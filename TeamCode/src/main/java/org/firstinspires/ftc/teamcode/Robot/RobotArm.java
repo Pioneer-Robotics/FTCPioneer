@@ -110,15 +110,15 @@ public class RobotArm extends Thread {
 //        currentLengthSpeed = 0;
 
 
-//        while (Op.opModeIsActive() && rotation.isBusy()) {
-//            Op.telemetry.addData("Length Power", length.getPower());
-//            Op.telemetry.addData("Length DT", deltaTime.seconds());
-//
-//
-//            Op.telemetry.update();
-//        }
+        while (Op.opModeIsActive() && rotation.isBusy()) {
+            Op.telemetry.addData("Length Power", length.getPower());
+            Op.telemetry.addData("Length DT", deltaTime.seconds());
 
-//        rotation.setPower(0);
+
+            Op.telemetry.update();
+        }
+
+        rotation.setPower(0);
     }
 
 

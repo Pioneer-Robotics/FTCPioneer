@@ -28,7 +28,8 @@ public class InputTroubleshooting extends LinearOpMode {
             telemetry.addData("Distance Sensor 90   : ", robot.GetDistance(RobotWallTrack.groupID.Group90, DistanceUnit.CM));
             telemetry.addData("Distance Sensor 180  : ", robot.GetDistance(RobotWallTrack.groupID.Group180, DistanceUnit.CM));
             telemetry.addData("Distance Sensor 270  : ", robot.GetDistance(RobotWallTrack.groupID.Group270, DistanceUnit.CM));
-
+            telemetry.addData("Arm Rotation", robot.arm.rotation.getCurrentPosition());
+            telemetry.addData("Arm Spool", robot.arm.length.getCurrentPosition());
 
             telemetry.update();
         }
