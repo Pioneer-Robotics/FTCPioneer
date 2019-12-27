@@ -20,18 +20,18 @@ public class SkystoneMain extends Auto {
 
         GrabArm(0.35, 0.35);
 
-        if (side == FieldSide.SIDE_BLUE) {
-            robot.RotateSimple(-90, 1, 5, 0.2);
-//            robot.RotatePID(-90, 1, 100);
-        } else {
-            robot.RotateSimple(90, 1, 5, 0.2);
-
-//            robot.RotatePID(90, 1, 100);
-        }
-
-        DepositeArm(0.35, 1);
-
-        robot.RotateSimple(0, 1, 5, 0.2);
+//        if (side == FieldSide.SIDE_BLUE) {
+//            robot.RotateSimple(-90, 1, 5, 0.2);
+////            robot.RotatePID(-90, 1, 100);
+//        } else {
+//            robot.RotateSimple(90, 1, 5, 0.2);
+//
+////            robot.RotatePID(90, 1, 100);
+//        }
+//
+//        DepositeArm(0.35, 1);
+//
+//        robot.RotateSimple(0, 1, 5, 0.2);
 
 
         StopMovement();

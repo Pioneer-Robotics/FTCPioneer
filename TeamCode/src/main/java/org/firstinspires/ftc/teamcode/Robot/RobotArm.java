@@ -87,22 +87,22 @@ public class RobotArm extends Thread {
     public double armRectExtension(double horiz, double vert) {
         return Math.sqrt(horiz * horiz + vert * vert);
     }
-    
+
     public double armRectAngle(double horiz, double vert) {
         return Math.atan(vert / horiz);
     }
 
 
-    public void SetArmState(double targetAngle, double _targetLength, double angleSpeed, double _lengthSpeed) {
-    // angleSpeed really means the angle you want the arm to be
-        targetLengthSpeed = _lengthSpeed;
-        targetLength = ((double) -2613 * _targetLength) - 10;
+    public void SetArmStateWait(double targetAngle, double _targetLength, double angleSpeed) {
+        // angleSpeed really means the angle you want the arm to be
+        targetLengthSpeed = 1;
+        targetLength = ((double) 2613 * _targetLength) + 10;
         rotation.setPower(angleSpeed);
 
 
 //        length.setTargetPosition((int) ((double) -2623 * _targetLength));
 
-        rotation.setTargetPosition((int) ((double) -5679 * targetAngle));
+        rotation.setTargetPosition((int) ((double) 5679 * targetAngle));
         rotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -121,11 +121,27 @@ public class RobotArm extends Thread {
         rotation.setPower(0);
     }
 
+    public void SetArmState(double targetAngle, double _targetLength, double angleSpeed) {
+        // angleSpeed really means the angle you want the arm to be
+        targetLengthSpeed = 1;
+        targetLength = ((double) 2613 * _targetLength) + 10;
+        rotation.setPower(angleSpeed);
+
+
+//        length.setTargetPosition((int) ((double) -2623 * _targetLength));
+
+        rotation.setTargetPosition((int) ((double) 5679 * targetAngle));
+        rotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+//        currentLengthSpeed = 0;
+    }
 
     //Set Arm Target Length and Power
-    public void SetArmState(double _targetLength, double angleSpeed, double _lengthSpeed) {
+    public void SetArmState(double _targetLength, double angleSpeed) {
 
-        targetLengthSpeed = _lengthSpeed;
+        targetLengthSpeed = 1;
         targetLength = ((double) -2613 * _targetLength) - 10;
 
 
@@ -135,15 +151,15 @@ public class RobotArm extends Thread {
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
     }
-    
+
 
     public double calcVertExtensionConst() {
-        return ((17.8*(double)length.getCurrentPosition())/480 * Math.cos(thetaAngle()));
+        return ((17.8 * (double) length.getCurrentPosition()) / 480 * Math.cos(thetaAngle()));
     }
 
     public double calcVertExtensionTicks(double k) {
         //Make sure to convert from encoder ticks when calling
-        return 480 * (k / Math.cos(thetaAngle())/17.8);
+        return 480 * (k / Math.cos(thetaAngle()) / 17.8);
     }
 
     public void SetGripState(GripState gripState, double rotationPosition) {
