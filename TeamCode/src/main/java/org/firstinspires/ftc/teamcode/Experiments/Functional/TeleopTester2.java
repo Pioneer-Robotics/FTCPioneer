@@ -43,11 +43,13 @@ public class TeleopTester2 extends LinearOpMode {
     boolean aButton2Check = false;
     boolean pointDown = false;
     double vertExtensionConst = 0;
+    double yWanted = 0;
+    double xWanted = 0;
     double vertDMove = 0;
     boolean lastD2press = false;
 
     //this section relates to moving the arm (not rotating the gripper)
-    boolean rectControls_wanted = true;
+    boolean rectControls_wanted = false;
     boolean leftBumper2Check = false;
     double targetGripperPositionY = 0;
     double targetGripperPositionX = 0;
@@ -191,13 +193,38 @@ public class TeleopTester2 extends LinearOpMode {
             }
             leftBumper2Check = gamepad2.left_bumper;
 
-            //get rectangular controls to work, not ready for testing
-            //I commented this out because its causing build errors. -B
-//            if (rectControls_wanted){
-//                RobotArm.SetArmState ( Math.atan(targetGripperPositionX / targetGripperPositionY), Math.sqrt (targetGripperPositionX * targetGripperPositionX + targetGripperPositionY * targetGripperPositionY), 1, 1);
-//                targetGripperPositionX;
-//                targetGripperPositionY;
-//            }
+            if (rectControls_wanted) { //yes it looks dumb, no it's not a typo, I'm gonna fix it when it's ready
+                if (Math.abs(gamepad2.left_stick_y) > 0.1){
+                    yWanted += deltaTime.seconds() * gamepad2.left_stick_y;
+                }
+                if (Math.abs(gamepad2.left_stick_x) > 0.1){
+                    xWanted += deltaTime.seconds() * gamepad2.left_stick_x;
+                }
+                double armLengthNeeded = Math.sqrt(xWanted * xWanted + yWanted * yWanted);
+                double armAngleNeeded = Math.atan(yWanted / xWanted);
+                robot.arm.SetArmState (armAngleNeeded, armLengthNeeded, 1);
+            }
+
+            if (!rectControls_wanted){ //yes it looks dumb, no it's not a typo, just leave it alone
+
+                //extend or shorten arm with Dpad
+                if ((gamepad2.dpad_up || gamepad2.dpad_down) && !lastD2press) {
+                    vertExtensionConst = robot.arm.calcVertExtensionConst();
+                }
+                lastD2press = gamepad2.dpad_up || gamepad2.dpad_down;
+
+                if (gamepad2.dpad_up) {
+                    vertDMove = 0.25;
+                    extension = (robot.arm.calcVertExtensionTicks(vertExtensionConst) + 10) / -2613;
+                }
+                if (gamepad2.dpad_down) {
+                    vertDMove = -0.25;
+                    extension = (robot.arm.calcVertExtensionTicks(vertExtensionConst) + 10) / -2613;
+                }
+                if (!gamepad2.dpad_up && !gamepad2.dpad_down) {
+                    vertDMove = 0;
+                }
+            }
 
             //press the X button to put the grabber in "idle" position
             if (gamepad2.x && !xButton2Check) {
@@ -249,23 +276,6 @@ public class TeleopTester2 extends LinearOpMode {
             if (gamepad2.dpad_right) {
                 gripAngle -= deltaTime.seconds() * 135;
                 pointDown = false;
-            }
-
-            if ((gamepad2.dpad_up || gamepad2.dpad_down) && !lastD2press) {
-                vertExtensionConst = robot.arm.calcVertExtensionConst();
-            }
-            lastD2press = gamepad2.dpad_up || gamepad2.dpad_down;
-
-            if (gamepad2.dpad_up) {
-                vertDMove = 0.25;
-                extension = (robot.arm.calcVertExtensionTicks(vertExtensionConst) + 10) / -2613;
-            } else
-                if (gamepad2.dpad_down) {
-                vertDMove = -0.25;
-                extension = (robot.arm.calcVertExtensionTicks(vertExtensionConst) + 10) / -2613;
-            }
-                else {
-                vertDMove = 0;
             }
 
 

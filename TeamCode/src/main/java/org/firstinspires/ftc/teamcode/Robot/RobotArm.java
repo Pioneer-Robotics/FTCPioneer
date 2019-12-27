@@ -93,7 +93,7 @@ public class RobotArm extends Thread {
     }
 
 
-    public void SetArmStateWait(double targetAngle, double _targetLength, double angleSpeed) {
+    public void SetArmStateWait (double targetAngle, double _targetLength, double angleSpeed) {
         // angleSpeed really means the angle you want the arm to be
         targetLengthSpeed = 1;
         targetLength = ((double) 2613 * _targetLength) + 10;
@@ -139,7 +139,7 @@ public class RobotArm extends Thread {
     }
 
     //Set Arm Target Length and Power
-    public void SetArmState(double _targetLength, double angleSpeed) {
+    public void SetArmAnglePower (double _targetLength, double angleSpeed) {
 
         targetLengthSpeed = 1;
         targetLength = ((double) -2613 * _targetLength) - 10;
