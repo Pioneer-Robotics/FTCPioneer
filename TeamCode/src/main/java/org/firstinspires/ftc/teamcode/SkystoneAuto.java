@@ -20,7 +20,7 @@ public class SkystoneAuto extends Auto {
 
         waitForStart();
 
-        robot.arm.SetArmState(0.1, 0, 1);
+        robot.arm.SetArmStateWait(0.1, 0, 1);
 
         //If we can't see the skystone, move forward a tad to get a better reading
         while (opModeIsActive()) {

@@ -63,41 +63,50 @@ public class Auto extends LinearOpMode {
 //        } else {
 //            side = FieldSide.SIDE_RED;
 //        }
-        robot.arm.SetGripState(RobotArm.GripState.IDLE, 0.5);
+        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
 
         print("Status: Waiting for play side input. Please press the button thats color corresponds to the side your robot is on (see bridge). Press A to continue");
 
 
         //Manually set the side based on gamepad input
-        boolean waitingForInput = true;
+//        boolean waitingForInput = true;
+//
+//        while (waitingForInput) {
+//            //blu
+//            if (gamepad1.x) {
+//                side = FieldSide.SIDE_BLUE;
+//            }
+//            //red
+//            if (gamepad1.b) {
+//                side = FieldSide.SIDE_RED;
+//            }
+//
+//            //confirm
+//            if (gamepad1.a) {
+//                waitingForInput = false;
+//            }
+//
+//            if (side == FieldSide.SIDE_BLUE) {
+//                print("Status: INIT ON SIDE BLUE. Press A to continue");
+//            }
+//
+//            if (side == FieldSide.SIDE_RED) {
+//                print("Status: INIT ON SIDE RED. Press A to continue");
+//            }
+//
+//
+//        }
 
-        while (waitingForInput) {
-            //blu
-            if (gamepad1.x) {
-                side = FieldSide.SIDE_BLUE;
-            }
-            //red
-            if (gamepad1.b) {
-                side = FieldSide.SIDE_RED;
-            }
+        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
 
-            //confirm
-            if (gamepad1.a) {
-                waitingForInput = false;
-            }
-
-            if (side == FieldSide.SIDE_BLUE) {
-                print("Status: INIT ON SIDE BLUE. Press A to continue");
-            }
-
-            if (side == FieldSide.SIDE_RED) {
-                print("Status: INIT ON SIDE RED. Press A to continue");
-            }
+        robot.arm.SetArmStateWait(0.2, 0, 0.25);
 
 
-        }
-
+        robot.arm.SetArmStateWait(0.2, 0.15, 0.25);
         robot.arm.SetGripState(RobotArm.GripState.IDLE, 0.5);
+        sleep(1000);
+        robot.arm.SetArmStateWait(0.2, 0, 0.25);
+
         print("Status: Awaiting start. Running on side " + (side == FieldSide.SIDE_BLUE ? "BLU" : "RED"));
     }
 
@@ -206,35 +215,37 @@ public class Auto extends LinearOpMode {
 
         //Open the gripper, raise the arm, and extend out
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
-        robot.arm.SetArmState(liftFactor, extensionLength, 1);
+        robot.arm.SetArmStateWait(liftFactor, extensionLength, 1);
 
 
         //Drop the arm
-        robot.arm.SetArmState(0, extensionLength, 1);
+        robot.arm.SetArmStateWait(0, extensionLength, 1);
 
         //Close the gripper
         robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
 
+        sleep(1000);
+
         //Raise the arm again
-        robot.arm.SetArmState(liftFactor, extensionLength, 1);
+        robot.arm.SetArmStateWait(liftFactor, extensionLength, 1);
     }
 
     public void DepositeArm(double lastLength, double extensionLength) {
 
         //Open the gripper, raise the arm, and extend out
         robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
-        robot.arm.SetArmState(0, lastLength, 1);
+        robot.arm.SetArmStateWait(0, lastLength, 1);
         sleep(1000);
 
         //Drop the arm
-        robot.arm.SetArmState(0, extensionLength, 1);
+        robot.arm.SetArmStateWait(0, extensionLength, 1);
         sleep(1000);
 
         //Close the gripper
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
 
         //Raise the arm again
-        robot.arm.SetArmState(0, lastLength, 1);
+        robot.arm.SetArmStateWait(0, lastLength, 1);
         sleep(1000);
     }
 
@@ -244,7 +255,7 @@ public class Auto extends LinearOpMode {
     }
 
     public void InitArm() {
-        robot.arm.SetArmState(0.2, 0, 1);
+        robot.arm.SetArmStateWait(0.2, 0, 1);
 
     }
 

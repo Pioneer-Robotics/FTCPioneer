@@ -93,16 +93,16 @@ public class RobotArm extends Thread {
     }
 
 
-    public void SetArmStateWait (double targetAngle, double _targetLength, double angleSpeed) {
+    public void SetArmStateWait(double targetAngle, double _targetLength, double angleSpeed) {
         // angleSpeed really means the angle you want the arm to be
         targetLengthSpeed = 1;
-        targetLength = ((double) 2613 * _targetLength) + 10;
+        targetLength = (RobotConfiguration.arm_lengthMax * _targetLength);
         rotation.setPower(angleSpeed);
 
 
 //        length.setTargetPosition((int) ((double) -2623 * _targetLength));
 
-        rotation.setTargetPosition((int) ((double) 5679 * targetAngle));
+        rotation.setTargetPosition((int) (RobotConfiguration.arm_rotationMax * targetAngle));
         rotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -110,10 +110,12 @@ public class RobotArm extends Thread {
 //        currentLengthSpeed = 0;
 
 
-        while (Op.opModeIsActive() && rotation.isBusy()) {
-            Op.telemetry.addData("Length Power", length.getPower());
+        while (Op.opModeIsActive() && rotation.isBusy() && length.isBusy()) {
+            rotation.setPower(angleSpeed);
+            Op.telemetry.addData("Rotation Power", rotation.getPower());
+            Op.telemetry.addData("Rotation Position", rotation.getCurrentPosition());
+            Op.telemetry.addData("Rotation Goal", rotation.getTargetPosition());
             Op.telemetry.addData("Length DT", deltaTime.seconds());
-
 
             Op.telemetry.update();
         }
@@ -124,13 +126,13 @@ public class RobotArm extends Thread {
     public void SetArmState(double targetAngle, double _targetLength, double angleSpeed) {
         // angleSpeed really means the angle you want the arm to be
         targetLengthSpeed = 1;
-        targetLength = ((double) 2613 * _targetLength) + 10;
+        targetLength = ((double) RobotConfiguration.arm_lengthMax * _targetLength);
         rotation.setPower(angleSpeed);
 
 
 //        length.setTargetPosition((int) ((double) -2623 * _targetLength));
 
-        rotation.setTargetPosition((int) ((double) 5679 * targetAngle));
+        rotation.setTargetPosition((int) ((double) RobotConfiguration.arm_rotationMax * targetAngle));
         rotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -139,10 +141,10 @@ public class RobotArm extends Thread {
     }
 
     //Set Arm Target Length and Power
-    public void SetArmAnglePower (double _targetLength, double angleSpeed) {
+    public void SetArmAnglePower(double _targetLength, double angleSpeed) {
 
         targetLengthSpeed = 1;
-        targetLength = ((double) -2613 * _targetLength) - 10;
+        targetLength = ((double) RobotConfiguration.arm_lengthMax * _targetLength);
 
 
         rotation.setPower(angleSpeed);
@@ -152,7 +154,8 @@ public class RobotArm extends Thread {
 
     }
 
-
+    //17.8 rotation is one CM
+    //(17.8 / 480) encoder ticks is one CM
     public double calcVertExtensionConst() {
         return ((17.8 * (double) length.getCurrentPosition()) / 480 * Math.cos(thetaAngle()));
     }

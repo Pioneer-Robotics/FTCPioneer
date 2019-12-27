@@ -67,7 +67,6 @@ public class Robot extends Thread {
     public Servo lunchbox;
 
     public void init(HardwareMap hardwareMap, LinearOpMode opmode) {
-
         //Start the printer service
         bTelemetry.Start(opmode);
 
@@ -160,7 +159,7 @@ public class Robot extends Thread {
 
     }
 
-    public void GetHardware(LinearOpMode opmode){
+    public void GetHardware(LinearOpMode opmode) {
         //Sets up the drive train hardware
         driveManager = new RobotDriveManager(opmode, RobotConfiguration.wheel_frontLeft, RobotConfiguration.wheel_frontRight, RobotConfiguration.wheel_backLeft, RobotConfiguration.wheel_backRight);
         arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
@@ -254,7 +253,7 @@ public class Robot extends Thread {
 
 
         //Initialize lunchbox
-        lunchbox.setPosition(1);
+//        lunchbox.setPosition(1);
 
         bTelemetry.Print("Wheel boot successful. Ready to operate!");
 
@@ -289,9 +288,6 @@ public class Robot extends Thread {
 
         //Start the thread that is responsible for fighting gravity and keeping arm position level.
 //        arm.start();
-
-        //Find the lunchbox servo
-        lunchbox = hardwareMap.get(Servo.class, RobotConfiguration.lunchboxServo);
 
         //Init the motors for use.
         SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -350,13 +346,11 @@ public class Robot extends Thread {
             //Make sure that the robot stops once we request a stop
             if (Op.isStopRequested()) {
                 SetPowerDouble4(0, 0, 0, 0, 0);
-
-
                 threadRunning.set(false);
             }
 
-            arm.length.setPower(1);
-            arm.length.setTargetPosition((int) arm.targetLength);
+//            arm.length.setPower(1);
+//            arm.length.setTargetPosition((int) arm.targetLength);
         }
 
 

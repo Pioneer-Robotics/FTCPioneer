@@ -40,7 +40,7 @@ public class TeleopTester extends LinearOpMode {
 
 
 //            robot.MoveComplex(new Double2(gamepad1.left_stick_x, gamepad1.left_stick_y), gamepad1.a ? 1 : 0.1, Math.toRadians(targetRotation));
-            robot.arm.SetArmState(0.1, gamepad1.left_stick_x, 1, 1);
+            robot.arm.SetArmState(0.1, gamepad1.left_stick_x, 1);
 //            robot.arm.SetGripState(gamepad1.left_stick_x, gamepad1.left_stick_y);
             robot.arm.SetGripState(RobotArm.GripState.CLOSED,0);
             telemetry.addData("Grip Postion", gamepad1.left_stick_x);

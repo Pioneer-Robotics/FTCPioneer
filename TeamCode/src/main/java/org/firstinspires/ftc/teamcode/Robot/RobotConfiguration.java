@@ -38,8 +38,14 @@ public class RobotConfiguration {
     //The motor that rotates the spool of string that controls the length of the arm
     public static final String arm_lengthMotor = "Arm Spool";
 
+    //The encoder ticks required to extend the arm completely
+    public static final double arm_lengthMax = -2613;
+
     //The motor that is responsible
     public static final String arm_rotationMotor = "Arm Rotation";
+
+    //The encoder tick required to elevate the arm completely
+    public static final double arm_rotationMax = -5678;
 
     //The servo responsible for controlling the grip state of the arm
     public static final String arm_gripServo = "Grip";
@@ -51,11 +57,6 @@ public class RobotConfiguration {
 
     //The servo responsible for holding the capstone during TeleOp
     public static final String lunchboxServo = "Lunchbox";
-
-    //The servo responsible for holding the capstone during TeleOp
-    public static final double lunchboxClosed = 0;
-    public static final double lunchboxOpen = 1;
-
 
     //Distance sensor 90 names
     public static final String distanceSensor_90A = "sensor 90A";
