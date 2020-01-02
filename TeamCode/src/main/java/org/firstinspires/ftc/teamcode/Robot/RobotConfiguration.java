@@ -9,6 +9,8 @@ public class RobotConfiguration {
     public static final String imu_0 = "imu";
     public static final String imu_1 = "imu1";
 
+    public static final String camera = "Webcam 1";
+
     /* Our cool robot configuration
 
 
