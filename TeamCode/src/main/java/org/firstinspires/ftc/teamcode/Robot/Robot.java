@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
+import android.app.AlarmManager;
 import android.renderscript.Double2;
 import android.renderscript.Double4;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -15,6 +17,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.SensorREV2mDistanc
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorREVColorDistance;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Experiments.QuickTests.TestingOpMode2;
 import org.firstinspires.ftc.teamcode.Hardware.bMotor;
 import org.firstinspires.ftc.teamcode.Helpers.PID;
 import org.firstinspires.ftc.teamcode.Helpers.bDataManager;
@@ -39,6 +42,8 @@ public class Robot extends Thread {
 
     //The wall tracker, lets you track along a wall using a sensor group and other data
     public RobotWallTrack wallTrack = new RobotWallTrack();
+
+    public AnalogInput armPotentiometer;
 
     //The current IMU rotation, assigned by a thread
     static double rotation;
@@ -84,39 +89,7 @@ public class Robot extends Thread {
         //Set the opmode
         Op = opmode;
 
-        //Sets up the drive train hardware
-        driveManager = new RobotDriveManager(opmode, RobotConfiguration.wheel_frontLeft, RobotConfiguration.wheel_frontRight, RobotConfiguration.wheel_backLeft, RobotConfiguration.wheel_backRight);
-
-        bTelemetry.Print("Robot wheels assigned.");
-        bTelemetry.Print("Robot motors configured in the DriveManager.");
-
-        //Define the arm values for motors and servos (also includes ranges)
-        arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
-
-        //Start the thread that is responsible for fighting gravity and keeping arm position level.
-//        arm.start();
-
-        //Find the lunchbox servo
-        lunchbox = hardwareMap.get(Servo.class, RobotConfiguration.lunchboxServo);
-
-        //Reverse the left side wheels to ensure forward drive works when all power is set to 1
-        driveManager.frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        driveManager.backLeft.setDirection(DcMotor.Direction.REVERSE);
-
-
-        //Start encoders for the drive train
-        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        bTelemetry.Print("Wheel encoders initialized.");
-
-
-        //Set up the bIMU, this class is responsible for taking the values of both of our IMU's and averaging them
-        imu.Start(opmode, RobotConfiguration.imu_0, RobotConfiguration.imu_1);
-        bTelemetry.Print("IMU's initialized.");
-
-        //Set up the wall tracker, this uses ALL the lasers so make sure they all work before running this
-        wallTrack.Start(opmode);
-        bTelemetry.Print("Walltracker initialized.");
+        GetHardware(opmode, true);
 
         //Starts the 'run' thread
         start();
@@ -142,107 +115,8 @@ public class Robot extends Thread {
 
 
         //Adds the motors and distance sensors to the expInput manager to allow for faster reads
-        bTelemetry.Print("Initializing Experimental Input...");
-        for (bMotor motor : driveManager.driveMotors) {
-            experimentalInput.AddMotor(motor);
-        }
-
-        for (DistanceSensor sensor : wallTrack.sensors) {
-            experimentalInput.AddSensor(sensor);
-        }
-
-
-        //Initialize lunchbox
-        lunchbox.setPosition(1);
-
-        bTelemetry.Print("Wheel boot successful. Ready to operate!");
-
-    }
-
-    public void GetHardware(LinearOpMode opmode) {
-        //Sets up the drive train hardware
-        driveManager = new RobotDriveManager(opmode, RobotConfiguration.wheel_frontLeft, RobotConfiguration.wheel_frontRight, RobotConfiguration.wheel_backLeft, RobotConfiguration.wheel_backRight);
-        arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
-        imu.Start(opmode, RobotConfiguration.imu_0, RobotConfiguration.imu_1);
-        wallTrack.Start(opmode);
-
-    }
-
-    //Inits without lasers for speed
-    public void initFast(HardwareMap hardwareMap, LinearOpMode opmode) {
-
-        //Start the printer service
-        bTelemetry.Start(opmode);
-
-        //Fail safe to make sure there is only one Robot.java running.
-//        if (instance != null) {
-//            bTelemetry.Print("FATAL ERROR: THERE CAN ONLY BE ONE INSTANCE OF ROBOT.JAVA");
-//            return;
-//        }
-
-
-        //Set up the instance
-        instance = this;
-        bTelemetry.Print("Robot instance assigned.");
-
-        //Set the opmode
-        Op = opmode;
-
-        //Sets up the drive train hardware
-        driveManager = new RobotDriveManager(opmode, RobotConfiguration.wheel_frontLeft, RobotConfiguration.wheel_frontRight, RobotConfiguration.wheel_backLeft, RobotConfiguration.wheel_backRight);
-
-        bTelemetry.Print("Robot wheels assigned.");
-        bTelemetry.Print("Robot motors configured in the DriveManager.");
-
-        //Define the arm values for motors and servos (also includes ranges)
-        arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
-
-        //Start the thread that is responsible for fighting gravity and keeping arm position level.
-//        arm.start();
-
-        //Find the lunchbox servo
-        lunchbox = hardwareMap.get(Servo.class, RobotConfiguration.lunchboxServo);
-
-        //Reverse the left side wheels to ensure forward drive works when all power is set to 1
-        driveManager.frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        driveManager.backLeft.setDirection(DcMotor.Direction.REVERSE);
-
-
-        //Start encoders for the drive train
-        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        bTelemetry.Print("Wheel encoders initialized.");
-
-
-        //Set up the bIMU, this class is responsible for taking the values of both of our IMU's and averaging them
-        imu.Start(opmode, RobotConfiguration.imu_0, RobotConfiguration.imu_1);
-        bTelemetry.Print("IMU's initialized.");
-
-        //Starts the 'run' thread
-        start();
-        bTelemetry.Print("Robot thread initialized.");
-
-        bTelemetry.Print("Robot start up successful. Preparing to read wheel calibration data...");
-
-        //Starts the dataManager to read calibration data
-        dataManger.Start();
-
-        bTelemetry.Print("bDataManager started.");
-
-
-        //Assign and display calibration data for debugging purposes
-        driveManager.frontLeft.powerCoefficent = dataManger.readData("wheel_front_left_powerCo", -1);
-        bTelemetry.Print("      Front Left  : " + driveManager.frontLeft.powerCoefficent);
-        driveManager.frontRight.powerCoefficent = dataManger.readData("wheel_front_right_powerCo", -1);
-        bTelemetry.Print("      Front Right : " + driveManager.frontRight.powerCoefficent);
-        driveManager.backLeft.powerCoefficent = dataManger.readData("wheel_back_left_powerCo", -1);
-        bTelemetry.Print("      Back Left   : " + driveManager.backLeft.powerCoefficent);
-        driveManager.backRight.powerCoefficent = dataManger.readData("wheel_back_right_powerCo", -1);
-        bTelemetry.Print("      Back Right  : " + driveManager.backRight.powerCoefficent);
-
-
-        //Adds the motors and distance sensors to the expInput manager to allow for faster reads
-        bTelemetry.Print("Initializing Experimental Input...");
+        //DISABLED BUT WORKS
+//        bTelemetry.Print("Initializing Experimental Input...");
 //        for (bMotor motor : driveManager.driveMotors) {
 //            experimentalInput.AddMotor(motor);
 //        }
@@ -251,12 +125,40 @@ public class Robot extends Thread {
 //            experimentalInput.AddSensor(sensor);
 //        }
 
-
-        //Initialize lunchbox
-//        lunchbox.setPosition(1);
-
         bTelemetry.Print("Wheel boot successful. Ready to operate!");
+    }
 
+    public void GetHardware(LinearOpMode opmode, boolean useWallTracking) {
+
+        //Sets up the drive train hardware
+        bTelemetry.Print("Configuring drive train...");
+        driveManager = new RobotDriveManager(opmode, RobotConfiguration.wheel_frontLeft, RobotConfiguration.wheel_frontRight, RobotConfiguration.wheel_backLeft, RobotConfiguration.wheel_backRight);
+
+        //Invert the left side wheels
+        driveManager.frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        driveManager.backLeft.setDirection(DcMotor.Direction.REVERSE);
+
+        //Reset drive train encoders
+        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+        //Sets up the arms hardware
+        bTelemetry.Print("Configuring arm motors...");
+        arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
+
+        bTelemetry.Print("Configuring IMU...");
+        imu.Start(opmode, RobotConfiguration.imu_0, RobotConfiguration.imu_1);
+
+        if (useWallTracking) {
+            bTelemetry.Print("Configuring wall tracking...");
+            wallTrack.Start(opmode);
+        }
+
+
+        armPotentiometer = opmode.hardwareMap.get(AnalogInput.class, RobotConfiguration.armPotentiometer);
+
+        bTelemetry.Print("Hardware configuration complete.");
     }
 
 

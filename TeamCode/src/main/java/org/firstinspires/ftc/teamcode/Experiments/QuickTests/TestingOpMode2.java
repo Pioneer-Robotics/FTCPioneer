@@ -17,29 +17,22 @@ import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 public class TestingOpMode2 extends LinearOpMode {
 
     Robot robot = new Robot();
-    ElapsedTime deltaTime = new ElapsedTime();
-
-
-    int last_bl;
-
-    int last_br;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(hardwareMap, this);
 
-        robot.arm.length.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.arm.rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         waitForStart();
 
         while (opModeIsActive()) {
-            //-2623
-            telemetry.addData("Spool Position : ", robot.arm.length.getCurrentPosition());
-            //-5679
-            telemetry.addData("Lift Position : ", robot.arm.rotation.getCurrentPosition());
+//            //-2623
+//            telemetry.addData("Spool Position : ", robot.arm.length.getCurrentPosition());
+//            //-5679
+//            telemetry.addData("Lift Position : ", robot.arm.rotation.getCurrentPosition());
 
+            telemetry.addData("POT Angle", robot.armPotentiometer.getVoltage() / 0.0122222222);
+            telemetry.addData("POT Voltage", robot.armPotentiometer.getVoltage());
             telemetry.update();
         }
 

@@ -72,6 +72,8 @@ public class RobotConfiguration {
     public static final String distanceSensor_270A = "sensor 270A";
     public static final String distanceSensor_270B = "sensor 270B";
 
+    public static final String armPotentiometer = "POT";
+
     //The distance between the two sensors along side 90, used for wall-tracking math. In CM.
     //Verified __________ by ___________
     public static final double distance_90AB = 33.5;

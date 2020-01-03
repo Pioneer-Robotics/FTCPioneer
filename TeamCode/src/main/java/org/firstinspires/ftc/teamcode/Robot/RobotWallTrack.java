@@ -421,11 +421,11 @@ public class RobotWallTrack {
             }
         }
         correctedDriveAngle = Math.toDegrees(bMath.MoveTowardsRadian(bMath.toRadians(driveAngle), correctionAngle, bMath.toRadians(bMath.Clamp(Math.abs(controller.Loop(distance, currentGroup.cache_avgDistance)), 0, maxCorrectionMagnitude))));
-        Robot.instance.Op.telemetry.addData("Angle correction", debuggingDeltaTime.seconds());
-        Robot.instance.Op.telemetry.addData("Angle ", debuggingDeltaTime.seconds());
+        Robot.instance.Op.telemetry.addData("Angle correction", correctionAngle);
+        Robot.instance.Op.telemetry.addData("Angle ", correctedDriveAngle);
 
-//        Robot.instance.Op.telemetry.addData("Current Distnace ", currentGroup.getDistanceAverage(DistanceUnit.CM));
-//        Robot.instance.Op.telemetry.addData("Current Error", distance - currentGroup.getDistanceAverage(DistanceUnit.CM));
+        Robot.instance.Op.telemetry.addData("Current Distnace ", currentGroup.getDistanceAverage(DistanceUnit.CM));
+        Robot.instance.Op.telemetry.addData("Current Error", distance - currentGroup.getDistanceAverage(DistanceUnit.CM));
 //        Robot.instance.Op.telemetry.addData("PID value", controller.State());
 
         //Move while keeping our rotation angle the same

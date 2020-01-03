@@ -68,7 +68,7 @@ public class TeleopTester2 extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot.initFast(hardwareMap, this);
+        robot.init(hardwareMap, this);
         fineServoControl = true;
 
 
@@ -188,24 +188,24 @@ public class TeleopTester2 extends LinearOpMode {
             //ARM CONTROLS
 
             //use the left bumper to make the toggle the arm controls (rectangular or polar)
-            if (gamepad2.left_bumper && !leftBumper2Check){
+            if (gamepad2.left_bumper && !leftBumper2Check) {
                 rectControls_wanted = !rectControls_wanted;
             }
             leftBumper2Check = gamepad2.left_bumper;
 
             if (rectControls_wanted) { //yes it looks dumb, no it's not a typo, I'm gonna fix it when it's ready
-                if (Math.abs(gamepad2.left_stick_y) > 0.1){
+                if (Math.abs(gamepad2.left_stick_y) > 0.1) {
                     yWanted += deltaTime.seconds() * gamepad2.left_stick_y;
                 }
-                if (Math.abs(gamepad2.left_stick_x) > 0.1){
+                if (Math.abs(gamepad2.left_stick_x) > 0.1) {
                     xWanted += deltaTime.seconds() * gamepad2.left_stick_x;
                 }
                 double armLengthNeeded = Math.sqrt(xWanted * xWanted + yWanted * yWanted);
                 double armAngleNeeded = Math.atan(yWanted / xWanted);
-                robot.arm.SetArmState (armAngleNeeded, armLengthNeeded, 1);
+                robot.arm.SetArmState(armAngleNeeded, armLengthNeeded, 1);
             }
 
-            if (!rectControls_wanted){ //yes it looks dumb, no it's not a typo, just leave it alone
+            if (!rectControls_wanted) { //yes it looks dumb, no it's not a typo, just leave it alone
 
                 //extend or shorten arm with Dpad
                 if ((gamepad2.dpad_up || gamepad2.dpad_down) && !lastD2press) {
@@ -244,14 +244,11 @@ public class TeleopTester2 extends LinearOpMode {
             bButton2Check = gamepad2.b;
 
 
-
             if (idle) {
                 robot.arm.SetGripState(RobotArm.GripState.IDLE, gripAngle / 180);
-            }
-            else
-                if (grab) {
+            } else if (grab) {
                 robot.arm.SetGripState(RobotArm.GripState.CLOSED, gripAngle / 180);
-            }   else {
+            } else {
                 robot.arm.SetGripState(RobotArm.GripState.OPEN, gripAngle / 180);
             }
 

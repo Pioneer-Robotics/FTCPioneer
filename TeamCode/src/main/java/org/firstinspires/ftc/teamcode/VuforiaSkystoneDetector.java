@@ -49,13 +49,23 @@ public class VuforiaSkystoneDetector {
     private float phoneYRotate = 0;
     private float phoneZRotate = 0;
 
+    //Define the skystone state
+    public SkystoneState lastState = SkystoneState.CENTER;
+
+    //Where the stones are relitive to the front of the bot
+    public enum SkystoneState {
+        PORT,
+        CENTER,
+        STARBOARD
+    }
+
     VuforiaTrackables targetsSkyStone;
     List<VuforiaTrackable> allTrackables = new ArrayList<>();
 
     public void Start(OpMode op) {
         //Find the camera
         camera = op.hardwareMap.get(WebcamName.class, RobotConfiguration.camera);
-
+        op.telemetry.addData("Camera Found.", "");
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
          * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
@@ -64,25 +74,34 @@ public class VuforiaSkystoneDetector {
         int cameraMonitorViewId = op.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", op.hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        op.telemetry.addData("Camera ID Found.", "");
 
         /**
          * We also indicate which camera on the RC we wish to use.
          */
         parameters.cameraName = camera;
+        op.telemetry.addData("Camera assigned.", "");
+
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
+        op.telemetry.addData("Vuforia instansiated.", "");
+
+
         // Load the data sets for the trackable objects. These particular data
         // sets are stored in the 'assets' part of our application.
         targetsSkyStone = this.vuforia.loadTrackablesFromAsset("Skystone");
+        op.telemetry.addData("Vuforia loaded trackable.", "");
 
         VuforiaTrackable stoneTarget = targetsSkyStone.get(0);
         stoneTarget.setName("Stone Target");
+        op.telemetry.addData("Skystone loaded.", "");
 
         // For convenience, gather together all the trackable objects in one easily-iterable collection */
         allTrackables.clear();
         allTrackables.add(stoneTarget);
+        op.telemetry.addData("Trackables loaded.", "");
 
         /**
          * In order for localization to work, we need to tell the system where each target is on the field, and
@@ -110,11 +129,13 @@ public class VuforiaSkystoneDetector {
                 .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
 
         phoneYRotate = -90;
+        phoneXRotate = 0;
+//        phoneYRotate = -90;
 
         // Next, translate the camera lens to where it is on the robot.
         // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
-        final float CAMERA_FORWARD_DISPLACEMENT = 4.0f * mmPerInch;   // eg: Camera is 4 Inches in front of robot-center
-        final float CAMERA_VERTICAL_DISPLACEMENT = 8.0f * mmPerInch;   // eg: Camera is 8 Inches above ground
+        final float CAMERA_FORWARD_DISPLACEMENT = 9 * mmPerInch;   // eg: Camera is 4 Inches in front of robot-center
+        final float CAMERA_VERTICAL_DISPLACEMENT = 1.5f * mmPerInch;   // eg: Camera is 8 Inches above ground
         final float CAMERA_LEFT_DISPLACEMENT = 0;     // eg: Camera is ON the robot's center line
 
         OpenGLMatrix robotFromCamera = OpenGLMatrix
@@ -125,7 +146,7 @@ public class VuforiaSkystoneDetector {
         for (VuforiaTrackable trackable : allTrackables) {
             ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, parameters.cameraDirection);
         }
-               
+
         targetsSkyStone.activate();
     }
 
@@ -159,12 +180,16 @@ public class VuforiaSkystoneDetector {
             Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
             op.telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
 
-            if (Math.abs(translation.get(0)) < stoneZ) {
+            //Gets the offset
+            if (Math.abs(translation.get(0)) < 5) {
+                lastState = SkystoneState.CENTER;
                 op.telemetry.addData("Selected center stone", "");
             } else {
                 if (translation.get(0) > 0) {
+                    lastState = SkystoneState.STARBOARD;
                     op.telemetry.addData("Selected starboard stone", "");
                 } else {
+                    lastState = SkystoneState.PORT;
                     op.telemetry.addData("Selected port stone", "");
                 }
             }
