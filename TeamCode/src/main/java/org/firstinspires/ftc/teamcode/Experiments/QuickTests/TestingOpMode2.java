@@ -31,8 +31,8 @@ public class TestingOpMode2 extends LinearOpMode {
 //            //-5679
 //            telemetry.addData("Lift Position : ", robot.arm.rotation.getCurrentPosition());
 
-            telemetry.addData("POT Angle", robot.armPotentiometer.getVoltage() / 0.0122222222);
-            telemetry.addData("POT Voltage", robot.armPotentiometer.getVoltage());
+//            telemetry.addData("POT Angle", robot.armPotentiometer.getVoltage() / 0.0122222222);
+//            telemetry.addData("POT Voltage", robot.armPotentiometer.getVoltage());
             telemetry.update();
         }
 
