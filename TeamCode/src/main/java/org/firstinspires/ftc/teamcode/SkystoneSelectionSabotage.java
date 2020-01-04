@@ -19,7 +19,8 @@ public class SkystoneSelectionSabotage extends Auto {
         startRotation = robot.GetRotation();
 
         waitForStart();
-        robot.arm.SetArmStateWait(0.5, 0.5, 1);
+
+        GrabArm(0.5, 0.2);
 
 
         StopMovement();

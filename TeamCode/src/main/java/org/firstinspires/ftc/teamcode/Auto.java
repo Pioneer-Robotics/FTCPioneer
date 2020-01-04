@@ -97,15 +97,14 @@ public class Auto extends LinearOpMode {
 //
 //        }
 
-//        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
-//
-//        robot.arm.SetArmStateWait(0.2, 0, 0.25);
-//
-//
-//        robot.arm.SetArmStateWait(0.2, 0.15, 0.25);
-//        robot.arm.SetGripState(RobotArm.GripState.IDLE, 0.5);
-//        sleep(1000);
-//        robot.arm.SetArmStateWait(0.2, 0, 0.25);
+        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
+        robot.arm.SetArmStateWait(0.2, 0, 0.25);
+
+
+        robot.arm.SetArmStateWait(0.2, 0.15, 0.25);
+        robot.arm.SetGripState(RobotArm.GripState.IDLE, 0.5);
+        sleep(1000);
+        robot.arm.SetArmStateWait(0.2, 0, 0.25);
 
         print("Status: Awaiting start. Running on side " + (side == FieldSide.SIDE_BLUE ? "BLU" : "RED"));
     }

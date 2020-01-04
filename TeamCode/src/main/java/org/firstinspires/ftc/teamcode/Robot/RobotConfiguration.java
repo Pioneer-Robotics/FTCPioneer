@@ -57,8 +57,9 @@ public class RobotConfiguration {
 
     //The Lunch.
 
-    //The servo responsible for holding the capstone during TeleOp
-    public static final String lunchboxServo = "Lunchbox";
+    //The servos responsible for moving the foundation
+    public static final String foundationGrip0 = "Foundation Grip 0";
+    public static final String foundationGrip1 = "Foundation Grip 1";
 
     //Distance sensor 90 names
     public static final String distanceSensor_90A = "sensor 90A";

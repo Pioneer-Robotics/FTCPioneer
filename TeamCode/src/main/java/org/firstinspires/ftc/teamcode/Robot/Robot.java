@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.Helpers.bDataManager;
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
 import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
 import org.firstinspires.ftc.teamcode.Hardware.bIMU;
+import org.firstinspires.ftc.teamcode.Hardware.Potentiometer;
 import org.firstinspires.ftc.teamcode.Robot.Input.RobotInputThread;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -43,7 +44,10 @@ public class Robot extends Thread {
     //The wall tracker, lets you track along a wall using a sensor group and other data
     public RobotWallTrack wallTrack = new RobotWallTrack();
 
-    public AnalogInput armPotentiometer;
+    public Potentiometer armPotentiometer;
+
+    public Servo foundationServo0;
+    public Servo foundationServo1;
 
     //The current IMU rotation, assigned by a thread
     static double rotation;
@@ -152,9 +156,10 @@ public class Robot extends Thread {
             bTelemetry.Print("Configuring wall tracking...");
             wallTrack.Start(opmode);
         }
+        foundationServo0 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip0);
+        foundationServo1 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip1);
 
-
-        armPotentiometer = opmode.hardwareMap.get(AnalogInput.class, RobotConfiguration.armPotentiometer);
+        armPotentiometer = new Potentiometer(opmode, RobotConfiguration.armPotentiometer);
 
         bTelemetry.Print("Hardware configuration complete.");
     }
