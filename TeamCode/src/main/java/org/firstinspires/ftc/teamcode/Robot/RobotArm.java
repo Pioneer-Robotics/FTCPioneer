@@ -103,6 +103,7 @@ public class RobotArm extends Thread {
 //        length.setTargetPosition((int) ((double) -2623 * _targetLength));
 
         rotation.setTargetPosition((int) (RobotConfiguration.arm_rotationMax * targetAngle));
+
         rotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -110,13 +111,13 @@ public class RobotArm extends Thread {
 //        currentLengthSpeed = 0;
 
 
-        while (Op.opModeIsActive() && rotation.isBusy() && length.isBusy()) {
+        while (Op.opModeIsActive() && rotation.getCurrentPosition() - rotation.getTargetPosition() > 5) {
             rotation.setPower(angleSpeed);
             Op.telemetry.addData("Rotation Power", rotation.getPower());
             Op.telemetry.addData("Rotation Position", rotation.getCurrentPosition());
+            Op.telemetry.addData("Length Position", length.getCurrentPosition());
             Op.telemetry.addData("Rotation Goal", rotation.getTargetPosition());
             Op.telemetry.addData("Length DT", deltaTime.seconds());
-
             Op.telemetry.update();
         }
 

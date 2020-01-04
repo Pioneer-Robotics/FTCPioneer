@@ -68,8 +68,6 @@ public class Robot extends Thread {
     //If our thread is running, using atomics to avoid thread conflicts. Might not be completely necessary
     AtomicBoolean threadRunning = new AtomicBoolean();
 
-    //lunchbox
-    public Servo lunchbox;
 
     public void init(HardwareMap hardwareMap, LinearOpMode opmode) {
         //Start the printer service
@@ -251,8 +249,8 @@ public class Robot extends Thread {
                 threadRunning.set(false);
             }
 
-//            arm.length.setPower(1);
-//            arm.length.setTargetPosition((int) arm.targetLength);
+            arm.length.setPower(1);
+            arm.length.setTargetPosition((int) arm.targetLength);
         }
 
 

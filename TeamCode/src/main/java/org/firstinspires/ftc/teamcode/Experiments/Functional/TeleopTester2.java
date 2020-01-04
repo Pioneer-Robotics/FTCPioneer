@@ -74,7 +74,7 @@ public class TeleopTester2 extends LinearOpMode {
 
         waitForStart();
 
-        robot.lunchbox.setPosition(1);
+//        robot.lunchbox.setPosition(1);
         lunchboxRot = 1;
         targetRotation = robot.GetRotation();
         gripAngle = 90;
@@ -162,7 +162,7 @@ public class TeleopTester2 extends LinearOpMode {
             lunchboxRot += gamepad1.dpad_down ? deltaTime.seconds() * 1 : 0;
             lunchboxRot = bMath.Clamp(lunchboxRot, 0, 1);
             telemetry.addData("LunchboxRot Position", lunchboxRot);
-            robot.lunchbox.setPosition(lunchboxRot);
+//            robot.lunchbox.setPosition(lunchboxRot);
 
 //            } else {
 //                robot.lunchbox.setPosition(0.4333);
