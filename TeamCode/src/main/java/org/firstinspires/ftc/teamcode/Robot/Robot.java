@@ -44,7 +44,7 @@ public class Robot extends Thread {
     //The wall tracker, lets you track along a wall using a sensor group and other data
     public RobotWallTrack wallTrack = new RobotWallTrack();
 
-    public Potentiometer armPotentiometer;
+    public Potentiometer armPotentiometer = new Potentiometer();
 
     public Servo foundationServo0;
     public Servo foundationServo1;
@@ -160,6 +160,7 @@ public class Robot extends Thread {
         foundationServo1 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip1);
 
         armPotentiometer = new Potentiometer(opmode, RobotConfiguration.armPotentiometer);
+
 
         bTelemetry.Print("Hardware configuration complete.");
     }
@@ -555,6 +556,7 @@ public class Robot extends Thread {
     //Returns true if any wheels are currently busy
     public boolean WheelsBusy() {
         return driveManager.frontRight.isBusy() || driveManager.frontLeft.isBusy() || driveManager.backLeft.isBusy() || driveManager.backRight.isBusy();
+//        return driveManager.frontRight.isBusy() || driveManager.frontLeft.isBusy() || driveManager.backLeft.isBusy() || driveManager.backRight.isBusy();
     }
     //</editor-fold>
 

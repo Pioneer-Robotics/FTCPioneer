@@ -409,9 +409,9 @@ public class RobotWallTrack {
         correctionAngle = 0;
         if (angleOffset > 0) {
             if (avoidanceConfig.CorrectionCoefficient() < 0) {
-                correctionAngle = bMath.toRadians(physicalOffset);
-            } else {
                 correctionAngle = bMath.toRadians(physicalOffset - 180);
+            } else {
+                correctionAngle = bMath.toRadians(physicalOffset );
             }
         } else {
             if (avoidanceConfig.CorrectionCoefficient() < 0) {

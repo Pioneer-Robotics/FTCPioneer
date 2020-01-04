@@ -58,6 +58,8 @@ public class RobotConfiguration {
     //The Lunch.
 
     //The servos responsible for moving the foundation
+    //Grip 0 position 1 is top
+    //Grip 1 position 0 is top
     public static final String foundationGrip0 = "Foundation Grip 0";
     public static final String foundationGrip1 = "Foundation Grip 1";
 

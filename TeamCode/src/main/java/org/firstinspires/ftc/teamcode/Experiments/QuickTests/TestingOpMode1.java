@@ -31,11 +31,11 @@ public class TestingOpMode1 extends LinearOpMode {
         controller.Start(1, 0, 0);
 //        controller.Start(4.95, 0.06, 0.05);
         while (opModeIsActive()) {
-            if (gamepad1.a) {
-                robot.wallTrack.MoveAlongWallComplexPID(RobotWallTrack.groupID.Group180, 1, 20, controller, 90, -90, targetRotation);
-            } else {
-                robot.wallTrack.MoveAlongWallComplexPID(RobotWallTrack.groupID.Group180, 1, 20, controller, 90, 90, targetRotation);
-            }
+//            if (gamepad1.a) {
+//                robot.wallTrack.MoveAlongWallComplexPID(RobotWallTrack.groupID.Group180, 1, 20, controller, 90, -90, targetRotation);
+//            } else {
+            robot.wallTrack.MoveAlongWallComplexPID(RobotWallTrack.groupID.Group180, 0.1, 20, controller, 90, 90, targetRotation);
+//            }
 
             telemetry.update();
         }

@@ -108,7 +108,7 @@ public class bMotor {
     }
 
     public boolean isBusy() {
-        return motor.isBusy();
+        return Math.abs(motor.getCurrentPosition() - motor.getTargetPosition()) > 5;
     }
 
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {

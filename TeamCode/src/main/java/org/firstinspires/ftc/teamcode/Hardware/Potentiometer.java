@@ -14,6 +14,10 @@ public class Potentiometer {
         analogInput = opMode.hardwareMap.get(AnalogInput.class, inputName);
     }
 
+    public Potentiometer() {
+        analogInput = null;
+    }
+
     public double GetAngle() {
         return analogInput.getVoltage() / 0.0122222222;
     }

@@ -63,7 +63,7 @@ public class Auto extends LinearOpMode {
 //        } else {
 //            side = FieldSide.SIDE_RED;
 //        }
-        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
+//        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
 
         print("Status: Waiting for play side input. Please press the button thats color corresponds to the side your robot is on (see bridge). Press A to continue");
 
@@ -97,10 +97,11 @@ public class Auto extends LinearOpMode {
 //
 //        }
 
+
         robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
-        robot.arm.SetArmStateWait(0, 0.5, 1);
-        robot.arm.SetGripState(RobotArm.GripState.IDLE, 0.5);
-        robot.arm.SetArmStateWait(0, 0, 1);
+//        robot.arm.SetArmStateWait(0, 1, 1);
+//        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
+//        robot.arm.SetArmStateWait(0, 0, 1);
 
         print("Status: Awaiting start. Running on side " + (side == FieldSide.SIDE_BLUE ? "BLU" : "RED"));
     }
@@ -207,6 +208,7 @@ public class Auto extends LinearOpMode {
 
     //Runs an arm cycle, an arm cycle will go out "extension" as a % from 1, drop the arm to 0
     public void GrabArm(double extensionLength, double liftFactor) {
+
 
         //Open the gripper, raise the arm, and extend out
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
