@@ -209,11 +209,11 @@ public class Auto extends LinearOpMode {
     //Runs an arm cycle, an arm cycle will go out "extension" as a % from 1, drop the arm to 0
     public void GrabArm(double extensionLength, double liftFactor) {
 
-
         //Open the gripper, raise the arm, and extend out
-        robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
         robot.arm.SetArmStateWait(liftFactor, extensionLength, 1);
+        robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
 
+        sleep(500);
 
         //Drop the arm
         robot.arm.SetArmStateWait(0, extensionLength, 1);
@@ -221,18 +221,21 @@ public class Auto extends LinearOpMode {
         //Close the gripper
         robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
 
-        sleep(1000);
+        sleep(2500);
 
         //Raise the arm again
         robot.arm.SetArmStateWait(liftFactor, extensionLength, 1);
+
     }
 
     public void DepositeArm(double lastLength, double extensionLength) {
 
         //Open the gripper, raise the arm, and extend out
         robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
-        robot.arm.SetArmStateWait(0, lastLength, 1);
+
         sleep(1000);
+
+        robot.arm.SetArmStateWait(0, lastLength, 1);
 
         //Drop the arm
         robot.arm.SetArmStateWait(0, extensionLength, 1);
