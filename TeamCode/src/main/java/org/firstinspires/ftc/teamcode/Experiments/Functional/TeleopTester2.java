@@ -24,6 +24,8 @@ public class TeleopTester2 extends LinearOpMode {
     public boolean lockRotation = false;
     boolean aButton1Check = false;
 
+    boolean fakeAuto = true;
+
     double targetRotation;
 
     double moveSpeed;
@@ -77,8 +79,29 @@ public class TeleopTester2 extends LinearOpMode {
 //        robot.lunchbox.setPosition(1);
         lunchboxRot = 1;
         targetRotation = robot.GetRotation();
-        gripAngle = 90;
+        robot.arm.SetGripState(RobotArm.GripState.IDLE, 60);
+        gripAngle = 30;
         while (opModeIsActive()) {
+
+
+            /*
+            Here is where I start
+            Fucking
+            with things
+            !!!!!!!!!!!!!!!!!
+             */
+
+            //press the "b" button to make the robot run like it's autonomous
+            if (gamepad1.b) fakeAuto = true;
+            if (fakeAuto){
+                robot.DriveByDistancePoorly (1, 99.6);
+                robot.RotateSimple(90, 0.5, 10, 2);
+                telemetry.addData("Victory Fuckers!", "");
+                telemetry.update();
+                robot.foundationServo0.setPosition(1);
+                robot.foundationServo1.setPosition(0);
+                fakeAuto = false;
+            }
 
             ///DRIVER CONTROLS
 
