@@ -594,13 +594,30 @@ public class Robot extends Thread {
         SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void DriveByDistancePoorly (double speedMultiplier, double distance){
+    // only goes straight forward
+    public void DriveByDistancePoorly(double speedMultiplier, double distance) {
         SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        int targetEncoders = 480 / RobotConfiguration.wheel_circumference) * distance;
-        SetPowerDouble4(1, 1, 1, 1, speedMultiplier);
+        int targetEncoders = (int) ((480.0 / RobotConfiguration.wheel_circumference) * distance);
         SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        while (driveManager.backLeft.getCurrentPosition() < targetEncoders){
+
+        SetPowerDouble4(1, 1, 1, 1, speedMultiplier);
+
+        while (driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders){
+    } //empty while loop works as waitUntil command
+
+        SetPowerDouble4(1, 1, 1, 1, 0.5);
+
+        while (driveManager.backLeft.getCurrentPosition() < 0.75 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.75 * targetEncoders){
         } //empty while loop works as waitUntil command
+
+        SetPowerDouble4(1, 1, 1, 1, 0.25);
+
+        while (driveManager.backLeft.getCurrentPosition() < targetEncoders && driveManager.backRight.getCurrentPosition() < targetEncoders){
+        } //empty while loop works as waitUntil command
+
+
+        SetPowerDouble4(0, 0, 0, 0, 0);
+
     }
 
 

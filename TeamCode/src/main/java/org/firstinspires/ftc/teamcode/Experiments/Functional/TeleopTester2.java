@@ -93,8 +93,10 @@ public class TeleopTester2 extends LinearOpMode {
 
             //press the "b" button to make the robot run like it's autonomous
             if (gamepad1.b) fakeAuto = true;
-            if (fakeAuto){
-                robot.DriveByDistancePoorly (1, 99.6);
+            if (fakeAuto) {
+                robot.DriveByDistancePoorly(1, 99.6);
+                telemetry.addData("Minor Victory Fuckers!", "");
+                telemetry.update();
                 robot.RotateSimple(90, 0.5, 10, 2);
                 telemetry.addData("Victory Fuckers!", "");
                 telemetry.update();
@@ -313,12 +315,12 @@ public class TeleopTester2 extends LinearOpMode {
             robot.arm.SetArmState(extension, raiseSpeed, 1);
 
 
-            telemetry.addData("Rotation Locked ", lockRotation);
-            telemetry.addData("Current Arm Angle", robot.arm.thetaAngle());
-            telemetry.addData("Current Rotation ", robot.GetRotation());
-            telemetry.addData("Current Target Rotation", targetRotation);
-            telemetry.addData("Current Lunchbox", lunchboxRot);
-            telemetry.update();
+//            telemetry.addData("Rotation Locked ", lockRotation);
+//            telemetry.addData("Current Arm Angle", robot.arm.thetaAngle());
+//            telemetry.addData("Current Rotation ", robot.GetRotation());
+//            telemetry.addData("Current Target Rotation", targetRotation);
+//            telemetry.addData("Current Lunchbox", lunchboxRot);
+//            telemetry.update();
 
             deltaTime.reset();
         }
