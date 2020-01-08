@@ -406,19 +406,23 @@ public class Robot extends Thread {
                 lastPositiveState = rotationPower > 0;
             }
 
-            if (rotationPID_test.error < 2) {
-                correctTime += dt.seconds();
-            }
-
-            if (correctTime > 0.25) {
+            if (directionChanges > 6) {
                 break;
             }
 
-            if (directionChanges > 3) {
-                ticker += cycles * 2;
-                Op.telemetry.addData("Rotation ended", directionChanges);
-                Op.telemetry.update();
-            }
+//            if (rotationPID_test.error < 2) {
+//                correctTime += dt.seconds();
+//            }
+//
+//            if (correctTime > 0.25) {
+//                break;
+//            }
+//
+//            if (directionChanges > 3) {
+//                ticker += cycles * 2;
+//                Op.telemetry.addData("Rotation ended", directionChanges);
+//                Op.telemetry.update();
+//            }
             dt.reset();
         }
 
@@ -602,17 +606,17 @@ public class Robot extends Thread {
 
         SetPowerDouble4(1, 1, 1, 1, speedMultiplier);
 
-        while (driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders){
-    } //empty while loop works as waitUntil command
+        while (driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders) {
+        } //empty while loop works as waitUntil command
 
         SetPowerDouble4(1, 1, 1, 1, 0.5);
 
-        while (driveManager.backLeft.getCurrentPosition() < 0.75 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.75 * targetEncoders){
+        while (driveManager.backLeft.getCurrentPosition() < 0.75 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.75 * targetEncoders) {
         } //empty while loop works as waitUntil command
 
         SetPowerDouble4(1, 1, 1, 1, 0.25);
 
-        while (driveManager.backLeft.getCurrentPosition() < targetEncoders && driveManager.backRight.getCurrentPosition() < targetEncoders){
+        while (driveManager.backLeft.getCurrentPosition() < targetEncoders && driveManager.backRight.getCurrentPosition() < targetEncoders) {
         } //empty while loop works as waitUntil command
 
 
