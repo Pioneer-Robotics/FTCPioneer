@@ -594,6 +594,15 @@ public class Robot extends Thread {
         SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    public void DriveByDistancePoorly (double speedMultiplier, double distance){
+        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        int targetEncoders = 480 / RobotConfiguration.wheel_circumference) * distance;
+        SetPowerDouble4(1, 1, 1, 1, speedMultiplier);
+        SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        while (driveManager.backLeft.getCurrentPosition() < targetEncoders){
+        } //empty while loop works as waitUntil command
+    }
+
 
     //This version of drive by distance doesnt use Drive To Position and keeps the oriantation the same
     //WIP
