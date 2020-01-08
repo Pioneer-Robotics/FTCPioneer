@@ -80,7 +80,8 @@ public class TeleopTester2 extends LinearOpMode {
 //        robot.lunchbox.setPosition(1);
         lunchboxRot = 1;
         targetRotation = robot.GetRotation();
-        gripAngle = 90;
+        robot.arm.SetGripState(RobotArm.GripState.IDLE, 60);
+        gripAngle = 30;
         while (opModeIsActive()) {
 
             ///DRIVER CONTROLS
@@ -293,6 +294,10 @@ public class TeleopTester2 extends LinearOpMode {
             robot.foundationServo0.setPosition(gripFoundation ? 0 : 1);
             robot.foundationServo1.setPosition(gripFoundation ? 1 : 0);
 
+            //extend arm by tapping right trigger
+            extension += gamepad2.right_trigger * deltaTime.seconds();
+            //retract arm by tapping left trigger
+            extension -= gamepad2.left_trigger * deltaTime.seconds();
 
 
             aTad = gamepad2.y ? 1 : 0;

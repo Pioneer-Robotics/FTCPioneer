@@ -46,6 +46,7 @@ public class Robot extends Thread {
 
     public Potentiometer armPotentiometer = new Potentiometer();
 
+    public Servo longLunchbox;
     public Servo foundationServo0;
     public Servo foundationServo1;
 
@@ -591,6 +592,32 @@ public class Robot extends Thread {
         //Set up for normal driving
         SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    // only goes straight forward
+    public void DriveByDistancePoorly(double speedMultiplier, double distance) {
+        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        int targetEncoders = (int) ((480.0 / RobotConfiguration.wheel_circumference) * distance);
+        SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        SetPowerDouble4(1, 1, 1, 1, speedMultiplier);
+
+        while (driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders){
+    } //empty while loop works as waitUntil command
+
+        SetPowerDouble4(1, 1, 1, 1, 0.5);
+
+        while (driveManager.backLeft.getCurrentPosition() < 0.75 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.75 * targetEncoders){
+        } //empty while loop works as waitUntil command
+
+        SetPowerDouble4(1, 1, 1, 1, 0.25);
+
+        while (driveManager.backLeft.getCurrentPosition() < targetEncoders && driveManager.backRight.getCurrentPosition() < targetEncoders){
+        } //empty while loop works as waitUntil command
+
+
+        SetPowerDouble4(0, 0, 0, 0, 0);
+
     }
 
 
