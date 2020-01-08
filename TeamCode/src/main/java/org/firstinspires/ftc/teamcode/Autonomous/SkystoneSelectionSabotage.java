@@ -1,9 +1,7 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 
 @Autonomous(name = "Skystone Low Key Sabotage", group = "ftcPio")
 public class SkystoneSelectionSabotage extends Auto {

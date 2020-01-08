@@ -1,11 +1,13 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
-
+@Disabled
+@Deprecated
 @Autonomous(name = "Skystone", group = "ftcPio")
 public class SkystoneAuto extends Auto {
 
@@ -24,14 +26,14 @@ public class SkystoneAuto extends Auto {
 
         //If we can't see the skystone, move forward a tad to get a better reading
         while (opModeIsActive()) {
-            if (jobs.tensorFlowaJob.getCurrentRecognition() == null) {
-                robot.DriveByDistance(speed_low, 2.5);
-                sleep(500);
-            }
-            if (jobs.tensorFlowaJob.getCurrentRecognition() != null) {
-                StopMovement();
-                break;
-            }
+//            if (jobs.tensorFlowaJob.getCurrentRecognition() == null) {
+//                robot.DriveByDistance(speed_low, 2.5);
+//                sleep(500);
+//            }
+//            if (jobs.tensorFlowaJob.getCurrentRecognition() != null) {
+//                StopMovement();
+//                break;
+//            }
         }
 
 
@@ -42,7 +44,7 @@ public class SkystoneAuto extends Auto {
         //Drive forward while adjusting heading to line up with the skystone
         DriveAtSkystone(speed_med, 35, 15, startRotation);
 
-        jobs.tensorFlowaJob.Stop();
+//        jobs.tensorFlowaJob.Stop();
 
         //Extend the arm 35% of the way
         robot.arm.SetArmState(0.1, 0.35, 1);

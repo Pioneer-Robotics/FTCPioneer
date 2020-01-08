@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Autonomous;
 
 import android.renderscript.Double2;
 
@@ -9,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.Helpers.PID;
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
+import org.firstinspires.ftc.teamcode.JobManager;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
@@ -126,42 +127,42 @@ public class Auto extends LinearOpMode {
 
         double onSkystoneTime = 0;
 
-        while (opModeIsActive()) {
-            Recognition skystone = jobs.tensorFlowaJob.getCurrentRecognition();
-            telemetry.addData("Get current recognition", deltaTime.seconds());
-
-            if (skystone != null) {
-                if (Math.abs(jobs.tensorFlowaJob.getCurrentXFactor(skystone)) < lockThreshold) {
-                    telemetry.addData("Get X factor", deltaTime.seconds());
-                    StopMovement();
-//                    StopAndMaintainRotation(startRotation);
-                    onSkystoneTime += deltaTime.seconds();
-                } else {
-                    telemetry.addData("Get X factor", deltaTime.seconds());
-                    robot.MoveComplex(jobs.tensorFlowaJob.getCurrentXFactor(skystone) > 0 ? 90 : -90, 0.15, robot.GetRotation() - startRotation);
-                    telemetry.addData("Move complex", deltaTime.seconds());
-                }
-
-
-//                telemetry.addData("Skystones distance ", Math.abs(jobs.tensorFlowaJob.getCurrentXFactor(skystone)));
-//                telemetry.addData("Rotation Goal ", startRotation);
-//                telemetry.addData("Current Rotation     ", robot.GetRotation());
-//                telemetry.addData("Rotation Factor ", robot.GetRotation() - startRotation);
-            } else {
-//                robot.MoveComplex(new Double2(0, 0), speed_med, robot.GetRotation() - startRotation);
-                StopMovement();
-                telemetry.addData("Move complex", deltaTime.seconds());
-            }
-
-            if (onSkystoneTime > lockTime) {
-                break;
-            }
-            telemetry.addData("DT ", deltaTime.seconds());
-
-            telemetry.update();
-
-            deltaTime.reset();
-        }
+//        while (opModeIsActive()) {
+//            Recognition skystone = jobs.tensorFlowaJob.getCurrentRecognition();
+//            telemetry.addData("Get current recognition", deltaTime.seconds());
+//
+//            if (skystone != null) {
+//                if (Math.abs(jobs.tensorFlowaJob.getCurrentXFactor(skystone)) < lockThreshold) {
+//                    telemetry.addData("Get X factor", deltaTime.seconds());
+//                    StopMovement();
+////                    StopAndMaintainRotation(startRotation);
+//                    onSkystoneTime += deltaTime.seconds();
+//                } else {
+//                    telemetry.addData("Get X factor", deltaTime.seconds());
+//                    robot.MoveComplex(jobs.tensorFlowaJob.getCurrentXFactor(skystone) > 0 ? 90 : -90, 0.15, robot.GetRotation() - startRotation);
+//                    telemetry.addData("Move complex", deltaTime.seconds());
+//                }
+//
+//
+////                telemetry.addData("Skystones distance ", Math.abs(jobs.tensorFlowaJob.getCurrentXFactor(skystone)));
+////                telemetry.addData("Rotation Goal ", startRotation);
+////                telemetry.addData("Current Rotation     ", robot.GetRotation());
+////                telemetry.addData("Rotation Factor ", robot.GetRotation() - startRotation);
+//            } else {
+////                robot.MoveComplex(new Double2(0, 0), speed_med, robot.GetRotation() - startRotation);
+//                StopMovement();
+//                telemetry.addData("Move complex", deltaTime.seconds());
+//            }
+//
+//            if (onSkystoneTime > lockTime) {
+//                break;
+//            }
+//            telemetry.addData("DT ", deltaTime.seconds());
+//
+//            telemetry.update();
+//
+//            deltaTime.reset();
+//        }
         StopMovement();
     }
 
@@ -173,20 +174,20 @@ public class Auto extends LinearOpMode {
     //This drives at a skystone while correcting itself
     public void DriveAtSkystone(double moveSpeed, double maxCorrectionAngle, double wallStopDistance, double startRotation) {
         ResetWallPID();
-        while (opModeIsActive()) {
-            Recognition skystone = jobs.tensorFlowaJob.getCurrentRecognition();
-            if (skystone == null) {
-                StopAndMaintainRotation(startRotation);
-            } else {
-                robot.MoveComplex(bMath.Lerp(maxCorrectionAngle, -maxCorrectionAngle, (jobs.tensorFlowaJob.getCurrentXFactor(skystone) + 1) / 2), moveSpeed, robot.GetRotation() - startRotation);
-//                robot.wallTrack.MoveAlongWallComplex(RobotWallTrack.groupID.Group180, moveSpeed, 180 + bMath.Lerp(maxCorrectionAngle, -maxCorrectionAngle, (jobs.tensorFlowaJob.getCurrentXFactor(skystone) + 1) / 2), startRotation);
-                if (robot.GetDistance(RobotWallTrack.groupID.Group180, DistanceUnit.CM) > wallStopDistance) {
-                    StopMovement();
-                    break;
-                }
-            }
-            telemetry.update();
-        }
+//        while (opModeIsActive()) {
+//            Recognition skystone = jobs.tensorFlowaJob.getCurrentRecognition();
+//            if (skystone == null) {
+//                StopAndMaintainRotation(startRotation);
+//            } else {
+//                robot.MoveComplex(bMath.Lerp(maxCorrectionAngle, -maxCorrectionAngle, (jobs.tensorFlowaJob.getCurrentXFactor(skystone) + 1) / 2), moveSpeed, robot.GetRotation() - startRotation);
+////                robot.wallTrack.MoveAlongWallComplex(RobotWallTrack.groupID.Group180, moveSpeed, 180 + bMath.Lerp(maxCorrectionAngle, -maxCorrectionAngle, (jobs.tensorFlowaJob.getCurrentXFactor(skystone) + 1) / 2), startRotation);
+//                if (robot.GetDistance(RobotWallTrack.groupID.Group180, DistanceUnit.CM) > wallStopDistance) {
+//                    StopMovement();
+//                    break;
+//                }
+//            }
+//            telemetry.update();
+//        }
         StopMovement();
     }
 
