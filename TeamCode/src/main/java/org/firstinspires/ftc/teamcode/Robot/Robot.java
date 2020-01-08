@@ -46,6 +46,7 @@ public class Robot extends Thread {
 
     public Potentiometer armPotentiometer = new Potentiometer();
 
+    public Servo longLunchbox;
     public Servo foundationServo0;
     public Servo foundationServo1;
 
