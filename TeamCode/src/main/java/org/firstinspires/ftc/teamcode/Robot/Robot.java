@@ -358,7 +358,7 @@ public class Robot extends Thread {
     PID rotationPID_test = new PID();
 
     //
-    public void RotatePID(double angle, double rotationSpeed, int cycles) {
+    public void RotatePID(double angle, double rotationSpeed, double maxTime) {
 
         //P of 3 and 0 for other gains seems to work really well
 //        rotationPID_test.Start(3, 0, 0.1);
@@ -373,7 +373,7 @@ public class Robot extends Thread {
 //        rotationPID_test.Start(1, 0.25, 0.035);
 //        rotationPID_test.Start(0.025, 0.005, 0);
 
-        int ticker = 0;
+        double ticker = 0;
         double startAngle = rotation;
         int directionChanges = 0;
         boolean lastPositiveState = true;
@@ -382,11 +382,10 @@ public class Robot extends Thread {
 
         double correctTime = 0;
 
-        while (ticker < cycles && Op.opModeIsActive()) {
-            ticker++;
+        while (ticker < maxTime && Op.opModeIsActive()) {
             rotationPower = rotationPID_test.Loop(angle, rotation);
             rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - angle));
-            rotationPower += (0.1 * (rotationPower > 0 ? 1 : -1));
+            rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
             Op.telemetry.addData("Error ", rotationPID_test.error);
             Op.telemetry.addData("Last Error  ", rotationPID_test.lastError);
             Op.telemetry.addData("Derivative ", rotationPID_test.derivative);
@@ -406,7 +405,11 @@ public class Robot extends Thread {
                 lastPositiveState = rotationPower > 0;
             }
 
-            if (directionChanges > 6) {
+            if (Math.abs(GetRotation() - angle) < 0.15 * rotationPower) {
+                break;
+            }
+
+            if (directionChanges > 3) {
                 break;
             }
 
@@ -423,6 +426,74 @@ public class Robot extends Thread {
 //                Op.telemetry.addData("Rotation ended", directionChanges);
 //                Op.telemetry.update();
 //            }
+            ticker += dt.seconds();
+            dt.reset();
+        }
+
+        SetPowerDouble4(0, 0, 0, 0, 0);
+    }
+
+    public void RotatePIDRelative(double angle, double rotationSpeed, double maxTime) {
+
+        //P of 3 and 0 for other gains seems to work really well
+//        rotationPID_test.Start(3, 0, 0.1);
+
+        rotationPID_test.Start(4.02, 0.0032, 0.0876);
+//        rotationPID_test.Start(4.01, 0.003, 0.0876);
+
+//        rotationPID_test.Start(1, 0.075, 0.022);
+
+//        rotationPID_test.Start(3, 0.21, 0.69);
+//        rotationPID_test.Start(0.5, 0.075, 0.015);
+//        rotationPID_test.Start(1, 0.25, 0.035);
+//        rotationPID_test.Start(0.025, 0.005, 0);
+
+        double ticker = 0;
+        double startAngle = GetRotation();
+        double targetAngle = startAngle + angle;
+
+        targetAngle = bMath.Loop(targetAngle, 180);
+
+        int directionChanges = 0;
+        boolean lastPositiveState = true;
+        double rotationPower = 0;
+        ElapsedTime dt = new ElapsedTime();
+
+        double correctTime = 0;
+
+
+        while (ticker < maxTime && Op.opModeIsActive()) {
+            rotationPower = rotationPID_test.Loop(targetAngle, rotation);
+            rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - angle));
+            rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
+            Op.telemetry.addData("Error ", rotationPID_test.error);
+            Op.telemetry.addData("Last Error  ", rotationPID_test.lastError);
+            Op.telemetry.addData("Derivative ", rotationPID_test.derivative);
+            Op.telemetry.addData("Integral ", rotationPID_test.integral);
+
+            Op.telemetry.addData("TD ", rotationPID_test.deltaTime.seconds());
+
+            Op.telemetry.addData("Rotation ", rotation);
+            Op.telemetry.addData("rotationPower ", rotationPower);
+            Op.telemetry.addData("rotationSpeed ", rotationSpeed);
+            Op.telemetry.addData("yeets", directionChanges);
+            Op.telemetry.update();
+            RotateSimple(rotationPower * rotationSpeed);
+
+            if (lastPositiveState != rotationPower > 0) {
+                directionChanges++;
+                lastPositiveState = rotationPower > 0;
+            }
+
+            if (Math.abs(GetRotation() - targetAngle) < 0.15 * rotationPower) {
+                break;
+            }
+
+            if (directionChanges > 3) {
+                break;
+            }
+
+            ticker += dt.seconds();
             dt.reset();
         }
 
