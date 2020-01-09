@@ -75,24 +75,6 @@ public class TeleopTester2 extends LinearOpMode {
     boolean gripFoundation = false;
     boolean bButton1Check = false;
     //Mode Switch Variables
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
