@@ -8,12 +8,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
-import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 
 @TeleOp(name = "Teleop2", group = "Sensor")
 public class TeleopTester2 extends LinearOpMode {
 
-    //RobotWallTrack.SensorGroup targetWallTrackGroup = null;
 
 
     Robot robot = new Robot();
@@ -23,54 +21,54 @@ public class TeleopTester2 extends LinearOpMode {
     //Program State
     
     //Driver Control Variables
-    double moveSpeed;
+    private double moveSpeed;
 
-    boolean leftRotateCoordCheck = false;
-    boolean rightRotateCoordCheck = false;
+    private boolean leftRotateCoordCheck = false;
+    private boolean rightRotateCoordCheck = false;
 
-    double angle = 0;
-    double leftDiagPower = 0;
-    double rightDiagPower = 0;
-    final double sq2 = Math.pow(2, 1/2);
-    double leftRotatePower = 0;
-    double rightRotatePower = 0;
+    private double angle = 0;
+    private double leftDiagPower = 0;
+    private double rightDiagPower = 0;
+    private final double sq2 = Math.pow(2, 1/2);
+    private double leftRotatePower = 0;
+    private double rightRotatePower = 0;
 
-    double rotationLockAngle = 0;
+    private double rotationLockAngle = 0;
 
-    boolean movementModeToggleCheck = false;
-    boolean coordinateSystemLock = false;
+    private boolean movementModeToggleCheck = false;
+    private boolean coordinateSystemLock = false;
 
     //Arm Control Variables
-    double raiseSpeed = 0;
-    double extension = 0;
-    double gripAngle = 180;
+    private double raiseSpeed = 0;
+    private double extension = 0;
+    private double gripAngle = 180;
 
     //Rectangular Control Variables New
-    boolean rectControls = false;
-    boolean rectControlsCheck = false;
-    boolean rectControls_goingUp = false;
-    boolean rectControls_goingUpCheck = false;
+    private boolean rectControls = false;
+    private boolean rectControlsCheck = false;
+    private boolean rectControls_goingUp = false;
+    private boolean rectControls_goingUpCheck = false;
 
     //Gripper Control
-    boolean grab = false; //whether the gripper is gripping
-    boolean bButton2Check = false; //prevState of grab
-    
-    boolean idle = false; //whether the gripper is in rest position
-    boolean xButton2Check = false;
+    private boolean grab = false; //whether the gripper is gripping
+    private boolean bButton2Check = false; //prevState of grab
 
-    boolean dropLunchBox = false;
-    boolean yButton2Check = false;
+    private boolean idle = false; //whether the gripper is in rest position
+    private boolean xButton2Check = false;
 
-    boolean pointDown = false;
-    boolean aButton2Check = false;
+    private boolean dropLunchBox = false;
+    private boolean yButton2Check = false;
 
-    boolean fineServoControl = true;
+    private boolean pointDown = false;
+    private boolean aButton2Check = false;
 
-    double lunchboxRot = 0.5;
+    private boolean fineServoControl = true;
+
+    private double lunchboxRot = 0.5;
 
 
-    boolean gripFoundation = false;
-    boolean bButton1Check = false;
+    private boolean gripFoundation = false;
+    private boolean bButton1Check = false;
     //Mode Switch Variables
 
 
@@ -269,16 +267,10 @@ public class TeleopTester2 extends LinearOpMode {
             }
 
             //move foundation grippers with b button
-            if (gamepad1.b && !bButton1Check) {
-                if (gamepad1.b) {
-                    gripFoundation = !gripFoundation;
-                }
-            }
+            if (gamepad1.b && !bButton1Check) gripFoundation = !gripFoundation;
             bButton1Check = gamepad1.b;
 
-            if (gamepad2.y && !yButton2Check) {
-                if (gamepad2.y) dropLunchBox = !dropLunchBox;
-            }
+            if (gamepad2.y && !yButton2Check) dropLunchBox = !dropLunchBox;
             yButton2Check = gamepad2.y;
 
             if (dropLunchBox) lunchboxRot = 0.1 ; //TODO Calibrate
