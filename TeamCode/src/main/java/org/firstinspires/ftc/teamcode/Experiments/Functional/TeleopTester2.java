@@ -120,7 +120,7 @@ public class TeleopTester2 extends LinearOpMode {
             if (movementModeNew) {
                 telemetry.addData("Drive System", "New");
 
-                angle = robot.GetRotation()-rotationLockValue;
+                angle = Math.toRadians(robot.GetRotation()-rotationLockValue);
                 leftDiagPower = ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.sin(angle) + ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.cos(angle));
                 rightDiagPower = ((-(-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.sin(angle) + ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.cos(angle)));
                     //Ensures that other code cannot change targetRotation while rotationLock is on
