@@ -347,7 +347,7 @@ public class RobotWallTrack {
         Robot.instance.Op.telemetry.addData("Current Distnace Goal ", distance);
 
         //Move while keeping our rotation angle the same
-        robot.MoveComplex(correctedDriveAngle, speed, robot.GetRotation() - rotationAngle);
+        robot.MoveComplex(correctedDriveAngle, speed, robot.GetRotation() - rotationAngle, 0);
     }
 
     ElapsedTime debuggingDeltaTime = new ElapsedTime();
@@ -438,7 +438,7 @@ public class RobotWallTrack {
         //0 - 0 - 90
         //-90 - 0 + 90
         //-90 -
-        robot.MoveComplex(correctedDriveAngle, speed, robot.GetRotation() - rotationAngle);
+        robot.MoveComplex(correctedDriveAngle, speed, robot.GetRotation() - rotationAngle, 0);
 
     }
 
@@ -455,7 +455,7 @@ public class RobotWallTrack {
         wallAngle = currentGroup.getWallAngle();
 
         //Move while keeping our rotation angle the same
-        robot.MoveComplex(angleOffset - wallAngle + physicalOffset, speed, robot.GetRotation() - rotationAngle);
+        robot.MoveComplex(angleOffset - wallAngle + physicalOffset, speed, robot.GetRotation() - rotationAngle, 0);
     }
 
 

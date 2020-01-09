@@ -5,11 +5,7 @@ import android.renderscript.Double2;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.Helpers.PID;
-import org.firstinspires.ftc.teamcode.Helpers.bMath;
-import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
 import org.firstinspires.ftc.teamcode.JobManager;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
@@ -194,7 +190,7 @@ public class Auto extends LinearOpMode {
 
     //Freezes the robots movement but continues to seek its correct rotation
     public void StopAndMaintainRotation(double rotation) {
-        robot.MoveComplex(new Double2(0, 0), 1, robot.GetRotation() - rotation);
+        robot.MoveComplex(new Double2(0, 0), 1, robot.GetRotation() - rotation, 0);
     }
 
     //Freezes the robots movement but continues to seek its correct rotation

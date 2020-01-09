@@ -15,20 +15,20 @@ public class bMath {
     static double rightRotatePower;
 
     //Get mecMovement works by moving in a direction (angle/vector) AND TO a target angle
-    public static Double4 getMecMovement(Double2 movementVector, double targetAngle) {
+    public static Double4 getMecMovement(Double2 headingVector, double rotationSpeed, double offsetAngle) {
 
         Double4 delta = new Double4(0, 0, 0, 0);
-        targetAngle = bMath.toRadians(targetAngle);
+        rotationSpeed = bMath.toRadians(rotationSpeed);
 
-//        leftMovementPower = ((-movementVector.y - movementVector.x) / sq2() * Math.sin(targetAngle) + ((-movementVector.y + movementVector.x) / sq2()) * Math.cos(targetAngle));
-        leftMovementPower = (((-movementVector.y - movementVector.x) / sq2()) * Math.sin(targetAngle)) + (((-movementVector.y + movementVector.x) / sq2()) * Math.cos(targetAngle));
-//        rightMovementPower = ((-(-movementVector.y + movementVector.x) / sq2()) * Math.sin(targetAngle) + ((-movementVector.y - movementVector.x) / sq2() * Math.cos(targetAngle)));
-        rightMovementPower = ((-(-movementVector.y + movementVector.x) / sq2()) * Math.sin(targetAngle)) + ((-movementVector.y - movementVector.x) / sq2() * Math.cos(targetAngle));
-        leftRotatePower = targetAngle;
-        rightRotatePower = -targetAngle;
+//        leftMovementPower = ((-headingVector.y - headingVector.x) / sq2() * Math.sin(targetAngle) + ((-headingVector.y + headingVector.x) / sq2()) * Math.cos(targetAngle));
+        leftMovementPower = (((-headingVector.y - headingVector.x) / sq2()) * Math.sin(offsetAngle)) + (((-headingVector.y + headingVector.x) / sq2()) * Math.cos(offsetAngle));
+//        rightMovementPower = ((-(-headingVector.y + headingVector.x) / sq2()) * Math.sin(targetAngle) + ((-headingVector.y - headingVector.x) / sq2() * Math.cos(targetAngle)));
+        rightMovementPower = ((-(-headingVector.y + headingVector.x) / sq2()) * Math.sin(offsetAngle)) + ((-headingVector.y - headingVector.x) / sq2() * Math.cos(offsetAngle));
+        leftRotatePower = rotationSpeed;
+        rightRotatePower = -rotationSpeed;
 
         delta.x = (leftMovementPower + leftRotatePower);
-        delta.y = (rightMovementPower + rightRotatePower);
+        delta.y = (rightMovementPower +  rightRotatePower);
         delta.z = (rightMovementPower + leftRotatePower);
         delta.w = (leftMovementPower + rightRotatePower);
 
@@ -55,10 +55,10 @@ public class bMath {
 
     //Hook for angle based movement
     //Hook means the output from this is the input to another function of the same name (Joe)
-    public static Double4 getMecMovement(double movementAngle, double targetAngle) {
-        Double2 movementVector = degreesToHeadingVector(movementAngle - 90);
-        //input movementAngle into degreesToHeadingVector and the output is movementVector
-        return getMecMovement(movementVector, targetAngle);
+    public static Double4 getMecMovement(double headingAngle, double rotationSpeed, double offsetAngle) {
+        Double2 movementVector = degreesToHeadingVector(headingAngle - 90);
+        //input headingAngle into degreesToHeadingVector and the output is movementVector
+        return getMecMovement(movementVector, rotationSpeed, offsetAngle);
     }
     //</editor-fold>
 
@@ -66,12 +66,12 @@ public class bMath {
     //Simple mec movement works by moving at a given angle/vector and rotating at rotationSpeed
     //<editor-fold desc="getMecMovementSimple">
 
-    public static Double4 getMecMovementSimple(Double2 movementVector) {
+    public static Double4 getMecMovementSimple(Double2 headingVector) {
 
         Double4 delta = new Double4(0, 0, 0, 0);
 
-        leftMovementPower = ((movementVector.x - movementVector.y) / sq2());
-        rightMovementPower = ((-movementVector.y - movementVector.x) / sq2());
+        leftMovementPower = ((headingVector.x - headingVector.y) / sq2());
+        rightMovementPower = ((-headingVector.y - headingVector.x) / sq2());
 
 
         delta.x = (leftMovementPower);
@@ -83,17 +83,17 @@ public class bMath {
     }
 
     //Hook for angle based movement
-    public static Double4 getMecMovementSimple(double movementAngle) {
-        Double2 movementVector = degreesToHeadingVector(movementAngle - 90);
+    public static Double4 getMecMovementSimple(double headingAngle) {
+        Double2 movementVector = degreesToHeadingVector(headingAngle - 90);
         return getMecMovementSimple(movementVector);
     }
 
-    public static Double4 getMecMovementSimple(Double2 movementVector, double rotationSpeed) {
+    public static Double4 getMecMovementSimple(Double2 headingVector, double rotationSpeed) {
 
         Double4 delta = new Double4(0, 0, 0, 0);
 
-        leftMovementPower = ((movementVector.x - movementVector.y) / sq2());
-        rightMovementPower = ((-movementVector.y - movementVector.x) / sq2());
+        leftMovementPower = ((headingVector.x - headingVector.y) / sq2());
+        rightMovementPower = ((-headingVector.y - headingVector.x) / sq2());
 
 
         delta.x = (leftMovementPower) - rotationSpeed;
@@ -105,8 +105,8 @@ public class bMath {
     }
 
     //Hook for angle based movement
-    public static Double4 getMecMovementSimple(double movementAngle, double rotationSpeed) {
-        Double2 movementVector = degreesToHeadingVector(movementAngle - 90);
+    public static Double4 getMecMovementSimple(double headingAngle, double rotationSpeed) {
+        Double2 movementVector = degreesToHeadingVector(headingAngle - 90);
         return getMecMovementSimple(movementVector, rotationSpeed);
     }
     //</editor-fold>

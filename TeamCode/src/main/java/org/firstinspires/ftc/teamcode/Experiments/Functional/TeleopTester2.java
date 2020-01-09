@@ -25,12 +25,7 @@ public class TeleopTester2 extends LinearOpMode {
 
     ElapsedTime deltaTime = new ElapsedTime();
 
-    boolean aButton1Check = false;
-
-    double targetRotation;
-
     double moveSpeed;
-    double rotateSpeed;
     double raiseSpeed = 0;
 
     boolean grab = false;
@@ -48,6 +43,9 @@ public class TeleopTester2 extends LinearOpMode {
     double xWanted = 0;
     double vertDMove = 0;
     boolean lastD2press = false;
+    boolean leftRotateCoordCheck = false;
+    boolean rightRotateCoordCheck = false;
+
     double angle = 0;
     double leftDiagPower = 0;
     double rightDiagPower = 0;
@@ -62,11 +60,11 @@ public class TeleopTester2 extends LinearOpMode {
     double targetGripperPositionY = 0;
     double targetGripperPositionX = 0;
 
-    boolean movementModeCheck;
-    boolean movementModeNew = false;
+    boolean movementModeToggleCheck = false;
+    boolean coordinateSystemLock = false;
 
 
-    double rotationLockValue = 0;
+    double rotationLockAngle = 0;
 
     double lunchboxRot = 0.5;
 
@@ -85,73 +83,69 @@ public class TeleopTester2 extends LinearOpMode {
 
         waitForStart();
 
-//        robot.lunchbox.setPosition(1);
         lunchboxRot = 1;
-        targetRotation = robot.GetRotation();
         robot.arm.SetGripState(RobotArm.GripState.IDLE, 60);
         gripAngle = 30;
         while (opModeIsActive()) {
 
             ///DRIVER CONTROLS
 
-            //let right bumper put robot in really slow mode for fine control
-            if (gamepad1.right_bumper) {
-                moveSpeed = 0.15;
+            //let left bumper put robot in really slow mode for fine control
+            if (gamepad1.left_bumper) {
+                //trigger makes robot slower
+                moveSpeed = bMath.Clamp(0.5 - gamepad1.right_trigger/2, 0, 1);
             } else {
-                moveSpeed = bMath.Clamp(gamepad1.right_trigger + 0.35, 0, 1);
+                //trigger makes robot faster
+                moveSpeed = bMath.Clamp(0.5 + gamepad1.right_trigger/2, 0, 1);
             }
-
-            rotateSpeed = bMath.Clamp(gamepad1.left_trigger + 0.35, 0, 1);
-
-
-            //targetRotation = bMath.Loop(targetRotation, 360);
-            //shouldn't we use deltatime?
-
-            if (gamepad1.x && !aButton1Check) {
-                rotationLockValue = robot.GetRotation();
+            // reset the "front" of the robot to be the real front
+            if (gamepad1.a) {
+                rotationLockAngle = robot.GetRotation();
             }
-            aButton1Check = gamepad1.a;
+            // up/down of right stick can incrementally change which way is the "front" of the robot in coordinate lock mode
+            rotationLockAngle = ((rotationLockAngle + 3.0*gamepad1.right_stick_y+360)%360)-360;
 
-            if (gamepad1.y != movementModeCheck) {
-                if (gamepad1.y) {
-                    rotationLockValue = robot.GetRotation();
-                    movementModeNew = !movementModeNew;
-                }
-                movementModeCheck = gamepad1.y;
+            //left and right dpad can shift "front" of robot by 90 degrees in coordinate lock mode
+            if (gamepad1.dpad_left && !leftRotateCoordCheck) {
+                rotationLockAngle = ((rotationLockAngle + 450)%360)-360;
             }
+            leftRotateCoordCheck = gamepad1.dpad_left;
+            if (gamepad1.dpad_right && !rightRotateCoordCheck) {
+                rotationLockAngle = ((rotationLockAngle + 270)%360)-360;
+            }
+            rightRotateCoordCheck = gamepad1.dpad_right;
 
-            if (movementModeNew) {
+            // y button toggles coordinate system lock
+            if (gamepad1.y && !movementModeToggleCheck) {
+                rotationLockAngle = robot.GetRotation();
+                coordinateSystemLock = !coordinateSystemLock;
+            }
+            movementModeToggleCheck = gamepad1.y;
+
+            // drive code
+            if (coordinateSystemLock) {
                 telemetry.addData("Drive System", "New");
 
-                angle = Math.toRadians(robot.GetRotation()-rotationLockValue);
+                angle = Math.toRadians(robot.GetRotation()- rotationLockAngle);
                 leftDiagPower = ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.sin(angle) + ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.cos(angle));
                 rightDiagPower = ((-(-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.sin(angle) + ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.cos(angle)));
-                    //Ensures that other code cannot change targetRotation while rotationLock is on
 
+                //robot.MoveComplex(new Double2(gamepad1.left_stick_x,gamepad1.left_stick_y),moveSpeed,gamepad1.right_stick_x,angle);
             } else {
                 telemetry.addData("Drive System", "Old");
 
                 leftDiagPower = ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2);
                 rightDiagPower = ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2);
-//                robot.MoveComplex(bMath.toRadians() new Double2(gamepad1.right_stick_x, gamepad1.right_stick_y), moveSpeed, robot.GetRotation() - (targetRotation));
 
-//                robot.MoveSimple(new Double2(gamepad1.right_stick_x, gamepad1.right_stick_y), moveSpeed, -gamepad1.left_stick_x * rotateSpeed);
+                //robot.MoveComplex(new Double2(gamepad1.left_stick_x,gamepad1.left_stick_y),moveSpeed,gamepad1.right_stick_x,0);
 
             }
             leftRotatePower = gamepad1.right_stick_x;
             rightRotatePower = -gamepad1.right_stick_x;
-            robot.driveManager.frontLeft.setPower(leftDiagPower+leftRotatePower);
-            robot.driveManager.frontRight.setPower(rightDiagPower+rightRotatePower);
-            robot.driveManager.backLeft.setPower(rightDiagPower+leftRotatePower);
-            robot.driveManager.backRight.setPower(leftDiagPower+rightRotatePower);
-
-
-            if (gamepad1.y != movementModeCheck) {
-                if (gamepad1.y) {
-                    movementModeNew = !movementModeNew;
-                }
-                movementModeCheck = gamepad1.y;
-            }
+            robot.driveManager.frontLeft.setPower(moveSpeed*(leftDiagPower+leftRotatePower));
+            robot.driveManager.frontRight.setPower(moveSpeed*(rightDiagPower+rightRotatePower));
+            robot.driveManager.backLeft.setPower(moveSpeed*(rightDiagPower+leftRotatePower));
+            robot.driveManager.backRight.setPower(moveSpeed*(leftDiagPower+rightRotatePower));
 
 //            if (gamepad1.x != servoLastToggle) {
 //                if (gamepad1.x) {
@@ -314,9 +308,8 @@ public class TeleopTester2 extends LinearOpMode {
 
 
             telemetry.addLine("------ Movement ------");
-            telemetry.addData("Rotation Locked ", movementModeNew);
+            telemetry.addData("Rotation Locked ", coordinateSystemLock);
             telemetry.addData("Current Rotation ", robot.GetRotation());
-            telemetry.addData("Current Target Rotation", targetRotation);
             telemetry.addLine("-------- Arm  --------");
             telemetry.addData("Current Arm Angle", robot.arm.thetaAngle());
             telemetry.addData("Current Potentiometer value", robot.armPotentiometer.GetAngle());

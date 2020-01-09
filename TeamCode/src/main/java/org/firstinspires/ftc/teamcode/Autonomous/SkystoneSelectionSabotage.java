@@ -40,7 +40,7 @@ public class SkystoneSelectionSabotage extends Auto {
             if (lasers) {
                 double distance = robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getDistanceAverage(DistanceUnit.CM);
                 while (Math.abs(distance - 90) >= 3) {
-                    robot.MoveComplex(Math.copySign(90, -(distance - (90-i*20))), 0.4, 0);
+                    robot.MoveComplex(Math.copySign(90, -(distance - (90-i*20))), 0.4, 0, 0);
                     distance = robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getDistanceAverage(DistanceUnit.CM);
                 }
             }
@@ -64,7 +64,7 @@ public class SkystoneSelectionSabotage extends Auto {
                 double distance = robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getDistanceAverage(DistanceUnit.CM);
                 bTelemetry.Print("Distance: ", Double.toString(distance));
                 while (Math.abs(distance - 30) >= 3) {
-                    robot.MoveComplex(Math.copySign(90, -(distance - 30)), 0.4, 0);
+                    robot.MoveComplex(Math.copySign(90, -(distance - 30)), 0.4, 0, 0);
                     distance = robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getDistanceAverage(DistanceUnit.CM);
                 }
             }
@@ -84,7 +84,7 @@ public class SkystoneSelectionSabotage extends Auto {
             if (lasers) {
                 double distance = robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getDistanceAverage(DistanceUnit.CM);
                 while (Math.abs(distance - 90) >= 3) {
-                    robot.MoveComplex(Math.copySign(90, -(distance - (90-((i+1)*20)))), 0.4, 0);
+                    robot.MoveComplex(Math.copySign(90, -(distance - (90-((i+1)*20)))), 0.4, 0, 0);
                     distance = robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getDistanceAverage(DistanceUnit.CM);
                 }
             }

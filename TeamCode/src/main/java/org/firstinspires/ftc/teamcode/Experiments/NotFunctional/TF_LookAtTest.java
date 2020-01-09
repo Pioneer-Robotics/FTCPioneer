@@ -8,9 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
@@ -40,7 +37,7 @@ public class TF_LookAtTest extends LinearOpMode {
         while (opModeIsActive()) {
 //            hwInf.SetPowerDouble4(new Double4(-1, -1, 1, 1), 1);
 
-            hwInf.MoveComplex(90, 1, 0);
+            hwInf.MoveComplex(90, 1, 0, 0);
 //            telemetry.addData("Velocity ", hwInf.imu.getVelocity());
             telemetry.update();
             Recognition skystone = TF_thread.skyStone();

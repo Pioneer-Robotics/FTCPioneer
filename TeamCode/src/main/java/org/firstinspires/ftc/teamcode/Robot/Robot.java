@@ -1,24 +1,16 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
-import android.app.AlarmManager;
 import android.renderscript.Double2;
 import android.renderscript.Double4;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorREV2mDistance;
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorREVColorDistance;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Experiments.QuickTests.TestingOpMode2;
-import org.firstinspires.ftc.teamcode.Hardware.bMotor;
 import org.firstinspires.ftc.teamcode.Helpers.PID;
 import org.firstinspires.ftc.teamcode.Helpers.bDataManager;
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
@@ -324,33 +316,35 @@ public class Robot extends Thread {
     /**
      * Uses
      *
-     * @param movementVector The vector that we want to move along
+     * @param headingVector The vector that we want to move along
      * @param movementSpeed  How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
      */
 
-    public void MoveSimple(Double2 movementVector, double movementSpeed, double rotationPower) {
-        Double4 v = bMath.getMecMovementSimple(movementVector, rotationPower);
+    public void MoveSimple(Double2 headingVector, double movementSpeed, double rotationSpeed) {
+        Double4 v = bMath.getMecMovementSimple(headingVector, rotationSpeed);
         SetPowerDouble4(v, movementSpeed);
     }
 
 
     /**
-     * @param movementAngle The angle (relative to the phoneside of the bot) that we want to move along, try to keep its magnitude under 180
+     * @param headingAngle The angle (relative to the phoneside of the bot) that we want to move along, try to keep its magnitude under 180
      * @param movementSpeed How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
-     * @param angle         The angle that we want the robot to rotate too. It's actually witchcraft and might need some more research/testing
+     * @param rotationSpeed         The angle that we want the robot to rotate too. It's actually witchcraft and might need some more research/testing
+     * @param offsetAngle
      */
-    public void MoveComplex(double movementAngle, double movementSpeed, double angle) {
-        Double4 v = bMath.getMecMovement(movementAngle, angle);
+    public void MoveComplex(double headingAngle, double movementSpeed, double rotationSpeed, double offsetAngle) {
+        Double4 v = bMath.getMecMovement(headingAngle, rotationSpeed, offsetAngle);
         SetPowerDouble4(v, movementSpeed);
     }
 
     /**
      * @param movementVector The vector (relative to the phoneside of the bot) that we want to move along
      * @param movementSpeed  How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
-     * @param angle          The angle that we want the robot to rotate too. It's actually witchcraft and might need some more research/testing
+     * @param rotationSpeed          The angle that we want the robot to rotate too. It's actually witchcraft and might need some more research/testing
+     * @param offsetAngle
      */
-    public void MoveComplex(Double2 movementVector, double movementSpeed, double angle) {
-        Double4 v = bMath.getMecMovement(movementVector, angle);
+    public void MoveComplex(Double2 movementVector, double movementSpeed, double rotationSpeed, double offsetAngle) {
+        Double4 v = bMath.getMecMovement(movementVector, rotationSpeed, offsetAngle);
         SetPowerDouble4(v, movementSpeed);
     }
 
@@ -557,7 +551,7 @@ public class Robot extends Thread {
         while (Op.opModeIsActive()) {
             deltaTime.reset();
 
-            MoveComplex(new Double2(0, 0), rotationSpeed, GetRotation() - angle);
+            MoveComplex(new Double2(0, 0), rotationSpeed, GetRotation() - angle, 0);
 
             if (Math.abs(GetRotation() - angle) < tolerance) {
                 exitTimer += deltaTime.seconds();
@@ -619,7 +613,7 @@ public class Robot extends Thread {
         driveManager.backRight.setMode(mode);
     }
 
-    public void SetRelitiveEncoderPosition(double delta) {
+    public void SetRelativeEncoderPosition(double delta) {
 
         driveManager.frontLeft.setTargetPosition(driveManager.frontLeft.getCurrentPosition() + (int) delta);
         driveManager.backLeft.setTargetPosition(driveManager.backLeft.getCurrentPosition() + (int) delta);
@@ -644,7 +638,7 @@ public class Robot extends Thread {
     public void DriveByDistance(double speed, double distance) {
 
         SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        SetRelitiveEncoderPosition((480 / RobotConfiguration.wheel_circumference) * distance);
+        SetRelativeEncoderPosition((480 / RobotConfiguration.wheel_circumference) * distance);
         SetPowerDouble4(1, 1, 1, 1, speed);
         SetDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
 

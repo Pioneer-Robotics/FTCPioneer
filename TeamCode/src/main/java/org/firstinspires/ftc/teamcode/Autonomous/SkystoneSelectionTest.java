@@ -37,7 +37,7 @@ public class SkystoneSelectionTest extends Auto {
             while (opModeIsActive()) {
                 deltaTime.reset();
 
-                robot.MoveComplex(-90, speed_low, startRotation - robot.GetRotation());
+                robot.MoveComplex(-90, speed_low, startRotation - robot.GetRotation(), 0);
 
                 moveTime += deltaTime.time();
 
@@ -50,7 +50,7 @@ public class SkystoneSelectionTest extends Auto {
             while (opModeIsActive()) {
                 deltaTime.reset();
 
-                robot.MoveComplex(90, speed_low, startRotation - robot.GetRotation());
+                robot.MoveComplex(90, speed_low, startRotation - robot.GetRotation(), 0);
 
                 moveTime += deltaTime.time();
 

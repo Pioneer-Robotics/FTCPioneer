@@ -44,10 +44,10 @@ public class SkystoneAutoBridge extends Auto {
 
 
             if (side == FieldSide.SIDE_BLUE) {
-                robot.MoveComplex(-90, 0.75, robot.GetRotation() - startRotation);
+                robot.MoveComplex(-90, 0.75, robot.GetRotation() - startRotation, 0);
             }
             if (side == FieldSide.SIDE_RED) {
-                robot.MoveComplex(90, 0.75, robot.GetRotation() - startRotation);
+                robot.MoveComplex(90, 0.75, robot.GetRotation() - startRotation, 0);
             }
 
             sleep(1500);
@@ -61,10 +61,10 @@ public class SkystoneAutoBridge extends Auto {
 
 
             if (side == FieldSide.SIDE_BLUE) {
-                robot.MoveComplex(-90, 0.75, robot.GetRotation() - startRotation);
+                robot.MoveComplex(-90, 0.75, robot.GetRotation() - startRotation, 0);
             }
             if (side == FieldSide.SIDE_RED) {
-                robot.MoveComplex(90, 0.75, robot.GetRotation() - startRotation);
+                robot.MoveComplex(90, 0.75, robot.GetRotation() - startRotation, 0);
             }
 
             sleep(1500);
