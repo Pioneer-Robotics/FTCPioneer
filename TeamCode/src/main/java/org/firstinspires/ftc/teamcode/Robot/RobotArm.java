@@ -30,6 +30,8 @@ public class RobotArm extends Thread {
     public double xExtConst;
     public double yExtConst;
 
+    public boolean protectSpool = true;
+
     public enum GripState {
         OPEN,
         IDLE,
@@ -72,7 +74,7 @@ public class RobotArm extends Thread {
         double k = 177;
         double H = 76.9;
         double L = 135;
-        double d = (rotation.getCurrentPosition() * 0.5) / 480;
+        double d = (rotation.getCurrentPosition() * 0.5) / 480; //TODO add offset to this value so it actually works lol: starts at 0 rn
         Double c = ((k * k) - (H * H) - (L * L) - (d * d)) / 2;
         Double x = (((d * c) - (H * Math.sqrt((((L * L) * (d * d)) + ((L * L) * (H * H))) - (c * c)))) / ((d * d) + (H * H))) + d;
 
@@ -83,7 +85,7 @@ public class RobotArm extends Thread {
     put that angle between 0 and PI/2 (in radians)
     not exact, we try to get it within a certain threshold but the arm jerks
      */
-        public void runToTheta(double thetaWanted) //FYI this entire function is gayer than josh, you cannot waituntil in teleop
+        public void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in 5radian steps
         {
             int thetaThreshold = 5;
             double thetaPower = 0.25;
@@ -180,22 +182,23 @@ length should be specified in cm. Should be between 0 and 100.
         rotation.setPower(0);
     }
 
+    /*
+    This method moves the arm to an extension represented in % fully extended from 0 to 1
+    and moves the shuttle on the lead screw to a position represented in % fully up from 0 to 1
+     */
     public void SetArmState(double targetAngle, double _targetLength, double angleSpeed) {
         // angleSpeed really means the angle you want the arm to be
         targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
+        if (targetLength > 0 && protectSpool) targetLength = 0; //don't extend the spool past it's starting point
+
         rotation.setPower(angleSpeed);
-
-
-//        length.setTargetPosition((int) ((double) -2623 * _targetLength));
-
         rotation.setTargetPosition((int) ((double) RobotConfiguration.arm_rotationMax * targetAngle));
         rotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-//        currentLengthSpeed = 0;
     }
+
 
     /*
     This method will rotate the arm at a specified speed and extend
@@ -205,7 +208,7 @@ length should be specified in cm. Should be between 0 and 100.
 
         targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
-        if (targetLength > 0) targetLength = 0; //don't extend the spool past it's starting point
+        if (targetLength > 0 && protectSpool) targetLength = 0; //don't extend the spool past it's starting point
 
         rotation.setPower(angleSpeed);
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -221,7 +224,7 @@ length should be specified in cm. Should be between 0 and 100.
     public void SetArmStatePowerCm(double _targetLength, double angleSpeed){
         targetLengthSpeed = 1; //speed of extension
         targetLength = CmToTicks(_targetLength);
-        if (targetLength > 0) targetLength = 0; //don't extend the spool past it's starting point
+        if (targetLength > 0 && protectSpool) targetLength = 0; //don't extend the spool past it's starting point
 
 
         rotation.setPower(angleSpeed);

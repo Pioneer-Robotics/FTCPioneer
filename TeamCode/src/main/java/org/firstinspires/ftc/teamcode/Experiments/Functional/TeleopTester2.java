@@ -210,8 +210,7 @@ public class TeleopTester2 extends LinearOpMode {
                 //set power and distance to the Arm.
                 robot.arm.SetArmStatePowerCm(robot.arm.RectExtension(rectControls_goingUp),
                                            rectControls_goingUp ? gamepad2.right_stick_y : -gamepad2.right_stick_x);
-            }
-            else{
+            } else {
                 telemetry.addLine("Arm Control: Radial");
 
                 extension += gamepad2.right_trigger * deltaTime.seconds();    //extend arm when right trigger held
