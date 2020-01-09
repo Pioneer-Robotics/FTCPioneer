@@ -52,6 +52,9 @@ public class RobotConfiguration {
     //The encoder tick required to elevate the arm completely
     public static final double arm_rotationMax = -5678;
 
+    //The offset to determine the interior angle between member k and L
+    public static final double pot_interiorOffset = (-29); //TODO Determine this value
+
     //The servo responsible for controlling the grip state of the arm
     public static final String arm_gripServo = "Grip";
 

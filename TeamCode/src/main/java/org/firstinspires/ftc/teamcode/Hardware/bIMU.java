@@ -8,6 +8,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.Robot.RobotConfiguration;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 
 //Used in place of BNO055IMU, it takes the average of both IMU's for readings
 public class bIMU extends Thread {
@@ -19,10 +21,12 @@ public class bIMU extends Thread {
 
     OpMode op;
 
-    public boolean initComplete = false;
+    public AtomicBoolean initComplete = new AtomicBoolean(false);
 
     public void Start(OpMode opMode) {
         op = opMode;
+
+        initComplete.set(false);
         start();
     }
 
@@ -50,7 +54,7 @@ public class bIMU extends Thread {
 
         imu_1.initialize(IParameters);
 
-        initComplete = true;
+        initComplete.set(true);
     }
 
     //Returns the average of both IMU rotations

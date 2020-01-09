@@ -16,6 +16,7 @@ public class RobotArm extends Thread {
 
     LinearOpMode Op;
 
+    public Robot robot;
     //Arm height motor
     public DcMotor rotation;
 
@@ -29,8 +30,11 @@ public class RobotArm extends Thread {
     public double targetLengthSpeed;
     public double xExtConst;
     public double yExtConst;
+    public double pot;
 
     public boolean protectSpool = true;
+
+    public boolean usePot = true;
 
     public enum GripState {
         OPEN,
@@ -46,11 +50,13 @@ public class RobotArm extends Thread {
     //The scale range Double2's are interpreted as X = min and Y = max.
     public RobotArm(LinearOpMode opMode, String armRotationMotor, String armSpoolMotor, String gripServo, String gripRotationServo, Double2 gripRange, Double2 gripRotationRange) {
         Op = opMode;
+        robot = Robot.instance;
 
         grip = opMode.hardwareMap.get(Servo.class, gripServo);
         gripRotation = opMode.hardwareMap.get(Servo.class, gripRotationServo);
         rotation = opMode.hardwareMap.get(DcMotor.class, armRotationMotor);
         length = opMode.hardwareMap.get(DcMotor.class, armSpoolMotor);
+        pot = robot.armPotentiometer.getAngle();
 
         grip.scaleRange(gripRange.x, gripRange.y);
         gripRotation.scaleRange(gripRotationRange.x, gripRotationRange.y);
@@ -72,13 +78,21 @@ public class RobotArm extends Thread {
     //Returns the angle that the arm is at. Please verify this math typing.
     public double thetaAngle() {
         double k = 177;
-        double H = 76.9;
-        double L = 135;
-        double d = (rotation.getCurrentPosition() * 0.5) / 480; //TODO add offset to this value so it actually works lol: starts at 0 rn
-        Double c = ((k * k) - (H * H) - (L * L) - (d * d)) / 2;
-        Double x = (((d * c) - (H * Math.sqrt((((L * L) * (d * d)) + ((L * L) * (H * H))) - (c * c)))) / ((d * d) + (H * H))) + d;
+        double h = 76.9;
+        double l = 135;
+        double C = pot + RobotConfiguration.pot_interiorOffset;
 
-        return Math.atan((Math.sqrt((k * k) - (x * x)) - H) / (d - x));
+        if (usePot) {
+            Double c = Math.sqrt(  (k*k)+(l*l) - 2*k*l*Math.cos(C) );
+            return Math.asin( (k*Math.sin(C))/c) + 90 - Math.asin(h/c);
+        }else {
+            double d = (rotation.getCurrentPosition() * 0.5) / 480; //TODO add offset to this value so it actually works lol: starts at 0 rn
+            Double c = ((k * k) - (h * h) - (l * l) - (d * d)) / 2;
+            Double x = (((d * c) - (h * Math.sqrt((((l * l) * (d * d)) + ((l * l) * (h * h))) - (c * c)))) / ((d * d) + (h * h))) + d;
+
+            return Math.atan((Math.sqrt((k * k) - (x * x)) - h) / (d - x));
+        }
+
     }
     /*
     This function drives the arm up or down to a desired angle.

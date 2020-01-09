@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.Hardware.bIMU;
 import org.firstinspires.ftc.teamcode.Hardware.Potentiometer;
 import org.firstinspires.ftc.teamcode.Robot.Input.RobotInputThread;
 
+import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 //TODO: clean up the canmove system
@@ -154,10 +155,17 @@ public class Robot extends Thread {
 
         armPotentiometer = new Potentiometer(opmode, RobotConfiguration.armPotentiometer);
 
-        while (!imu.initComplete) {
+        while (!imu.initComplete.get()) {
 
         }
 
+        bTelemetry.Print("Completed IMU start up.");
+
+        while (!wallTrack.startUpComplete.get()) {
+
+        }
+
+        bTelemetry.Print("Completed walltrack start up.");
 
         bTelemetry.Print("Hardware configuration complete.");
     }
@@ -280,7 +288,7 @@ public class Robot extends Thread {
     /**
      * Uses
      *
-     * @param headingAngle The angle  that we want to move along, try to keep its magnitude under 180
+     * @param headingAngle  The angle  that we want to move along, try to keep its magnitude under 180
      * @param movementSpeed How fast we want to move to move along 'headingAngle'. 1 is very fast, 0 is anti-fast (brakes).
      */
 
@@ -293,7 +301,7 @@ public class Robot extends Thread {
      * Uses
      *
      * @param headingVector The vector that we want to move along
-     * @param movementSpeed  How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
+     * @param movementSpeed How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
      */
 
     public void MoveSimple(Double2 headingVector, double movementSpeed) {
@@ -304,7 +312,7 @@ public class Robot extends Thread {
     /**
      * Uses
      *
-     * @param headingAngle The angle  that we want to move along, try to keep its magnitude under 180
+     * @param headingAngle  The angle  that we want to move along, try to keep its magnitude under 180
      * @param movementSpeed How fast we want to move to move along 'headingAngle'. 1 is very fast, 0 is anti-fast (brakes).
      */
 
@@ -339,8 +347,8 @@ public class Robot extends Thread {
 
     /**
      * @param headingVector The vector (relative to the phoneside of the bot) that we want to move along
-     * @param movementSpeed  How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
-     * @param rotationSpeed  The angle that we want the robot to rotate too. It's actually witchcraft and might need some more research/testing
+     * @param movementSpeed How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
+     * @param rotationSpeed The angle that we want the robot to rotate too. It's actually witchcraft and might need some more research/testing
      * @param offsetAngle
      */
     public void MoveComplex(Double2 headingVector, double movementSpeed, double rotationSpeed, double offsetAngle) {
@@ -448,7 +456,7 @@ public class Robot extends Thread {
 
         double ticker = 0;
         double startAngle = GetRotation();
-        double targetAngle = ((startAngle + relativeTargetAngle+360)%360)-360;
+        double targetAngle = ((startAngle + relativeTargetAngle + 360) % 360) - 360;
 
         targetAngle = bMath.Loop(targetAngle, 180);
 
@@ -682,7 +690,7 @@ public class Robot extends Thread {
         double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
         Double4 a = bMath.getMecMovement(angle, 0, 0);
 
-        SetRelativeEncoderPosition(a.x * distanceTicks, a.y* distanceTicks, a.z* distanceTicks, a.w* distanceTicks);
+        SetRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
         SetPowerDouble4(1, 1, 1, 1, speed);
 
         SetDriveMode(DcMotor.RunMode.RUN_TO_POSITION);

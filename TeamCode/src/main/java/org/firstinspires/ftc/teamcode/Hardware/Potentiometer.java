@@ -18,7 +18,7 @@ public class Potentiometer {
         analogInput = null;
     }
 
-    public double GetAngle() {
+    public double getAngle() {
         return analogInput.getVoltage() / 0.0122222222;
     }
 }
