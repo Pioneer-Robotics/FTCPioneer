@@ -24,13 +24,34 @@ public class TeleopTester2 extends LinearOpMode {
     
     //Driver Control Variables
     double moveSpeed;
+
+    boolean leftRotateCoordCheck = false;
+    boolean rightRotateCoordCheck = false;
+
+    double angle = 0;
+    double leftDiagPower = 0;
+    double rightDiagPower = 0;
+    final double sq2 = Math.pow(2, 1/2);
+    double leftRotatePower = 0;
+    double rightRotatePower = 0;
+
+    double rotationLockAngle = 0;
+
+    boolean movementModeToggleCheck = false;
+    boolean coordinateSystemLock = false;
+
     //Arm Control Variables
     double raiseSpeed = 0;
     double extension = 0;
     double armAngle = 0;
     double gripAngle = 180;
+
     //Rectangular Control Variables New
-    
+    boolean rectControls = false;
+    boolean rectControlsCheck = false;
+    boolean rectControls_goingUp = false;
+    boolean rectControls_goingUpCheck = false;
+
     //Rectangular Control Variables Old
     double yWanted = 0;
     double xWanted = 0;
@@ -45,45 +66,34 @@ public class TeleopTester2 extends LinearOpMode {
     
     boolean pointDown = false;
     boolean aButton2Check = false;
-    
-    //Mode Switch Variables
-    
-    
 
-
-    
-
-
-    boolean leftRotateCoordCheck = false;
-    boolean rightRotateCoordCheck = false;
-
-    double angle = 0;
-    double leftDiagPower = 0;
-    double rightDiagPower = 0;
-    final double sq2 = Math.pow(2, 1/2);
-    double leftRotatePower = 0;
-    double rightRotatePower = 0;
-
-
-
-    boolean rectControls = false;
-    boolean rectControlsCheck = false;
-    boolean rectControls_goingUp = false;
-    boolean rectControls_goingUpCheck = false;
-
-    boolean movementModeToggleCheck = false;
-    boolean coordinateSystemLock = false;
-
-
-    double rotationLockAngle = 0;
+    boolean fineServoControl = true;
 
     double lunchboxRot = 0.5;
 
-    boolean servoLastToggle = false;
-    boolean fineServoControl = true;
 
     boolean gripFoundation = false;
-    boolean bLast = false;
+    boolean bButton1Check = false;
+    //Mode Switch Variables
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Override
@@ -319,12 +329,12 @@ public class TeleopTester2 extends LinearOpMode {
             }
 
             //move foundation grippers with b button
-            if (gamepad1.b && !bLast) {
+            if (gamepad1.b && !bButton1Check) {
                 if (gamepad1.b) {
                     gripFoundation = !gripFoundation;
                 }
             }
-            bLast = gamepad1.b;
+            bButton1Check = gamepad1.b;
             robot.foundationServo0.setPosition(gripFoundation ? 0 : 1);
             robot.foundationServo1.setPosition(gripFoundation ? 1 : 0);
 
