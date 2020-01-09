@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Robot.RobotConfiguration;
 
 
 //Used in place of BNO055IMU, it takes the average of both IMU's for readings
-public class bIMU {
+public class bIMU extends Thread {
 
     private BNO055IMU imu_0;
     private BNO055IMU imu_1;
@@ -19,11 +19,18 @@ public class bIMU {
 
     OpMode op;
 
-    public void Start(OpMode opMode, String imu_0_name, String imu_1_name) {
+    public boolean initComplete = false;
+
+    public void Start(OpMode opMode) {
         op = opMode;
+        start();
+    }
+
+    @Override
+    public void run() {
 
         //Start up the first IMU
-        imu_0 = opMode.hardwareMap.get(BNO055IMU.class, RobotConfiguration.imu_0);
+        imu_0 = op.hardwareMap.get(BNO055IMU.class, RobotConfiguration.imu_0);
         IParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         IParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         IParameters.calibrationDataFile = "BNO055IMUCalibration.json";
@@ -34,7 +41,7 @@ public class bIMU {
 
 
         //Start up the first IMU
-        imu_1 = opMode.hardwareMap.get(BNO055IMU.class, RobotConfiguration.imu_1);
+        imu_1 = op.hardwareMap.get(BNO055IMU.class, RobotConfiguration.imu_1);
         IParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         IParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         IParameters.calibrationDataFile = "BNO055IMUCalibration.json";
@@ -42,8 +49,9 @@ public class bIMU {
         IParameters.loggingTag = "IMU 1";
 
         imu_1.initialize(IParameters);
-    }
 
+        initComplete = true;
+    }
 
     //Returns the average of both IMU rotations
     public double getRotation(AngleUnit angleUnit) {
@@ -64,5 +72,6 @@ public class bIMU {
 
         return ((imuRotation_0 + imuRotation_1) / 2) % 360;
     }
+
 
 }

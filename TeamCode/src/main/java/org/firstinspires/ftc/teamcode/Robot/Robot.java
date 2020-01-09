@@ -151,7 +151,7 @@ public class Robot extends Thread {
         arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
 
         bTelemetry.Print("Configuring IMU...");
-        imu.Start(opmode, RobotConfiguration.imu_0, RobotConfiguration.imu_1);
+        imu.Start(opmode);
 
         if (useWallTracking) {
             bTelemetry.Print("Configuring wall tracking...");
@@ -161,6 +161,10 @@ public class Robot extends Thread {
         foundationServo1 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip1);
 
         armPotentiometer = new Potentiometer(opmode, RobotConfiguration.armPotentiometer);
+
+        while (!imu.initComplete) {
+
+        }
 
 
         bTelemetry.Print("Hardware configuration complete.");
@@ -203,7 +207,7 @@ public class Robot extends Thread {
 
 
         //Set up the IMU(s)
-        imu.Start(opmode, RobotConfiguration.imu_0, RobotConfiguration.imu_1);
+        imu.Start(opmode);
         bTelemetry.Print("IMU's initialized.");
 
         //Set up the wall tracker, this uses ALL the lasers so make sure they all work before running this
