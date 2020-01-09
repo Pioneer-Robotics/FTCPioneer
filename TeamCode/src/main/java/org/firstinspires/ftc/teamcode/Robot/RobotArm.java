@@ -27,8 +27,8 @@ public class RobotArm extends Thread {
 
     public double targetLength;
     public double targetLengthSpeed;
-    public double hExtConst;
-    public double vExtConst;
+    public double xExtConst;
+    public double yExtConst;
 
     public enum GripState {
         OPEN,
@@ -218,13 +218,11 @@ length should be specified in cm. Should be between 0 and 100.
     This method will rotate the arm at a specified speed and extend
     to match a certain distance in cm >0
      */
-    public void SetArmStatePowerAndDistance(double _targetLength, double angleSpeed){
+    public void SetArmStatePowerCm(double _targetLength, double angleSpeed){
         targetLengthSpeed = 1; //speed of extension
-        targetLength = ((480 / 17.8) * (_targetLength-RobotConfiguration.arm_lengthMin));
+        targetLength = CmToTicks(_targetLength);
         if (targetLength > 0) targetLength = 0; //don't extend the spool past it's starting point
-        //17.8 cm is one rotation
-        // n cm * (1rot/17.8cm) * (480tick/1rot) = n * (480/17.8)(tick/cm)
-        //(17.8 / 480) cm is one tick, (480/17.8)tick is one cm
+
 
         rotation.setPower(angleSpeed);
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -232,16 +230,50 @@ length should be specified in cm. Should be between 0 and 100.
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
+    /*
+    The following two methods convert ticks to cm and vice versa
+
+    17.8 cm is one rotation
+     n cm * (1rot/17.8cm) * (480tick/1rot) = n * (480/17.8)(tick/cm)
+    (17.8 / 480) cm is one tick, (480/17.8)tick is one cm
+    */
+
+    public double TicksToCm(int ticks){ return (double) ticks * (17.8/480) + RobotConfiguration.arm_lengthMin; }
+    public int CmToTicks(double cm){ return  (int)(cm * (480/17.8) - RobotConfiguration.arm_lengthMin); }
+
+/* Principle for rectangular control
+         /|
+     l /  |
+     /    | y
+   / A    |
+   --------
+      x
+      cos(A)= x/l   ;   l = x/cos(A)   ;   x = l*cos(A)    --Keep x constant, change A, get vertical movement
+      sin(A)= y/l   ;   l = y/sin(A)   ;   y = l*sin(A)    --Keep y constant, change A, get horizontal movement
+ */
 
 
-    public double calcVertExtensionConst() {
-        return ((17.8 * (double) length.getCurrentPosition()) / 480 * Math.cos(thetaAngle()));
+    //returns and sets the above x value
+    public double xExtConstCalc() {
+        return xExtConst = TicksToCm(length.getCurrentPosition()) * Math.cos(thetaAngle()) ;
     }
 
-    public double calcVertExtensionTicks(double k) {
-        //Make sure to convert from encoder ticks when calling
-        return 480 * (k / Math.cos(thetaAngle()) / 17.8);
+    //returns and sets the above y value
+    public double yExtConstCalc() {
+        return yExtConst = TicksToCm(length.getCurrentPosition()) * Math.sin(thetaAngle()) ;
     }
+
+    //returns the amount the arm should be extended when moving
+    public double rectExtension(boolean goingUp) {
+        if (goingUp)
+            return xExtConst/Math.cos(thetaAngle());
+        else
+            return yExtConst/Math.sin(thetaAngle());
+    }
+
+
+
+
 
     public void SetGripState(GripState gripState, double rotationPosition) {
         grip.setPosition(gripState == GripState.CLOSED ? 0 : (gripState == GripState.IDLE ? 0.23 : 0.64));
