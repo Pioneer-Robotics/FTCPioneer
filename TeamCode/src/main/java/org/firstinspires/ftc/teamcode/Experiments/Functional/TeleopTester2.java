@@ -28,7 +28,6 @@ public class TeleopTester2 extends LinearOpMode {
     double moveSpeed;
     double rotateSpeed;
     double raiseSpeed = 0;
-    double targetRotationOffset;
 
     boolean grab = false;
     boolean bButton2Check = false;
@@ -107,12 +106,12 @@ public class TeleopTester2 extends LinearOpMode {
 
             if (gamepad1.x && !aButton1Check) {
                 rotationLockValue = robot.GetRotation();
-                targetRotationOffset = 0;
             }
             aButton1Check = gamepad1.a;
 
             if (gamepad1.y != movementModeCheck) {
                 if (gamepad1.y) {
+                    rotationLockValue = robot.GetRotation();
                     movementModeNew = !movementModeNew;
                 }
                 movementModeCheck = gamepad1.y;
