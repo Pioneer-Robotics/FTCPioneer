@@ -23,7 +23,7 @@ public class TeleopTester extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, this);
+        robot.init(hardwareMap, this, true);
 //        robot.armWintch.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        robot.armWintch.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 

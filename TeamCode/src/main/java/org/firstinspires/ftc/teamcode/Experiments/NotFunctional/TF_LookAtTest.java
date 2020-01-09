@@ -24,7 +24,7 @@ public class TF_LookAtTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 //        telemetry.addData(":", "STARTING");
 
-        hwInf.init(hardwareMap, this);
+        hwInf.init(hardwareMap, this, true);
 //        TF_thread.startFromOpmode(this);
 //        TF_thread.start();
 

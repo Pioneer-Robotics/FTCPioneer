@@ -42,7 +42,7 @@ public class Auto extends LinearOpMode {
         print("Status: Initiating robot.");
 
         //init the bot hardware! This sets up the static references for the bot as well so make sure to run this before any other code
-        robot.init(hardwareMap, this);
+        robot.init(hardwareMap, this, true);
 
         print("Status: Initiating all jobs.");
 

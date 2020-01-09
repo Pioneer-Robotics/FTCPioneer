@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Hardware.bMotor;
@@ -10,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
 
 import java.util.HashSet;
 
-//The idea here is that we have encoders that are able to assign a specific speed to a motor. But the encoder never grantees that ALL motors are able to move at the same speeds (ei if one motors weaker than all of the others we need to adjust the stronger motors max speeds to work within the bounds of the weakest motor)
+//The idea here is that we have encoders that are able to assign a specific speed to a motor. But the encoder never guarantees that ALL motors are able to move at the same speeds (ei if one motors weaker than all of the others we need to adjust the stronger motors max speeds to work within the bounds of the weakest motor)
 //This class takes the weakest motor and sets other motors power relative to that one
 public class RobotDriveManager {
 
@@ -49,7 +48,7 @@ public class RobotDriveManager {
     //An array of all of the above motors
     public HashSet<bMotor> driveMotors = new HashSet<bMotor>();
 
-    public void PreformInitalCalibration() {
+    public void PerformInitialCalibration() {
 
         for (bMotor motor : driveMotors) {
             motor.setPower(1);
@@ -93,7 +92,7 @@ public class RobotDriveManager {
             bTelemetry.Print("Rerunning calibration.");
 
             //Might be good to offset the target values by 250 every time we rerun it
-            PreformInitalCalibration();
+            PerformInitialCalibration();
         } else {
             bTelemetry.Print("Calibration VALID!");
         }

@@ -23,7 +23,7 @@ public class TestingOpMode4 extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, this);
+        robot.init(hardwareMap, this, true);
 
         waitForStart();
 
