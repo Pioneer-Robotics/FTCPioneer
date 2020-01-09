@@ -226,7 +226,7 @@ public class Robot extends Thread {
 
         bTelemetry.Print("Robot start up successful. Running initial wheel calibration...");
 
-        driveManager.PreformInitalCalibration();
+        driveManager.PerformInitialCalibration();
 
         bTelemetry.Print("Wheel boot successful. Writing results...");
 
@@ -464,6 +464,7 @@ public class Robot extends Thread {
         boolean lastPositiveState = true;
         double rotationPower = 0;
         ElapsedTime dt = new ElapsedTime();
+
 
         while (ticker < maxTime && Op.opModeIsActive()) {
             rotationPower = rotationPID_test.Loop(targetAngle, rotation);
