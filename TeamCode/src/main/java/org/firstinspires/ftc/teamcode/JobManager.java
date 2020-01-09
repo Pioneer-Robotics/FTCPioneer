@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 
 //A lovely picture of the robot
@@ -217,7 +216,7 @@ class aJobNavigation extends aJob implements Runnable {
     @Override
     public void Init(LinearOpMode op) {
         super.Init(op);
-        robot.init(op.hardwareMap, op);
+        robot.init(op.hardwareMap, op, true);
 
     }
 

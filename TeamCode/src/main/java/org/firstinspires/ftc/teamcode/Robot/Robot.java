@@ -226,7 +226,7 @@ public class Robot extends Thread {
 
         bTelemetry.Print("Robot start up successful. Running initial wheel calibration...");
 
-        driveManager.PerformInitialCalibration();
+        driveManager.PreformInitalCalibration();
 
         bTelemetry.Print("Wheel boot successful. Writing results...");
 
@@ -260,7 +260,7 @@ public class Robot extends Thread {
                 threadRunning.set(false);
             }
 
-            //arm.length.setPower(1);
+            arm.length.setPower(1);
             arm.length.setTargetPosition((int) arm.targetLength);
         }
 
@@ -687,8 +687,7 @@ public class Robot extends Thread {
         double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
         Double4 a = bMath.getMecMovement(angle, 0, 0);
 
-
-        SetRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
+        SetRelativeEncoderPosition(a.x * distanceTicks, a.y* distanceTicks, a.z* distanceTicks, a.w* distanceTicks);
         SetPowerDouble4(1, 1, 1, 1, speed);
 
         SetRelativeEncoderPosition(a.x * distanceTicks, a.y* distanceTicks, a.z* distanceTicks, a.w* distanceTicks);

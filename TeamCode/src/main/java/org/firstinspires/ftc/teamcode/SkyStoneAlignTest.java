@@ -5,11 +5,8 @@ import android.renderscript.Double2;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.teamcode.JobManager;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 
@@ -35,7 +32,7 @@ public class SkyStoneAlignTest extends LinearOpMode {
         print("Status: Initiating robot.");
 
         //init the bot! This sets up the static references for the bot as well so make sure to run this early
-        robot.init(hardwareMap, this);
+        robot.init(hardwareMap, this, true);
 
         print("Status: Initiating all jobs.");
 

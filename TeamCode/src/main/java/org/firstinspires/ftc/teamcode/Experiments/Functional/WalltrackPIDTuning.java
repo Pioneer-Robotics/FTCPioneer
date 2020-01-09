@@ -39,7 +39,7 @@ WalltrackPIDTuning extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, this);
+        robot.init(hardwareMap, this, true);
         dataManger.Start();
         deltaTime.reset();
 
