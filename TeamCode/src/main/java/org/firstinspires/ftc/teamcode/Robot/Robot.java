@@ -280,36 +280,36 @@ public class Robot extends Thread {
     /**
      * Uses
      *
-     * @param movementAngle The angle  that we want to move along, try to keep its magnitude under 180
-     * @param movementSpeed How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
+     * @param headingAngle The angle  that we want to move along, try to keep its magnitude under 180
+     * @param movementSpeed How fast we want to move to move along 'headingAngle'. 1 is very fast, 0 is anti-fast (brakes).
      */
 
-    public void MoveSimple(double movementAngle, double movementSpeed) {
-        Double4 v = bMath.getMecMovementSimple(movementAngle);
+    public void MoveSimple(double headingAngle, double movementSpeed) {
+        Double4 v = bMath.getMecMovementSimple(headingAngle);
         SetPowerDouble4(v, movementSpeed);
     }
 
     /**
      * Uses
      *
-     * @param movementVector The vector that we want to move along
+     * @param headingVector The vector that we want to move along
      * @param movementSpeed  How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
      */
 
-    public void MoveSimple(Double2 movementVector, double movementSpeed) {
-        Double4 v = bMath.getMecMovementSimple(movementVector);
+    public void MoveSimple(Double2 headingVector, double movementSpeed) {
+        Double4 v = bMath.getMecMovementSimple(headingVector);
         SetPowerDouble4(v, movementSpeed);
     }
 
     /**
      * Uses
      *
-     * @param movementAngle The angle  that we want to move along, try to keep its magnitude under 180
-     * @param movementSpeed How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
+     * @param headingAngle The angle  that we want to move along, try to keep its magnitude under 180
+     * @param movementSpeed How fast we want to move to move along 'headingAngle'. 1 is very fast, 0 is anti-fast (brakes).
      */
 
-    public void MoveSimple(double movementAngle, double movementSpeed, double rotationPower) {
-        Double4 v = bMath.getMecMovementSimple(movementAngle, rotationPower);
+    public void MoveSimple(double headingAngle, double movementSpeed, double rotationPower) {
+        Double4 v = bMath.getMecMovementSimple(headingAngle, rotationPower);
         SetPowerDouble4(v, movementSpeed);
     }
 
@@ -338,13 +338,13 @@ public class Robot extends Thread {
     }
 
     /**
-     * @param movementVector The vector (relative to the phoneside of the bot) that we want to move along
+     * @param headingVector The vector (relative to the phoneside of the bot) that we want to move along
      * @param movementSpeed  How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
      * @param rotationSpeed  The angle that we want the robot to rotate too. It's actually witchcraft and might need some more research/testing
      * @param offsetAngle
      */
-    public void MoveComplex(Double2 movementVector, double movementSpeed, double rotationSpeed, double offsetAngle) {
-        Double4 v = bMath.getMecMovement(movementVector, rotationSpeed, offsetAngle);
+    public void MoveComplex(Double2 headingVector, double movementSpeed, double rotationSpeed, double offsetAngle) {
+        Double4 v = bMath.getMecMovement(headingVector, rotationSpeed, offsetAngle);
         SetPowerDouble4(v, movementSpeed);
     }
 
@@ -356,7 +356,7 @@ public class Robot extends Thread {
     PID rotationPID_test = new PID();
 
     //
-    public void RotatePID(double angle, double rotationSpeed, double maxTime) {
+    public void RotatePID(double targetAngle, double rotationSpeed, double maxTime) {
 
         //P of 3 and 0 for other gains seems to work really well
 //        rotationPID_test.Start(3, 0, 0.1);
@@ -381,8 +381,8 @@ public class Robot extends Thread {
         double correctTime = 0;
 
         while (ticker < maxTime && Op.opModeIsActive()) {
-            rotationPower = rotationPID_test.Loop(angle, rotation);
-            rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - angle));
+            rotationPower = rotationPID_test.Loop(targetAngle, rotation);
+            rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - targetAngle));
             rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
             Op.telemetry.addData("Error ", rotationPID_test.error);
             Op.telemetry.addData("Last Error  ", rotationPID_test.lastError);
@@ -403,7 +403,7 @@ public class Robot extends Thread {
                 lastPositiveState = rotationPower > 0;
             }
 
-            if (Math.abs(GetRotation() - angle) < 0.15 * rotationPower) {
+            if (Math.abs(GetRotation() - targetAngle) < 0.15 * rotationPower) {
                 break;
             }
 
@@ -431,7 +431,7 @@ public class Robot extends Thread {
         SetPowerDouble4(0, 0, 0, 0, 0);
     }
 
-    public void RotatePIDRelative(double angle, double rotationSpeed, double maxTime) {
+    public void RotatePIDRelative(double relativeTargetAngle, double rotationSpeed, double maxTime) {
 
         //P of 3 and 0 for other gains seems to work really well
 //        rotationPID_test.Start(3, 0, 0.1);
@@ -448,7 +448,7 @@ public class Robot extends Thread {
 
         double ticker = 0;
         double startAngle = GetRotation();
-        double targetAngle = startAngle + angle;
+        double targetAngle = ((startAngle + relativeTargetAngle+360)%360)-360;
 
         targetAngle = bMath.Loop(targetAngle, 180);
 
@@ -462,7 +462,7 @@ public class Robot extends Thread {
 
         while (ticker < maxTime && Op.opModeIsActive()) {
             rotationPower = rotationPID_test.Loop(targetAngle, rotation);
-            rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - angle));
+            rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - relativeTargetAngle));
             rotationPower += (Math.copySign(0.1, rotationPower));
             Op.telemetry.addData("Error ", rotationPID_test.error);
             Op.telemetry.addData("Last Error  ", rotationPID_test.lastError);
@@ -498,7 +498,7 @@ public class Robot extends Thread {
         SetPowerDouble4(0, 0, 0, 0, 0);
     }
 
-    public void RotatePID(double angle, double rotationSpeed, int cycles, double p, double i, double d) {
+    public void RotatePID(double targetAngle, double rotationSpeed, int cycles, double p, double i, double d) {
 
 //        rotationPID_test.Start(3, 0.21, 0.69);
         rotationPID_test.Start(p, i, d);
@@ -511,8 +511,8 @@ public class Robot extends Thread {
 
         while (ticker < cycles && Op.opModeIsActive()) {
             ticker++;
-            double rotationPower = rotationPID_test.Loop(angle, rotation);
-            rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - angle));
+            double rotationPower = rotationPID_test.Loop(targetAngle, rotation);
+            rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - targetAngle));
             rotationPower += (0.01 * (rotationPower > 0 ? 1 : -1));
             Op.telemetry.addData("Error ", rotationPID_test.error);
             Op.telemetry.addData("Last Error  ", rotationPID_test.lastError);
@@ -543,7 +543,7 @@ public class Robot extends Thread {
     }
 
 
-    public void RotateSimple(double angle, double rotationSpeed, double tolerance, double exitTime) {
+    public void RotateSimple(double targetAngle, double rotationSpeed, double tolerance, double exitTime) {
         double exitTimer = 0;
         ElapsedTime deltaTime = new ElapsedTime();
 
@@ -551,9 +551,9 @@ public class Robot extends Thread {
         while (Op.opModeIsActive()) {
             deltaTime.reset();
 
-            MoveComplex(new Double2(0, 0), rotationSpeed, GetRotation() - angle, 0);
+            MoveComplex(new Double2(0, 0), rotationSpeed, GetRotation() - targetAngle, 0);
 
-            if (Math.abs(GetRotation() - angle) < tolerance) {
+            if (Math.abs(GetRotation() - targetAngle) < tolerance) {
                 exitTimer += deltaTime.seconds();
             }
 
