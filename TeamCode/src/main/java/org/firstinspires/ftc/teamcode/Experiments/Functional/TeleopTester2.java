@@ -20,23 +20,40 @@ public class TeleopTester2 extends LinearOpMode {
 
     ElapsedTime deltaTime = new ElapsedTime();
 
+    //Program State
+    
+    //Driver Control Variables
     double moveSpeed;
+    //Arm Control Variables
     double raiseSpeed = 0;
-
-    boolean grab = false;
-    boolean bButton2Check = false;
-
     double extension = 0;
     double armAngle = 0;
     double gripAngle = 180;
-    boolean xButton2Check = false;
-    boolean idle = false;
-    boolean aButton2Check = false;
-    boolean pointDown = false;
-    double vertExtensionConst = 0;
+    //Rectangular Control Variables New
+    
+    //Rectangular Control Variables Old
     double yWanted = 0;
     double xWanted = 0;
     double vertDMove = 0;
+    
+    //Gripper Control
+    boolean grab = false; //whether the gripper is gripping
+    boolean bButton2Check = false; //prevState of grab
+    
+    boolean idle = false; //whether the gripper is in rest position
+    boolean xButton2Check = false;
+    
+    boolean pointDown = false;
+    boolean aButton2Check = false;
+    
+    //Mode Switch Variables
+    
+    
+
+
+    
+
+    
     boolean lastD2press = false;
     boolean leftRotateCoordCheck = false;
     boolean rightRotateCoordCheck = false;
