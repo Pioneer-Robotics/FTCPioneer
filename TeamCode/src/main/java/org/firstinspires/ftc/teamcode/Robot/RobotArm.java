@@ -83,14 +83,42 @@ public class RobotArm extends Thread {
 
         return Math.atan((Math.sqrt((k * k) - (x * x)) - H) / (d - x));
     }
+    /*
+    This function drives the arm up or down to a desired angle.
+    put that angle between 0 and 90 (in degrees)
+    not exact, we try to get it within a certain threshold but the arm jerks
+     */
+        public void runToTheta(double thetaWanted)
+        {
+            int thetaThreshold = 5;
+            double thetaPower = 0.25;
+            rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            //depending on if the angle needs to be increased or decreased, turn on the motors
+            if (thetaAngle() - thetaWanted > 0) {
+                rotation.setPower(thetaPower);
+            } else {
+                rotation.setPower(-thetaPower);
+            }
+            while (thetaAngle() - thetaWanted > thetaThreshold){ }
+            //empty while loop works as waitUntil
+            rotation.setPower(0);
+        }
+/*
+This method will move the arm to match a desired length and angle.
+angle should be between 0 and 90 (measured in degrees)
+length should be specified in cm. Should be between 0 and 100.
+ */
+        public void SetArmLengthAndAngle(double angleNeeded, double lengthNeeded){
+            //cmToRange is what you use to convert from cm to the 0-1 scale we use to actually set the arm length
+            /*
+            This is where we put the stuff to convert our cm value to weird Ben value
+             */
+            length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            length.setTargetPosition((int) lengthNeeded);
+            runToTheta(angleNeeded);
+        }
 
-    public double armRectExtension(double horiz, double vert) {
-        return Math.sqrt(horiz * horiz + vert * vert);
-    }
 
-    public double armRectAngle(double horiz, double vert) {
-        return Math.atan(vert / horiz);
-    }
 
 
     public void SetArmStateWait(double targetAngle, double _targetLength, double angleSpeed) {
@@ -157,7 +185,7 @@ public class RobotArm extends Thread {
     public void SetArmState(double targetAngle, double _targetLength, double angleSpeed) {
         // angleSpeed really means the angle you want the arm to be
         targetLengthSpeed = 1;
-        targetLength = ((double) RobotConfiguration.arm_lengthMax * _targetLength);
+        targetLength = (RobotConfiguration.arm_lengthMax * _targetLength);
         rotation.setPower(angleSpeed);
 
 
