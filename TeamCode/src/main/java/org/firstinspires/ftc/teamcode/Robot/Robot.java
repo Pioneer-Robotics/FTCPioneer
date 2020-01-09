@@ -465,7 +465,7 @@ public class Robot extends Thread {
         while (ticker < maxTime && Op.opModeIsActive()) {
             rotationPower = rotationPID_test.Loop(targetAngle, rotation);
             rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - angle));
-            rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
+            rotationPower += (Math.copySign(0.1 , rotationPower));
             Op.telemetry.addData("Error ", rotationPID_test.error);
             Op.telemetry.addData("Last Error  ", rotationPID_test.lastError);
             Op.telemetry.addData("Derivative ", rotationPID_test.derivative);

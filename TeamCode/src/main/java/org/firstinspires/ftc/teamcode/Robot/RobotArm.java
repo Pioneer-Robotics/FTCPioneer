@@ -106,9 +106,9 @@ public class RobotArm extends Thread {
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         double runtime = 0;
-        double rotationDelta;
+        double rotationDelta = 0;
         double lastrotationDelta = 1000000;
-        double lengthDelta;
+        double lengthDelta = 0;
         double lastlengthDelta = 100000;
         ElapsedTime dt = new ElapsedTime();
 
@@ -122,6 +122,10 @@ public class RobotArm extends Thread {
             Op.telemetry.addData("Rotation Position", rotation.getCurrentPosition());
             Op.telemetry.addData("Length Position", length.getCurrentPosition());
             Op.telemetry.addData("Rotation Goal", rotation.getTargetPosition());
+            Op.telemetry.addData("Rotation Delta", rotationDelta);
+            Op.telemetry.addData("Length Delta", lengthDelta);
+
+
             Op.telemetry.addData("Length DT", deltaTime.seconds());
 
             Op.telemetry.update();
