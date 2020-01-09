@@ -112,6 +112,8 @@ public class RobotArm extends Thread {
         double lastlengthDelta = 100000;
         ElapsedTime dt = new ElapsedTime();
 
+        dt.reset();
+
         while (Op.opModeIsActive() /*&& (Math.abs(rotation.getCurrentPosition() - rotation.getTargetPosition()) > 5 || Math.abs(length.getCurrentPosition() - targetLength) > 5)*/) {
 
             rotation.setPower(angleSpeed);
@@ -131,7 +133,6 @@ public class RobotArm extends Thread {
 
                 lengthDelta = Math.abs((int) lastlengthDelta - length.getCurrentPosition());
                 lastlengthDelta = length.getCurrentPosition();
-
 
                 if (rotationDelta <= 3) {
                     break;
