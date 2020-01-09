@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 @TeleOp(name = "Teleop2", group = "Sensor")
 public class TeleopTester2 extends LinearOpMode {
 
-    RobotWallTrack.SensorGroup targetWallTrackGroup = null;
+    //RobotWallTrack.SensorGroup targetWallTrackGroup = null;
 
 
     Robot robot = new Robot();
@@ -50,7 +50,7 @@ public class TeleopTester2 extends LinearOpMode {
     boolean rectControlsCheck = false;
     boolean rectControls_goingUp = false;
     boolean rectControls_goingUpCheck = false;
-    
+
     //Gripper Control
     boolean grab = false; //whether the gripper is gripping
     boolean bButton2Check = false; //prevState of grab
@@ -77,7 +77,7 @@ public class TeleopTester2 extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, this);
+        robot.init(hardwareMap, this, false);
         fineServoControl = true;
 
 
@@ -91,7 +91,7 @@ public class TeleopTester2 extends LinearOpMode {
 
             ///DRIVER CONTROLS
 
-            //let left bumper put robot in really slow mode for fine control
+            //let left bumper toggle boost vs slow mode on the right trigger for fine control of the robot
             if (gamepad1.left_bumper) {
                 //trigger makes robot slower
                 moveSpeed = bMath.Clamp(0.5 - gamepad1.right_trigger/2, 0, 1);
@@ -131,6 +131,7 @@ public class TeleopTester2 extends LinearOpMode {
                 leftDiagPower = ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.sin(angle) + ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.cos(angle));
                 rightDiagPower = ((-(-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.sin(angle) + ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.cos(angle)));
 
+                //this could replace the lines above and the 6 lines after the else but the implementation in this function
                 //robot.MoveComplex(new Double2(gamepad1.left_stick_x,gamepad1.left_stick_y),moveSpeed,gamepad1.right_stick_x,angle);
             } else {
                 telemetry.addData("Drive System", "Old");
