@@ -317,7 +317,7 @@ public class Robot extends Thread {
      * Uses
      *
      * @param headingVector The vector that we want to move along
-     * @param movementSpeed  How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
+     * @param movementSpeed How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
      */
 
     public void MoveSimple(Double2 headingVector, double movementSpeed, double rotationSpeed) {
@@ -327,9 +327,9 @@ public class Robot extends Thread {
 
 
     /**
-     * @param headingAngle The angle (relative to the phoneside of the bot) that we want to move along, try to keep its magnitude under 180
+     * @param headingAngle  The angle (relative to the phoneside of the bot) that we want to move along, try to keep its magnitude under 180
      * @param movementSpeed How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
-     * @param rotationSpeed         The angle that we want the robot to rotate too. It's actually witchcraft and might need some more research/testing
+     * @param rotationSpeed The angle that we want the robot to rotate too. It's actually witchcraft and might need some more research/testing
      * @param offsetAngle
      */
     public void MoveComplex(double headingAngle, double movementSpeed, double rotationSpeed, double offsetAngle) {
@@ -340,7 +340,7 @@ public class Robot extends Thread {
     /**
      * @param movementVector The vector (relative to the phoneside of the bot) that we want to move along
      * @param movementSpeed  How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
-     * @param rotationSpeed          The angle that we want the robot to rotate too. It's actually witchcraft and might need some more research/testing
+     * @param rotationSpeed  The angle that we want the robot to rotate too. It's actually witchcraft and might need some more research/testing
      * @param offsetAngle
      */
     public void MoveComplex(Double2 movementVector, double movementSpeed, double rotationSpeed, double offsetAngle) {
@@ -463,7 +463,7 @@ public class Robot extends Thread {
         while (ticker < maxTime && Op.opModeIsActive()) {
             rotationPower = rotationPID_test.Loop(targetAngle, rotation);
             rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - angle));
-            rotationPower += (Math.copySign(0.1 , rotationPower));
+            rotationPower += (Math.copySign(0.1, rotationPower));
             Op.telemetry.addData("Error ", rotationPID_test.error);
             Op.telemetry.addData("Last Error  ", rotationPID_test.lastError);
             Op.telemetry.addData("Derivative ", rotationPID_test.derivative);
@@ -621,6 +621,14 @@ public class Robot extends Thread {
         driveManager.backRight.setTargetPosition(driveManager.backRight.getCurrentPosition() + (int) delta);
     }
 
+    public void SetRelativeEncoderPosition(double deltaX, double deltaY, double deltaZ, double deltaW) {
+
+        driveManager.frontLeft.setTargetPosition(driveManager.frontLeft.getCurrentPosition() + (int) deltaX);
+        driveManager.backLeft.setTargetPosition(driveManager.backLeft.getCurrentPosition() + (int) deltaY);
+        driveManager.frontRight.setTargetPosition(driveManager.frontRight.getCurrentPosition() + (int) deltaZ);
+        driveManager.backRight.setTargetPosition(driveManager.backRight.getCurrentPosition() + (int) deltaW);
+    }
+
     //Returns IMU rotation on the zed axies
     public double GetRotation() {
         //returns the threaded rotation values for speeeed
@@ -640,6 +648,43 @@ public class Robot extends Thread {
         SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         SetRelativeEncoderPosition((480 / RobotConfiguration.wheel_circumference) * distance);
         SetPowerDouble4(1, 1, 1, 1, speed);
+        SetDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        Op.telemetry.addData("Driving by distance ", distance * ((RobotConfiguration.wheel_circumference * RobotConfiguration.wheel_ticksPerRotation)));
+        Op.telemetry.update();
+        while (Op.opModeIsActive() && WheelsBusy()) {
+            Op.telemetry.addData("Wheel Busy", "");
+            Op.telemetry.addData("Wheel Front Right Postion", driveManager.frontRight.getCurrentPosition());
+            Op.telemetry.addData("Wheel Front Right Target", driveManager.frontRight.motor.getTargetPosition());
+            Op.telemetry.update();
+
+            if (!Op.opModeIsActive()) {
+                break;
+            }
+            //Wait until we are at our target distance
+        }
+
+        Op.telemetry.addData("Target Reached", "");
+        Op.telemetry.update();
+
+        //Stop motors
+        SetPowerDouble4(0, 0, 0, 0, 0);
+
+        //Set up for normal driving
+        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void DriveByDistance(double angle, double speed, double distance) {
+
+        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
+        Double4 a = bMath.getMecMovement(angle, 0, 0);
+
+        SetRelativeEncoderPosition(a.x * distanceTicks, a.y* distanceTicks, a.z* distanceTicks, a.w* distanceTicks);
+        SetPowerDouble4(1, 1, 1, 1, speed);
+
         SetDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         Op.telemetry.addData("Driving by distance ", distance * ((RobotConfiguration.wheel_circumference * RobotConfiguration.wheel_ticksPerRotation)));
