@@ -105,8 +105,13 @@ public class RobotArm extends Thread {
         rotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        double rotationDelta;
+        double lastrotationDelta = 1000000;
+        double lengthDelta;
+        double lastlengthDelta = 100000;
+        ElapsedTime dt = new ElapsedTime();
 
-        while (Op.opModeIsActive() && (Math.abs(rotation.getCurrentPosition() - rotation.getTargetPosition()) > 5 || Math.abs(length.getCurrentPosition() - targetLength) > 5)) {
+        while (Op.opModeIsActive() /*&& (Math.abs(rotation.getCurrentPosition() - rotation.getTargetPosition()) > 5 || Math.abs(length.getCurrentPosition() - targetLength) > 5)*/) {
 
             rotation.setPower(angleSpeed);
             length.setPower(angleSpeed);
@@ -115,7 +120,23 @@ public class RobotArm extends Thread {
             Op.telemetry.addData("Length Position", length.getCurrentPosition());
             Op.telemetry.addData("Rotation Goal", rotation.getTargetPosition());
             Op.telemetry.addData("Length DT", deltaTime.seconds());
+
             Op.telemetry.update();
+
+
+            rotationDelta = Math.abs((int) lastrotationDelta - rotation.getCurrentPosition());
+            lastrotationDelta = rotation.getCurrentPosition();
+
+            lengthDelta = Math.abs((int) lastlengthDelta - length.getCurrentPosition());
+            lastlengthDelta = length.getCurrentPosition();
+
+            if (rotationDelta <= 3) {
+                break;
+            }
+            if (lengthDelta <= 3) {
+                break;
+            }
+
         }
 
         rotation.setPower(0);
