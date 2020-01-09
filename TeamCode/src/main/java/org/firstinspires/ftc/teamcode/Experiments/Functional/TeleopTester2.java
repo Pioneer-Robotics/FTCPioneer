@@ -20,24 +20,11 @@ public class TeleopTester2 extends LinearOpMode {
 
     ElapsedTime deltaTime = new ElapsedTime();
 
+    //Program State
+
+    //Driver Control Variables
     double moveSpeed;
-    double raiseSpeed = 0;
 
-    boolean grab = false;
-    boolean bButton2Check = false;
-
-    double extension = 0;
-    double armAngle = 0;
-    double gripAngle = 180;
-    boolean xButton2Check = false;
-    boolean idle = false;
-    boolean aButton2Check = false;
-    boolean pointDown = false;
-    //double vertExtensionConst = 0;
-    //double yWanted = 0;
-    //double xWanted = 0;
-    //double vertDMove = 0;
-    //boolean lastD2press = false;
     boolean leftRotateCoordCheck = false;
     boolean rightRotateCoordCheck = false;
 
@@ -48,30 +35,47 @@ public class TeleopTester2 extends LinearOpMode {
     double leftRotatePower = 0;
     double rightRotatePower = 0;
 
+    double rotationLockAngle = 0;
 
+    boolean movementModeToggleCheck = false;
+    boolean coordinateSystemLock = false;
 
+    //Arm Control Variables
+    double raiseSpeed = 0;
+    double extension = 0;
+    double armAngle = 0;
+    double gripAngle = 180;
+
+    //Rectangular Control Variables New
     boolean rectControls = false;
     boolean rectControlsCheck = false;
     boolean rectControls_goingUp = false;
     boolean rectControls_goingUpCheck = false;
 
-    //boolean leftBumper2Check = false;
-    //double targetGripperPositionY = 0;
-    //double targetGripperPositionX = 0;
+    //Rectangular Control Variables Old
+    double yWanted = 0;
+    double xWanted = 0;
+    double vertDMove = 0;
 
-    boolean movementModeToggleCheck = false;
-    boolean coordinateSystemLock = false;
+    //Gripper Control
+    boolean grab = false; //whether the gripper is gripping
+    boolean bButton2Check = false; //prevState of grab
 
+    boolean idle = false; //whether the gripper is in rest position
+    boolean xButton2Check = false;
 
-    double rotationLockAngle = 0;
+    boolean pointDown = false;
+    boolean aButton2Check = false;
+
+    boolean fineServoControl = true;
 
     double lunchboxRot = 0.5;
 
-    boolean servoLastToggle = false;
-    boolean fineServoControl = true;
 
     boolean gripFoundation = false;
-    boolean bLast = false;
+    boolean bButton1Check = false;
+    //Mode Switch Variables
+
 
 
     @Override
@@ -199,8 +203,7 @@ public class TeleopTester2 extends LinearOpMode {
             rectControls_goingUp = Math.abs(gamepad2.right_stick_y) > Math.abs(gamepad2.right_stick_x);
 
             //get new extension constants if rectControls changes or if direction changes
-            if ( (rectControls != rectControlsCheck ) || (rectControls_goingUp != rectControls_goingUpCheck) )
-                 robot.arm.ExtConstCalc();
+            if ( (rectControls != rectControlsCheck ) || (rectControls_goingUp != rectControls_goingUpCheck) ) robot.arm.ExtConstCalc();
             rectControlsCheck = rectControls;
             rectControls_goingUpCheck = rectControls_goingUp;
 
@@ -211,8 +214,7 @@ public class TeleopTester2 extends LinearOpMode {
                 //set power and distance to the Arm.
                 robot.arm.SetArmStatePowerCm(robot.arm.RectExtension(rectControls_goingUp),
                                            rectControls_goingUp ? gamepad2.right_stick_y : -gamepad2.right_stick_x);
-            }
-            else{
+            } else {
                 telemetry.addLine("Arm Control: Radial");
 
                 extension += gamepad2.right_trigger * deltaTime.seconds();    //extend arm when right trigger held
@@ -313,12 +315,12 @@ public class TeleopTester2 extends LinearOpMode {
             }
 
             //move foundation grippers with b button
-            if (gamepad1.b && !bLast) {
+            if (gamepad1.b && !bButton1Check) {
                 if (gamepad1.b) {
                     gripFoundation = !gripFoundation;
                 }
             }
-            bLast = gamepad1.b;
+            bButton1Check = gamepad1.b;
             robot.foundationServo0.setPosition(gripFoundation ? 0 : 1);
             robot.foundationServo1.setPosition(gripFoundation ? 1 : 0);
 
