@@ -4,15 +4,10 @@ import android.renderscript.Double2;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.teamcode.Helpers.bDataManager;
-import org.firstinspires.ftc.teamcode.Helpers.bMath;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Thread.sleep;
@@ -31,9 +26,9 @@ public class RobotArm extends Thread {
     public Servo grip;
 
     public double targetLength;
-    public double currentLengthSpeed;
     public double targetLengthSpeed;
-
+    public double hExtConst;
+    public double vExtConst;
 
     public enum GripState {
         OPEN,
@@ -85,27 +80,30 @@ public class RobotArm extends Thread {
     }
     /*
     This function drives the arm up or down to a desired angle.
-    put that angle between 0 and 90 (in degrees)
+    put that angle between 0 and PI/2 (in radians)
     not exact, we try to get it within a certain threshold but the arm jerks
      */
-        public void runToTheta(double thetaWanted)
+        public void runToTheta(double thetaWanted) //TODO this entire function is gayer than josh, you cannot waituntil in teleop
         {
             int thetaThreshold = 5;
             double thetaPower = 0.25;
             rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             //depending on if the angle needs to be increased or decreased, turn on the motors
-            if (thetaAngle() - thetaWanted > 0) {
-                rotation.setPower(thetaPower);
-            } else {
-                rotation.setPower(-thetaPower);
+            if (Math.abs(thetaAngle() - thetaWanted) > thetaThreshold) { //if the rotation is not yet at the intended position
+                if (thetaAngle() - thetaWanted > 0)
+                    rotation.setPower(thetaPower);
+                else
+                    rotation.setPower(-thetaPower);
             }
-            while (thetaAngle() - thetaWanted > thetaThreshold){ }
+
+
+            //while (thetaAngle() - thetaWanted > thetaThreshold){ } //TODO Also, this function only works on one side of thetaWanted
             //empty while loop works as waitUntil
             rotation.setPower(0);
         }
 /*
 This method will move the arm to match a desired length and angle.
-angle should be between 0 and 90 (measured in degrees)
+angle should be between 0 and PI/2 (measured in radians)
 length should be specified in cm. Should be between 0 and 100.
  */
         public void SetArmLengthAndAngle(double angleNeeded, double lengthNeeded){
@@ -124,7 +122,7 @@ length should be specified in cm. Should be between 0 and 100.
     public void SetArmStateWait(double targetAngle, double _targetLength, double angleSpeed) {
         // angleSpeed really means the angle you want the arm to be
         targetLengthSpeed = 1;
-        targetLength = (RobotConfiguration.arm_lengthMax * _targetLength);
+        targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
         rotation.setPower(angleSpeed);
 
         rotation.setTargetPosition((int) (RobotConfiguration.arm_rotationMax * targetAngle));
@@ -185,7 +183,7 @@ length should be specified in cm. Should be between 0 and 100.
     public void SetArmState(double targetAngle, double _targetLength, double angleSpeed) {
         // angleSpeed really means the angle you want the arm to be
         targetLengthSpeed = 1;
-        targetLength = (RobotConfiguration.arm_lengthMax * _targetLength);
+        targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
         rotation.setPower(angleSpeed);
 
 
@@ -199,12 +197,15 @@ length should be specified in cm. Should be between 0 and 100.
 //        currentLengthSpeed = 0;
     }
 
-    //Set Arm Target Length and Power
-    public void SetArmAnglePower(double _targetLength, double angleSpeed) {
+    /*
+    This method will rotate the arm at a specified speed and extend
+    to match a certain percentage of extension between 0 and 1
+     */
+    public void SetArmStatePower(double _targetLength, double angleSpeed) {
 
         targetLengthSpeed = 1;
-        targetLength = ((double) RobotConfiguration.arm_lengthMax * _targetLength);
-
+        targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
+        if (targetLength > 0) targetLength = 0; //don't extend the spool past it's starting point
 
         rotation.setPower(angleSpeed);
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -213,8 +214,26 @@ length should be specified in cm. Should be between 0 and 100.
 
     }
 
-    //17.8 rotation is one CM
-    //(17.8 / 480) encoder ticks is one CM
+    /*
+    This method will rotate the arm at a specified speed and extend
+    to match a certain distance in cm >0
+     */
+    public void SetArmStatePowerAndDistance(double _targetLength, double angleSpeed){
+        targetLengthSpeed = 1; //speed of extension
+        targetLength = ((480 / 17.8) * (_targetLength-RobotConfiguration.arm_lengthMin));
+        if (targetLength > 0) targetLength = 0; //don't extend the spool past it's starting point
+        //17.8 cm is one rotation
+        // n cm * (1rot/17.8cm) * (480tick/1rot) = n * (480/17.8)(tick/cm)
+        //(17.8 / 480) cm is one tick, (480/17.8)tick is one cm
+
+        rotation.setPower(angleSpeed);
+        rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+
+
     public double calcVertExtensionConst() {
         return ((17.8 * (double) length.getCurrentPosition()) / 480 * Math.cos(thetaAngle()));
     }

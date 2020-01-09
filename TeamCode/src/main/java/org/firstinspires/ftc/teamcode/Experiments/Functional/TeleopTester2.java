@@ -17,9 +17,6 @@ public class TeleopTester2 extends LinearOpMode {
 
     RobotWallTrack.SensorGroup targetWallTrackGroup = null;
 
-//    robot.
-
-
 
     Robot robot = new Robot();
 
@@ -156,12 +153,11 @@ public class TeleopTester2 extends LinearOpMode {
 //
 //            if (fineServoControl) {
 
-            //rotate lun chbox up with the up dpad
+            //rotate lunchbox up with the up dpad
             lunchboxRot -= gamepad1.dpad_up ? deltaTime.seconds() * 1 : 0;
             //rotate lunchbox down with the down dpad
             lunchboxRot += gamepad1.dpad_down ? deltaTime.seconds() * 1 : 0;
             lunchboxRot = bMath.Clamp(lunchboxRot, 0, 1);
-            telemetry.addData("LunchboxRot Position", lunchboxRot);
 //            robot.lunchbox.setPosition(lunchboxRot);
 
 //            } else {
@@ -193,7 +189,9 @@ public class TeleopTester2 extends LinearOpMode {
             }
             leftBumper2Check = gamepad2.left_bumper;
 
+
             if (rectControls_wanted) {
+                telemetry.addLine("Arm Control: Rect");
                 if (Math.abs(gamepad2.left_stick_y) > 0.1) {
                     yWanted += deltaTime.seconds() * gamepad2.left_stick_y;
                 }
@@ -205,12 +203,13 @@ public class TeleopTester2 extends LinearOpMode {
                 robot.arm.SetArmLengthAndAngle(armAngleNeeded, armLengthNeeded);
             }
             else{
-                //extend arm by tapping right trigger
+                telemetry.addLine("Arm Control: Radial");
+                //extend arm when right trigger held
                 extension += gamepad2.right_trigger * deltaTime.seconds();
-                //retract arm by tapping left trigger
+                //retract arm when left trigger held
                 extension -= gamepad2.left_trigger * deltaTime.seconds();
                 raiseSpeed = bMath.Clamp(gamepad2.left_stick_y, -1, 1);
-                robot.arm.SetArmState(raiseSpeed, extension, 1);
+                robot.arm.SetArmStatePower(extension,raiseSpeed);
             }
 
 /*
