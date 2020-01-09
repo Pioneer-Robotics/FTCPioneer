@@ -87,7 +87,7 @@ public class RobotArm extends Thread {
      */
         public void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in 5radian steps
         {
-            int thetaThreshold = 5;
+            double thetaThreshold = Math.PI*(5/180);
             double thetaPower = 0.25;
             rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             //depending on if the angle needs to be increased or decreased, turn on the motors
@@ -97,8 +97,6 @@ public class RobotArm extends Thread {
                 else
                     rotation.setPower(-thetaPower);
             }
-
-
             //while (thetaAngle() - thetaWanted > thetaThreshold){ } //FYI Also, this function only works on one side of thetaWanted
             //empty while loop works as waitUntil
             rotation.setPower(0);

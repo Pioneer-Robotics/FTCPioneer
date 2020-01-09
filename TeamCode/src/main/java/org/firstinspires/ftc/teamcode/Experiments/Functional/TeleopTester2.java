@@ -53,8 +53,7 @@ public class TeleopTester2 extends LinearOpMode {
 
     
 
-    
-    boolean lastD2press = false;
+
     boolean leftRotateCoordCheck = false;
     boolean rightRotateCoordCheck = false;
 
@@ -71,10 +70,6 @@ public class TeleopTester2 extends LinearOpMode {
     boolean rectControlsCheck = false;
     boolean rectControls_goingUp = false;
     boolean rectControls_goingUpCheck = false;
-
-    boolean leftBumper2Check = false;
-    double targetGripperPositionY = 0;
-    double targetGripperPositionX = 0;
 
     boolean movementModeToggleCheck = false;
     boolean coordinateSystemLock = false;
@@ -215,8 +210,7 @@ public class TeleopTester2 extends LinearOpMode {
             rectControls_goingUp = Math.abs(gamepad2.right_stick_y) > Math.abs(gamepad2.right_stick_x);
 
             //get new extension constants if rectControls changes or if direction changes
-            if ( (rectControls != rectControlsCheck ) || (rectControls_goingUp != rectControls_goingUpCheck) )
-                 robot.arm.ExtConstCalc();
+            if ( (rectControls != rectControlsCheck ) || (rectControls_goingUp != rectControls_goingUpCheck) ) robot.arm.ExtConstCalc();
             rectControlsCheck = rectControls;
             rectControls_goingUpCheck = rectControls_goingUp;
 
