@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.Experiments.Functional;
 
 
-import android.renderscript.Double2;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -51,8 +49,12 @@ public class TeleopTester2 extends LinearOpMode {
     double rightRotatePower = 0;
 
 
-    //this section relates to moving the arm (not rotating the gripper)
-    boolean rectControls_wanted = false;
+
+    boolean rectControls = false;
+    boolean rectControlsCheck = false;
+    boolean rectControls_goingUp = false;
+    boolean rectControls_goingUpCheck = false;
+
     boolean leftBumper2Check = false;
     double targetGripperPositionY = 0;
     double targetGripperPositionX = 0;
@@ -184,36 +186,43 @@ public class TeleopTester2 extends LinearOpMode {
             //ARM CONTROLS
 
             //use the left bumper to make the toggle the arm controls (rectangular or polar)
-            if (gamepad2.left_bumper && !leftBumper2Check) {
-                rectControls_wanted = !rectControls_wanted;
-            }
-            leftBumper2Check = gamepad2.left_bumper;
+//            if (gamepad2.left_bumper && !leftBumper2Check) {
+//                rectControls = !rectControls;
+//            }
+//            leftBumper2Check = gamepad2.left_bumper;
 
 
-            if (rectControls_wanted) {
+            // Activates rectControls when right stick is being moved
+            rectControls = ((Math.abs(gamepad2.right_stick_y) > 0.1) || (Math.abs(gamepad2.right_stick_x) > 0.1));
+            //sets direction of rectControls to whichever axis is greater
+            rectControls_goingUp = Math.abs(gamepad2.right_stick_y) > Math.abs(gamepad2.right_stick_x);
+
+            //get new extension constants if rectControls changes or if direction changes
+            if ( (rectControls != rectControlsCheck ) || (rectControls_goingUp != rectControls_goingUpCheck) )
+                 robot.arm.ExtConstCalc();
+            rectControlsCheck = rectControls;
+            rectControls_goingUpCheck = rectControls_goingUp;
+
+
+
+            if (rectControls) {
                 telemetry.addLine("Arm Control: Rect");
-                if (Math.abs(gamepad2.left_stick_y) > 0.1) {
-                    yWanted += deltaTime.seconds() * gamepad2.left_stick_y;
-                }
-                if (Math.abs(gamepad2.left_stick_x) > 0.1) {
-                    xWanted += deltaTime.seconds() * gamepad2.left_stick_x;
-                }
-                double armLengthNeeded = Math.sqrt(xWanted * xWanted + yWanted * yWanted);
-                double armAngleNeeded = Math.atan(yWanted / xWanted);
-                robot.arm.SetArmLengthAndAngle(armAngleNeeded, armLengthNeeded);
+                //set power and distance to the Arm.
+                robot.arm.SetArmStatePowerCm(robot.arm.RectExtension(rectControls_goingUp),
+                                           rectControls_goingUp ? gamepad2.right_stick_y : -gamepad2.right_stick_x);
             }
             else{
                 telemetry.addLine("Arm Control: Radial");
-                //extend arm when right trigger held
-                extension += gamepad2.right_trigger * deltaTime.seconds();
-                //retract arm when left trigger held
-                extension -= gamepad2.left_trigger * deltaTime.seconds();
+
+                extension += gamepad2.right_trigger * deltaTime.seconds();    //extend arm when right trigger held
+                extension -= gamepad2.left_trigger * deltaTime.seconds();     //retract arm when left trigger held
+
                 raiseSpeed = bMath.Clamp(gamepad2.left_stick_y, -1, 1);
                 robot.arm.SetArmStatePower(extension,raiseSpeed);
             }
 
 /*
-            if (rectControls_wanted) {
+            if (rectControls) {
 
                 //extend or shorten arm with Dpad
                 if ((gamepad2.dpad_up || gamepad2.dpad_down) && !lastD2press) {
@@ -239,6 +248,17 @@ public class TeleopTester2 extends LinearOpMode {
                 extension -= gamepad2.left_trigger * deltaTime.seconds();
             }
 */
+
+//                if (Math.abs(gamepad2.right_stick_y) > 0.1) {
+//                    yWanted += deltaTime.seconds() * gamepad2.right_stick_y;
+//                }
+//                if (Math.abs(gamepad2.right_stick_x) > 0.1) {
+//                    xWanted += deltaTime.seconds() * gamepad2.right_stick_x;
+//                }
+//                double armLengthNeeded = Math.sqrt(xWanted * xWanted + yWanted * yWanted);
+//                double armAngleNeeded = Math.atan(yWanted / xWanted);
+//                robot.arm.SetArmLengthAndAngle(armAngleNeeded, armLengthNeeded);
+
             //press the X button to put the grabber in "idle" position
             if (gamepad2.x && !xButton2Check) {
                 idle = true;
@@ -312,7 +332,7 @@ public class TeleopTester2 extends LinearOpMode {
             telemetry.addLine("-------- Arm  --------");
             telemetry.addData("Current Arm Angle", robot.arm.thetaAngle());
             telemetry.addData("Current Potentiometer value", robot.armPotentiometer.GetAngle());
-            telemetry.addData("RectWanted?:",rectControls_wanted);
+            telemetry.addData("RectWanted?:", rectControls);
             telemetry.addLine("------ Lunchbox ------");
             telemetry.addData("Current Lunchbox", lunchboxRot);
             telemetry.update();

@@ -83,7 +83,7 @@ public class RobotArm extends Thread {
     put that angle between 0 and PI/2 (in radians)
     not exact, we try to get it within a certain threshold but the arm jerks
      */
-        public void runToTheta(double thetaWanted) //TODO this entire function is gayer than josh, you cannot waituntil in teleop
+        public void runToTheta(double thetaWanted) //FYI this entire function is gayer than josh, you cannot waituntil in teleop
         {
             int thetaThreshold = 5;
             double thetaPower = 0.25;
@@ -97,7 +97,7 @@ public class RobotArm extends Thread {
             }
 
 
-            //while (thetaAngle() - thetaWanted > thetaThreshold){ } //TODO Also, this function only works on one side of thetaWanted
+            //while (thetaAngle() - thetaWanted > thetaThreshold){ } //FYI Also, this function only works on one side of thetaWanted
             //empty while loop works as waitUntil
             rotation.setPower(0);
         }
@@ -253,18 +253,17 @@ length should be specified in cm. Should be between 0 and 100.
  */
 
 
-    //returns and sets the above x value
-    public double xExtConstCalc() {
-        return xExtConst = TicksToCm(length.getCurrentPosition()) * Math.cos(thetaAngle()) ;
+    //returns and sets the above x and y values (in cm)
+    public void ExtConstCalc() {
+        xExtConst = TicksToCm(length.getCurrentPosition()) * Math.cos(thetaAngle()) ;
+
+        yExtConst = TicksToCm(length.getCurrentPosition()) * Math.sin(thetaAngle()) ;
     }
 
-    //returns and sets the above y value
-    public double yExtConstCalc() {
-        return yExtConst = TicksToCm(length.getCurrentPosition()) * Math.sin(thetaAngle()) ;
-    }
 
-    //returns the amount the arm should be extended when moving
-    public double rectExtension(boolean goingUp) {
+
+    //returns the amount the arm should be extended when moving (in cm)
+    public double RectExtension(boolean goingUp) {
         if (goingUp)
             return xExtConst/Math.cos(thetaAngle());
         else
