@@ -105,6 +105,7 @@ public class RobotArm extends Thread {
         rotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+        double runtime = 0;
         double rotationDelta;
         double lastrotationDelta = 1000000;
         double lengthDelta;
@@ -124,18 +125,24 @@ public class RobotArm extends Thread {
             Op.telemetry.update();
 
 
-            rotationDelta = Math.abs((int) lastrotationDelta - rotation.getCurrentPosition());
-            lastrotationDelta = rotation.getCurrentPosition();
+            if (runtime > 0.25) {
+                rotationDelta = Math.abs((int) lastrotationDelta - rotation.getCurrentPosition());
+                lastrotationDelta = rotation.getCurrentPosition();
 
-            lengthDelta = Math.abs((int) lastlengthDelta - length.getCurrentPosition());
-            lastlengthDelta = length.getCurrentPosition();
+                lengthDelta = Math.abs((int) lastlengthDelta - length.getCurrentPosition());
+                lastlengthDelta = length.getCurrentPosition();
 
-            if (rotationDelta <= 3) {
-                break;
+
+                if (rotationDelta <= 3) {
+                    break;
+                }
+                if (lengthDelta <= 3) {
+                    break;
+                }
             }
-            if (lengthDelta <= 3) {
-                break;
-            }
+
+            runtime += dt.seconds();
+            dt.reset();
 
         }
 
