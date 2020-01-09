@@ -16,4 +16,10 @@ public class bTelemetry {
         opMode.telemetry.update();
     }
 
+    //Adds one line without clearing the log
+    public static void Print(String caption, Object data) {
+        opMode.telemetry.log().add("bTelemetry: " + caption + " " + data.toString());
+        opMode.telemetry.update();
+    }
+
 }
