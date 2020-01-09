@@ -204,7 +204,7 @@ public class TeleopTester2 extends LinearOpMode {
             rectControls_goingUpCheck = rectControls_goingUp;
 
 
-
+            //Allows the Gripper to be moved straight up and down with the right joystick
             if (rectControls) {
                 telemetry.addLine("Arm Control: Rect");
                 //set power and distance to the Arm.
