@@ -67,7 +67,7 @@ public class Robot extends Thread {
     AtomicBoolean threadRunning = new AtomicBoolean();
 
 
-    public void init(HardwareMap hardwareMap, LinearOpMode opmode) {
+    public void init(HardwareMap hardwareMap, LinearOpMode opmode, boolean useWalltrack) {
         //Start the printer service
         bTelemetry.Start(opmode);
 
@@ -85,7 +85,7 @@ public class Robot extends Thread {
         //Set the opmode
         Op = opmode;
 
-        GetHardware(opmode, true);
+        GetHardware(opmode, useWalltrack);
 
         //Starts the 'run' thread
         start();
@@ -226,7 +226,7 @@ public class Robot extends Thread {
 
         bTelemetry.Print("Robot start up successful. Running initial wheel calibration...");
 
-        driveManager.PreformInitalCalibration();
+        driveManager.PerformInitialCalibration();
 
         bTelemetry.Print("Wheel boot successful. Writing results...");
 
@@ -260,7 +260,7 @@ public class Robot extends Thread {
                 threadRunning.set(false);
             }
 
-            arm.length.setPower(1);
+            //arm.length.setPower(1);
             arm.length.setTargetPosition((int) arm.targetLength);
         }
 
@@ -464,9 +464,6 @@ public class Robot extends Thread {
         boolean lastPositiveState = true;
         double rotationPower = 0;
         ElapsedTime dt = new ElapsedTime();
-
-        double correctTime = 0;
-
 
         while (ticker < maxTime && Op.opModeIsActive()) {
             rotationPower = rotationPID_test.Loop(targetAngle, rotation);
@@ -690,8 +687,13 @@ public class Robot extends Thread {
         double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
         Double4 a = bMath.getMecMovement(angle, 0, 0);
 
+
         SetRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
         SetPowerDouble4(1, 1, 1, 1, speed);
+
+        SetRelativeEncoderPosition(a.x * distanceTicks, a.y* distanceTicks, a.z* distanceTicks, a.w* distanceTicks);
+        SetPowerDouble4(a.x, a.y, a.z, a.w, speed);
+
 
         SetDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
 
