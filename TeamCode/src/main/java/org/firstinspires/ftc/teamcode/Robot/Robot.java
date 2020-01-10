@@ -142,7 +142,9 @@ public class Robot extends Thread {
         bTelemetry.Print("Configuring arm motors...");
         armPotentiometer = new Potentiometer(opmode, RobotConfiguration.armPotentiometer);
         arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
-        lunchBox = opmode.hardwareMap.get(Servo.class, RobotConfiguration.lunchboxGrip);
+
+//        lunchBox = opmode.hardwareMap.get(Servo.class, RobotConfiguration.lunchboxGrip);
+
         bTelemetry.Print("Configuring IMU...");
         imu.Start(opmode);
 

@@ -169,7 +169,7 @@ public class RobotArm extends Thread {
             Op.telemetry.update();
 
 
-            if (runtime > 0.25) {
+            if (runtime > 0.75) {
 
                 Op.telemetry.addData("Arm Telem", rotationDelta);
 
