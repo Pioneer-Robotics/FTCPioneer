@@ -161,7 +161,7 @@ public class TeleopTester2 extends LinearOpMode {
             //rotate lunchbox down with the down dpad
             lunchboxRot += gamepad1.dpad_down ? deltaTime.seconds() * 1 : 0;
             lunchboxRot = bMath.Clamp(lunchboxRot, 0, 1);
-            //robot.lunchbox.setPosition(lunchboxRot);
+            robot.lunchBox.setPosition(lunchboxRot);
 
 //            } else {
 //                robot.lunchbox.setPosition(0.4333);
