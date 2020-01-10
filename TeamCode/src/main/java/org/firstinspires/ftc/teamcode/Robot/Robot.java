@@ -141,6 +141,7 @@ public class Robot extends Thread {
 
         //Sets up the arms hardware
         bTelemetry.Print("Configuring arm motors...");
+        armPotentiometer = new Potentiometer(opmode, RobotConfiguration.armPotentiometer);
         arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
 
         bTelemetry.Print("Configuring IMU...");
@@ -153,7 +154,6 @@ public class Robot extends Thread {
         foundationServo0 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip0);
         foundationServo1 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip1);
 
-        armPotentiometer = new Potentiometer(opmode, RobotConfiguration.armPotentiometer);
 
         while (!imu.initComplete.get()) {
 
@@ -688,10 +688,10 @@ public class Robot extends Thread {
         double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
         Double4 a = bMath.getMecMovement(angle, 0, 0);
 
-        SetRelativeEncoderPosition(a.x * distanceTicks, a.y* distanceTicks, a.z* distanceTicks, a.w* distanceTicks);
+        SetRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
         SetPowerDouble4(1, 1, 1, 1, speed);
 
-        SetRelativeEncoderPosition(a.x * distanceTicks, a.y* distanceTicks, a.z* distanceTicks, a.w* distanceTicks);
+        SetRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
         SetPowerDouble4(a.x, a.y, a.z, a.w, speed);
 
 
