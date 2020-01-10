@@ -787,4 +787,9 @@ public class Robot extends Thread {
         return wallTrack.sensorIDGroupPairs.get(group).getDistanceAverage(unit);
     }
 
+    public void SetFoundationGripperState(double value) {
+        foundationServo0.setPosition(1 - value);
+        foundationServo1.setPosition(value);
+    }
+
 }
