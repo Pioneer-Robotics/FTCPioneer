@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Helpers.TriggerBoolean;
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
@@ -21,7 +22,7 @@ public class TeleopTester2 extends LinearOpMode {
     ElapsedTime deltaTime = new ElapsedTime();
 
     //Program State
-    
+
     //Driver Control Variables
     double moveSpeed;
 
@@ -31,7 +32,7 @@ public class TeleopTester2 extends LinearOpMode {
     double angle = 0;
     double leftDiagPower = 0;
     double rightDiagPower = 0;
-    final double sq2 = Math.pow(2, 1/2);
+    final double sq2 = Math.pow(2, 1 / 2);
     double leftRotatePower = 0;
     double rightRotatePower = 0;
 
@@ -54,7 +55,7 @@ public class TeleopTester2 extends LinearOpMode {
     //Gripper Control
     boolean grab = false; //whether the gripper is gripping
     boolean bButton2Check = false; //prevState of grab
-    
+
     boolean idle = false; //whether the gripper is in rest position
     boolean xButton2Check = false;
 
@@ -72,7 +73,6 @@ public class TeleopTester2 extends LinearOpMode {
     boolean gripFoundation = false;
     boolean bButton1Check = false;
     //Mode Switch Variables
-
 
 
     @Override
@@ -94,25 +94,25 @@ public class TeleopTester2 extends LinearOpMode {
             //let left bumper toggle boost vs slow mode on the right trigger for fine control of the robot
             if (gamepad1.left_bumper) {
                 //trigger makes robot slower
-                moveSpeed = bMath.Clamp(0.5 - gamepad1.right_trigger/2, 0, 1);
+                moveSpeed = bMath.Clamp(0.5 - gamepad1.right_trigger / 2, 0, 1);
             } else {
                 //trigger makes robot faster
-                moveSpeed = bMath.Clamp(0.5 + gamepad1.right_trigger/2, 0, 1);
+                moveSpeed = bMath.Clamp(0.5 + gamepad1.right_trigger / 2, 0, 1);
             }
             // reset the "front" of the robot to be the real front
             if (gamepad1.a) {
                 rotationLockAngle = robot.GetRotation();
             }
             // up/down of right stick can incrementally change which way is the "front" of the robot in coordinate lock mode
-            rotationLockAngle = ((rotationLockAngle + 3.0*gamepad1.right_stick_y+360)%360)-360;
+            rotationLockAngle = ((rotationLockAngle + 3.0 * gamepad1.right_stick_y + 360) % 360) - 360;
 
             //left and right dpad can shift "front" of robot by 90 degrees in coordinate lock mode
             if (gamepad1.dpad_left && !leftRotateCoordCheck) {
-                rotationLockAngle = ((rotationLockAngle + 450)%360)-360;
+                rotationLockAngle = ((rotationLockAngle + 450) % 360) - 360;
             }
             leftRotateCoordCheck = gamepad1.dpad_left;
             if (gamepad1.dpad_right && !rightRotateCoordCheck) {
-                rotationLockAngle = ((rotationLockAngle + 270)%360)-360;
+                rotationLockAngle = ((rotationLockAngle + 270) % 360) - 360;
             }
             rightRotateCoordCheck = gamepad1.dpad_right;
 
@@ -127,7 +127,7 @@ public class TeleopTester2 extends LinearOpMode {
             if (coordinateSystemLock) {
                 telemetry.addData("Drive System", "New");
 
-                angle = Math.toRadians(robot.GetRotation()- rotationLockAngle);
+                angle = Math.toRadians(robot.GetRotation() - rotationLockAngle);
                 leftDiagPower = ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.sin(angle) + ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.cos(angle));
                 rightDiagPower = ((-(-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.sin(angle) + ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.cos(angle)));
 
@@ -144,10 +144,10 @@ public class TeleopTester2 extends LinearOpMode {
             }
             leftRotatePower = gamepad1.right_stick_x;
             rightRotatePower = -gamepad1.right_stick_x;
-            robot.driveManager.frontLeft.setPower(moveSpeed*(leftDiagPower+leftRotatePower));
-            robot.driveManager.frontRight.setPower(moveSpeed*(rightDiagPower+rightRotatePower));
-            robot.driveManager.backLeft.setPower(moveSpeed*(rightDiagPower+leftRotatePower));
-            robot.driveManager.backRight.setPower(moveSpeed*(leftDiagPower+rightRotatePower));
+            robot.driveManager.frontLeft.setPower(moveSpeed * (leftDiagPower + leftRotatePower));
+            robot.driveManager.frontRight.setPower(moveSpeed * (rightDiagPower + rightRotatePower));
+            robot.driveManager.backLeft.setPower(moveSpeed * (rightDiagPower + leftRotatePower));
+            robot.driveManager.backRight.setPower(moveSpeed * (leftDiagPower + rightRotatePower));
 
 //            if (gamepad1.x != servoLastToggle) {
 //                if (gamepad1.x) {
@@ -194,7 +194,8 @@ public class TeleopTester2 extends LinearOpMode {
             rectControls_goingUp = Math.abs(gamepad2.right_stick_y) > Math.abs(gamepad2.right_stick_x);
 
             //get new extension constants if rectControls changes or if direction changes
-            if ( (rectControls != rectControlsCheck ) || (rectControls_goingUp != rectControls_goingUpCheck) ) robot.arm.ExtConstCalc();
+            if ((rectControls != rectControlsCheck) || (rectControls_goingUp != rectControls_goingUpCheck))
+                robot.arm.ExtConstCalc();
             rectControlsCheck = rectControls;
             rectControls_goingUpCheck = rectControls_goingUp;
 
@@ -204,7 +205,7 @@ public class TeleopTester2 extends LinearOpMode {
                 telemetry.addLine("Arm Control: Rect");
                 //set power and distance to the Arm.
                 robot.arm.SetArmStatePowerCm(robot.arm.RectExtension(rectControls_goingUp),
-                                           rectControls_goingUp ? gamepad2.right_stick_y : -gamepad2.right_stick_x);
+                        rectControls_goingUp ? gamepad2.right_stick_y : -gamepad2.right_stick_x);
             } else {
                 telemetry.addLine("Arm Control: Radial");
 
@@ -213,7 +214,7 @@ public class TeleopTester2 extends LinearOpMode {
 
                 raiseSpeed = bMath.Clamp(gamepad2.left_stick_y, -1, 1);
                 extension = bMath.Clamp(extension, 0, 1);
-                robot.arm.SetArmStatePower(extension,raiseSpeed);
+                robot.arm.SetArmStatePower(extension, raiseSpeed);
             }
 
 
@@ -281,16 +282,13 @@ public class TeleopTester2 extends LinearOpMode {
             }
             yButton2Check = gamepad2.y;
 
-            if (dropLunchBox) lunchboxRot = 0.1 ; //TODO Calibrate
+            if (dropLunchBox) lunchboxRot = 0.1; //TODO Calibrate
             else lunchboxRot = 0.6; //TODO Calibrate
 
             robot.foundationServo0.setPosition(gripFoundation ? 0 : 1);
             robot.foundationServo1.setPosition(gripFoundation ? 1 : 0);
 
             gripAngle = bMath.Clamp(gripAngle, 0, 180);
-
-
-
 
 
             telemetry.addLine("------ Movement ------");

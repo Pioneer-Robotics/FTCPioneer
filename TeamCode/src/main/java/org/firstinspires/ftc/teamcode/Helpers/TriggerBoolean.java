@@ -15,13 +15,14 @@ public class TriggerBoolean {
         return state != lastState;
     }
 
-    public void Assign(boolean newState) {
+    public void assign(boolean newState) {
         lastState = state;
         state = newState;
     }
 
-    public boolean Value() {
+    public boolean value() {
         return state;
     }
+
 
 }
