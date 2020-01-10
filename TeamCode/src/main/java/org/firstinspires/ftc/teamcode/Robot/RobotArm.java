@@ -99,7 +99,7 @@ public class RobotArm extends Thread {
     put that angle between 0 and PI/2 (in radians)
     not exact, we try to get it within a certain threshold but the arm jerks
      */
-        public void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in 5radian steps
+        public void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
         {
             double thetaThreshold = Math.PI*(5/180);
             double thetaPower = 0.25;
@@ -111,8 +111,6 @@ public class RobotArm extends Thread {
                 else
                     rotation.setPower(-thetaPower);
             }
-            //while (thetaAngle() - thetaWanted > thetaThreshold){ } //FYI Also, this function only works on one side of thetaWanted
-            //empty while loop works as waitUntil
             rotation.setPower(0);
         }
 /*
