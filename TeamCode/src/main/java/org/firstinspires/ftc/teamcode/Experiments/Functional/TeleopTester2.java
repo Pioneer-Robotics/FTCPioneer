@@ -38,6 +38,9 @@ public class TeleopTester2 extends LinearOpMode {
     private boolean movementModeToggleCheck = false;
     private boolean coordinateSystemLock = false;
 
+    private double newGamepadX;
+    private double newGamepadY;
+
     //Arm Control Variables
     private double raiseSpeed = 0;
     private double extension = 0;
@@ -126,8 +129,23 @@ public class TeleopTester2 extends LinearOpMode {
                 telemetry.addData("Drive System", "New");
 
                 angle = Math.toRadians(robot.GetRotation()- rotationLockAngle);
-                leftDiagPower = ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.sin(angle) + ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.cos(angle));
-                rightDiagPower = ((-(-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.sin(angle) + ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.cos(angle)));
+//                leftDiagPower = ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.sin(angle) + ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.cos(angle));
+//                rightDiagPower = (((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.sin(angle) + ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.cos(angle)));
+
+//                leftDiagPower = ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.sin(angle) + ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.cos(angle));
+//                rightDiagPower = ((-(-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.sin(angle) + ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.cos(angle)));
+////              This is Josh's idea that may work if any of the above doesn't (He's pretty confidant about it.... He tested it in Desmos and everything). The operative idea below is that it just adjusts the input vector from the gamepad to one that has the same magnitude but an angle
+////              that is equal to (originalAngle + angle) which I think then would make it move in the desired direction in real life. Then it just uses the movement code from the nonlock version to move along that new input vector
+//
+                newGamepadX = (Math.sqrt(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(gamepad1.left_stick_y, 2))) * Math.cos(angle + Math.atan(gamepad1.left_stick_y / gamepad1.left_stick_x));
+                newGamepadY = (Math.sqrt(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(gamepad1.left_stick_y, 2))) * Math.sin(angle + Math.atan(gamepad1.left_stick_y / gamepad1.left_stick_x));
+//
+////              The following two lines just correct the signs of newGamePadX and newGamePadY because the domain of the Math.atan function will make this always return angles in Q1 and Q4, so when the point is in Q2 and Q3 then you gotta adjust it
+                newGamepadX = (gamepad1.left_stick_x <= 0) ? -newGamepadX : newGamepadX;
+                newGamepadY = (gamepad1.left_stick_x <= 0) ? -newGamepadY : newGamepadY;
+                leftDiagPower = ((-newGamepadY + newGamepadX) / sq2);
+                rightDiagPower = ((-newGamepadY - newGamepadX) / sq2);
+////              //And so Ends Josh's Idea.
 
                 //this could replace the lines above and the 6 lines after the else but the implementation in this function
                 //robot.MoveComplex(new Double2(gamepad1.left_stick_x,gamepad1.left_stick_y),moveSpeed,gamepad1.right_stick_x,angle);
