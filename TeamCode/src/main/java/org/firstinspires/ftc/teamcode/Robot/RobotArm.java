@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Helpers.bMath;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Thread.sleep;
@@ -76,24 +78,28 @@ public class RobotArm extends Thread {
     }
 
     //Returns the angle that the arm is at. Please verify this math typing.
+    //I think "usePot" math is off by 90 radians, am subtracting 90 radians
+
     public double thetaAngle() {
         double k = 177;
         double h = 76.9;
         double l = 135;
-        double C = pot + RobotConfiguration.pot_interiorOffset;
+        double C = bMath.toRadians(pot + RobotConfiguration.pot_interiorOffset);
 
         if (usePot) {
-            Double c = Math.sqrt(  (k*k)+(l*l) - 2*k*l*Math.cos(C) );
-            return Math.asin( (k*Math.sin(C))/c) + 90 - Math.asin(h/c);
+            double c = Math.sqrt(  (k*k)+(l*l) - 2*k*l*Math.cos(C) );
+            return Math.asin((k*Math.sin(C))/c) - Math.asin(h/c);
         }else {
             double d = (rotation.getCurrentPosition() * 0.5) / 480; //TODO add offset to this value so it actually works lol: starts at 0 rn
-            Double c = ((k * k) - (h * h) - (l * l) - (d * d)) / 2;
-            Double x = (((d * c) - (h * Math.sqrt((((l * l) * (d * d)) + ((l * l) * (h * h))) - (c * c)))) / ((d * d) + (h * h))) + d;
+            double c = ((k * k) - (h * h) - (l * l) - (d * d)) / 2;
+            double x = (((d * c) - (h * Math.sqrt((((l * l) * (d * d)) + ((l * l) * (h * h))) - (c * c)))) / ((d * d) + (h * h))) + d;
 
             return Math.atan((Math.sqrt((k * k) - (x * x)) - h) / (d - x));
         }
 
     }
+
+
 
     /*
     This function drives the arm up or down to a desired angle.
@@ -107,7 +113,7 @@ public class RobotArm extends Thread {
             rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             //depending on if the angle needs to be increased or decreased, turn on the motors
             if (Math.abs(thetaAngle() - thetaWanted) > thetaThreshold) { //if the rotation is not yet at the intended position
-                if (thetaAngle() - thetaWanted > 0)
+                if (thetaAngle() > thetaWanted)
                     rotation.setPower(thetaPower);
                 else
                     rotation.setPower(-thetaPower);
