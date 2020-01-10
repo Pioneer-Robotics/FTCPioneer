@@ -155,6 +155,8 @@ public class Robot extends Thread {
         foundationServo0 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip0);
         foundationServo1 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip1);
 
+        SetFoundationGripperState(1);
+
 
         while (!imu.initComplete.get()) {
 
