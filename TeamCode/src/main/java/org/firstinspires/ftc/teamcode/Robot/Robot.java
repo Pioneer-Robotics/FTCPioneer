@@ -161,7 +161,7 @@ public class Robot extends Thread {
 
         bTelemetry.Print("Completed IMU start up.");
 
-        while (!wallTrack.startUpComplete.get()) {
+        while (useWallTracking && !wallTrack.startUpComplete.get()) {
 
         }
 
