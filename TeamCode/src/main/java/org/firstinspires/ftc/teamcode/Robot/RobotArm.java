@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Helpers.bMath;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Thread.sleep;
@@ -82,7 +84,7 @@ public class RobotArm extends Thread {
         double k = 177;
         double h = 76.9;
         double l = 135;
-        double C = pot + RobotConfiguration.pot_interiorOffset;
+        double C = bMath.toRadians(pot + RobotConfiguration.pot_interiorOffset);
 
         if (usePot) {
             double c = Math.sqrt(  (k*k)+(l*l) - 2*k*l*Math.cos(C) );
