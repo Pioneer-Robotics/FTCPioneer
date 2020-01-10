@@ -682,7 +682,7 @@ public class Robot extends Thread {
         SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void DriveByDistance(double angle, double speed, double distance) {
+    public void DriveByDistanceAndAngle(double angle, double speed, double distance) {
 
         SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
