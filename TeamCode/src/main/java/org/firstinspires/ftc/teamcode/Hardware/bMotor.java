@@ -107,8 +107,16 @@ public class bMotor {
         return motor.getCurrentPosition();
     }
 
+    int bencoderDelta;
+
     public boolean isBusy() {
-        return motor.isBusy();
+
+        bencoderDelta = Math.abs(motor.getCurrentPosition() - lastEncoderReading);
+
+        lastEncoderReading = motor.getCurrentPosition();
+
+
+        return bencoderDelta < 3;
     }
 
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {

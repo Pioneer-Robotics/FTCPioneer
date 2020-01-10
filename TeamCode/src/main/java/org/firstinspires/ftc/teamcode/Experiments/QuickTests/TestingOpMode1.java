@@ -19,22 +19,22 @@ public class TestingOpMode1 extends LinearOpMode {
 
     double targetRotation;
 
+    double a;
+
     @Override
     public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, this, true);
+        robot.init(hardwareMap, this, false);
 
         waitForStart();
-        targetRotation = robot.GetRotation();
-        controller.Start(1, 0, 0);
-//        controller.Start(4.95, 0.06, 0.05);
-        while (opModeIsActive()) {
-//            if (gamepad1.a) {
-//                robot.wallTrack.MoveAlongWallComplexPID(RobotWallTrack.groupID.Group180, 1, 20, controller, 90, -90, targetRotation);
-//            } else {
-            robot.wallTrack.MoveAlongWallComplexPID(RobotWallTrack.groupID.Group180, 0.1, 20, controller, 90, 90, targetRotation);
-//            }
 
+
+        while (opModeIsActive()) {
+            robot.SetFoundationGripperState(a);
+
+            a += gamepad1.left_stick_x * deltaTime.seconds();
+            telemetry.addData("Power", a);
             telemetry.update();
+            deltaTime.reset();
         }
 
         robot.Stop();

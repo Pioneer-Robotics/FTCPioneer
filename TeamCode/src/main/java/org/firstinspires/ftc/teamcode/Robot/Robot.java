@@ -143,7 +143,7 @@ public class Robot extends Thread {
         armPotentiometer = new Potentiometer(opmode, RobotConfiguration.armPotentiometer);
         arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
 
-//        lunchBox = opmode.hardwareMap.get(Servo.class, RobotConfiguration.lunchboxGrip);
+        lunchBox = opmode.hardwareMap.get(Servo.class, RobotConfiguration.lunchboxGrip);
 
         bTelemetry.Print("Configuring IMU...");
         imu.Start(opmode);
@@ -154,6 +154,8 @@ public class Robot extends Thread {
         }
         foundationServo0 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip0);
         foundationServo1 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip1);
+
+        SetFoundationGripperState(1);
 
 
         while (!imu.initComplete.get()) {
@@ -825,6 +827,11 @@ public class Robot extends Thread {
     //Returns the distance using a sensor group
     public double GetDistance(RobotWallTrack.groupID group, DistanceUnit unit) {
         return wallTrack.sensorIDGroupPairs.get(group).getDistanceAverage(unit);
+    }
+
+    public void SetFoundationGripperState(double value) {
+        foundationServo0.setPosition(1 - value);
+        foundationServo1.setPosition(value);
     }
 
 }
