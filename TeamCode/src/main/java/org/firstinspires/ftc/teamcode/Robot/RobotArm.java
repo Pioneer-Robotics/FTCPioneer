@@ -83,9 +83,9 @@ public class RobotArm extends Thread {
         double C = pot + RobotConfiguration.pot_interiorOffset;
 
         if (usePot) {
-            Double c = Math.sqrt(  (k*k)+(l*l) - 2*k*l*Math.cos(C) );
-            return Math.asin( (k*Math.sin(C))/c) + 90 - Math.asin(h/c);
-        }else {
+            Double c = Math.sqrt((k * k) + (l * l) - 2 * k * l * Math.cos(C));
+            return Math.asin((k * Math.sin(C)) / c) + 90 - Math.asin(h / c);
+        } else {
             double d = (rotation.getCurrentPosition() * 0.5) / 480; //TODO add offset to this value so it actually works lol: starts at 0 rn
             Double c = ((k * k) - (h * h) - (l * l) - (d * d)) / 2;
             Double x = (((d * c) - (h * Math.sqrt((((l * l) * (d * d)) + ((l * l) * (h * h))) - (c * c)))) / ((d * d) + (h * h))) + d;
@@ -94,41 +94,41 @@ public class RobotArm extends Thread {
         }
 
     }
+
     /*
     This function drives the arm up or down to a desired angle.
     put that angle between 0 and PI/2 (in radians)
     not exact, we try to get it within a certain threshold but the arm jerks
      */
-        public void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
-        {
-            double thetaThreshold = Math.PI*(5/180);
-            double thetaPower = 0.25;
-            rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            //depending on if the angle needs to be increased or decreased, turn on the motors
-            if (Math.abs(thetaAngle() - thetaWanted) > thetaThreshold) { //if the rotation is not yet at the intended position
-                if (thetaAngle() - thetaWanted > 0)
-                    rotation.setPower(thetaPower);
-                else
-                    rotation.setPower(-thetaPower);
-            }
-            rotation.setPower(0);
+    public void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
+    {
+        double thetaThreshold = Math.PI * (5 / 180);
+        double thetaPower = 0.25;
+        rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //depending on if the angle needs to be increased or decreased, turn on the motors
+        if (Math.abs(thetaAngle() - thetaWanted) > thetaThreshold) { //if the rotation is not yet at the intended position
+            if (thetaAngle() - thetaWanted > 0)
+                rotation.setPower(thetaPower);
+            else
+                rotation.setPower(-thetaPower);
         }
-/*
-This method will move the arm to match a desired length and angle.
-angle should be between 0 and PI/2 (measured in radians)
-length should be specified in cm. Should be between 0 and 100.
- */
-        public void SetArmLengthAndAngle(double angleNeeded, double lengthNeeded){
-            //cmToRange is what you use to convert from cm to the 0-1 scale we use to actually set the arm length
+        rotation.setPower(0);
+    }
+
+    /*
+    This method will move the arm to match a desired length and angle.
+    angle should be between 0 and PI/2 (measured in radians)
+    length should be specified in cm. Should be between 0 and 100.
+     */
+    public void SetArmLengthAndAngle(double angleNeeded, double lengthNeeded) {
+        //cmToRange is what you use to convert from cm to the 0-1 scale we use to actually set the arm length
             /*
             This is where we put the stuff to convert our cm value to weird Ben value
              */
-            length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            length.setTargetPosition((int) lengthNeeded);
-            runToTheta(angleNeeded);
-        }
-
-
+        length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        length.setTargetPosition((int) lengthNeeded);
+        runToTheta(angleNeeded);
+    }
 
 
     public void SetArmStateWait(double targetAngle, double _targetLength, double angleSpeed) {
@@ -170,16 +170,16 @@ length should be specified in cm. Should be between 0 and 100.
 
 
             if (runtime > 0.25) {
+
+                Op.telemetry.addData("Arm Telem", rotationDelta);
+
                 rotationDelta = Math.abs((int) lastrotationDelta - rotation.getCurrentPosition());
                 lastrotationDelta = rotation.getCurrentPosition();
 
                 lengthDelta = Math.abs((int) lastlengthDelta - length.getCurrentPosition());
                 lastlengthDelta = length.getCurrentPosition();
 
-                if (rotationDelta <= 3) {
-                    break;
-                }
-                if (lengthDelta <= 3) {
+                if (rotationDelta <= 3 && lengthDelta <= 3) {
                     break;
                 }
             }
@@ -200,7 +200,8 @@ length should be specified in cm. Should be between 0 and 100.
         // angleSpeed really means the angle you want the arm to be
         targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
-        if (targetLength > 0 && protectSpool) targetLength = 0; //don't extend the spool past it's starting point
+        if (targetLength > 0 && protectSpool)
+            targetLength = 0; //don't extend the spool past it's starting point
 
         rotation.setPower(angleSpeed);
         rotation.setTargetPosition((int) ((double) RobotConfiguration.arm_rotationMax * targetAngle));
@@ -218,7 +219,8 @@ length should be specified in cm. Should be between 0 and 100.
 
         targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
-        if (targetLength > 0 && protectSpool) targetLength = 0; //don't extend the spool past it's starting point
+        if (targetLength > 0 && protectSpool)
+            targetLength = 0; //don't extend the spool past it's starting point
 
         rotation.setPower(angleSpeed);
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -231,10 +233,11 @@ length should be specified in cm. Should be between 0 and 100.
     This method will rotate the arm at a specified speed and extend
     to match a certain distance in cm >0
      */
-    public void SetArmStatePowerCm(double _targetLength, double angleSpeed){
+    public void SetArmStatePowerCm(double _targetLength, double angleSpeed) {
         targetLengthSpeed = 1; //speed of extension
         targetLength = CmToTicks(_targetLength);
-        if (targetLength > 0 && protectSpool) targetLength = 0; //don't extend the spool past it's starting point
+        if (targetLength > 0 && protectSpool)
+            targetLength = 0; //don't extend the spool past it's starting point
 
 
         rotation.setPower(angleSpeed);
@@ -251,8 +254,13 @@ length should be specified in cm. Should be between 0 and 100.
     (17.8 / 480) cm is one tick, (480/17.8)tick is one cm
     */
 
-    public double TicksToCm(int ticks){ return (double) ticks * (17.8/480) + RobotConfiguration.arm_lengthMin; }
-    public int CmToTicks(double cm){ return  (int)(cm * (480/17.8) - RobotConfiguration.arm_lengthMin); }
+    public double TicksToCm(int ticks) {
+        return (double) ticks * (17.8 / 480) + RobotConfiguration.arm_lengthMin;
+    }
+
+    public int CmToTicks(double cm) {
+        return (int) (cm * (480 / 17.8) - RobotConfiguration.arm_lengthMin);
+    }
 
 /* Principle for rectangular control
          /|
@@ -268,23 +276,19 @@ length should be specified in cm. Should be between 0 and 100.
 
     //returns and sets the above x and y values (in cm)
     public void ExtConstCalc() {
-        xExtConst = TicksToCm(length.getCurrentPosition()) * Math.cos(thetaAngle()) ;
+        xExtConst = TicksToCm(length.getCurrentPosition()) * Math.cos(thetaAngle());
 
-        yExtConst = TicksToCm(length.getCurrentPosition()) * Math.sin(thetaAngle()) ;
+        yExtConst = TicksToCm(length.getCurrentPosition()) * Math.sin(thetaAngle());
     }
-
 
 
     //returns the amount the arm should be extended when moving (in cm)
     public double RectExtension(boolean goingUp) {
         if (goingUp)
-            return xExtConst/Math.cos(thetaAngle());
+            return xExtConst / Math.cos(thetaAngle());
         else
-            return yExtConst/Math.sin(thetaAngle());
+            return yExtConst / Math.sin(thetaAngle());
     }
-
-
-
 
 
     public void SetGripState(GripState gripState, double rotationPosition) {

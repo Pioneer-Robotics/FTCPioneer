@@ -220,7 +220,7 @@ public class Auto extends LinearOpMode {
         //Close the gripper
         robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
 
-        sleep(2500);
+        sleep(500);
 
         //Raise the arm again
         robot.arm.SetArmStateWait(liftFactor, extensionLength, 1);
@@ -232,20 +232,17 @@ public class Auto extends LinearOpMode {
         //Open the gripper, raise the arm, and extend out
         robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
 
-        sleep(1000);
-
         robot.arm.SetArmStateWait(0, lastLength, 1);
 
-        //Drop the arm
+        //Extend the arm
         robot.arm.SetArmStateWait(0, extensionLength, 1);
         sleep(1000);
 
         //Close the gripper
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
 
-        //Raise the arm again
+        //Retract the arm again
         robot.arm.SetArmStateWait(0, lastLength, 1);
-        sleep(1000);
     }
 
 

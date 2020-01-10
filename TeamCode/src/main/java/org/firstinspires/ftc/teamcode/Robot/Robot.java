@@ -19,7 +19,6 @@ import org.firstinspires.ftc.teamcode.Hardware.bIMU;
 import org.firstinspires.ftc.teamcode.Hardware.Potentiometer;
 import org.firstinspires.ftc.teamcode.Robot.Input.RobotInputThread;
 
-import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 //TODO: clean up the canmove system
@@ -39,7 +38,7 @@ public class Robot extends Thread {
 
     public Potentiometer armPotentiometer = new Potentiometer();
 
-    public Servo longLunchbox;
+    public Servo lunchBox;
     public Servo foundationServo0;
     public Servo foundationServo1;
 
@@ -143,7 +142,7 @@ public class Robot extends Thread {
         bTelemetry.Print("Configuring arm motors...");
         armPotentiometer = new Potentiometer(opmode, RobotConfiguration.armPotentiometer);
         arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
-
+        lunchBox = opmode.hardwareMap.get(Servo.class, RobotConfiguration.lunchboxGrip);
         bTelemetry.Print("Configuring IMU...");
         imu.Start(opmode);
 

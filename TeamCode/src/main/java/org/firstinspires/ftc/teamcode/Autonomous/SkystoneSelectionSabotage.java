@@ -30,23 +30,27 @@ public class SkystoneSelectionSabotage extends Auto {
         robot.DriveByDistancePoorly(0.5, 15);
 
         bTelemetry.Print("Status: ", "Grabbing");
-        GrabArm(0.5, 0.2);
+        GrabArm(0.65, 0.35);
         bTelemetry.Print("Status: ", "Rotating");
 
-        robot.RotatePIDRelative(-90, 0.8, 500);
-        StopMovement();
+        if (side == FieldSide.SIDE_BLUE) {
+            //-90
+        } else {
+            //90
+        }
+
+        robot.RotatePIDRelative(-90, speed_high, 350);
 
         bTelemetry.Print("Status: ", "Depositing");
-        DepositeArm(0.5, 0.2);
+        DepositeArm(0.65, 0.5);
 
 
         bTelemetry.Print("Status: ", "Fixing Angle");
 
-        robot.RotatePIDRelative(90, 0.8, 500);
-        StopMovement();
+        robot.RotatePID(0, speed_high, 350);
 
 
-//        //loop code for multiple skystones
+// loop code for multiple skystones
 //        for (int i = 0; i <= 2; i++) {
 //            bTelemetry.Print("Loop: ", Integer.toString(i));
 //            bTelemetry.Print("Status: ", "Grabbing");
