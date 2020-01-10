@@ -29,6 +29,8 @@ public class TeleopTester2 extends LinearOpMode {
     private double angle = 0;
     private double leftDiagPower = 0;
     private double rightDiagPower = 0;
+    private double ogLeftDiagPower = 0;
+    private double ogRightDiagPower = 0;
     private final double sq2 = Math.pow(2, 1/2);
     private double leftRotatePower = 0;
     private double rightRotatePower = 0;
@@ -129,11 +131,24 @@ public class TeleopTester2 extends LinearOpMode {
                 telemetry.addData("Drive System", "New");
 
                 angle = Math.toRadians(robot.GetRotation()- rotationLockAngle);
-//                leftDiagPower = ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.sin(angle) + ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.cos(angle));
-//                rightDiagPower = (((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.sin(angle) + ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.cos(angle)));
 
-//                leftDiagPower = ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.sin(angle) + ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.cos(angle));
-//                rightDiagPower = ((-(-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.sin(angle) + ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.cos(angle)));
+                /*
+                EXAMPLE of the old (and better) math
+
+                first the original diag powers are used
+                ogLeftDiagPower = ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2);
+                ogRightDiagPower = ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2);
+
+                then we use use the coordinate rotation formula (see https://en.wikipedia.org/wiki/Rotation_of_axes#Derivation) to get the new coordinates
+
+                leftDiagPower = ogLeftDiagPower*Math.cos(angle)+ogRightDiagPower*Math.sin(angle);
+                rightDiagPower = -ogLeftDiagPower*Math.sin(angle)+ogRightDiagPower*Math.cos(angle);
+
+                Finally we compose the first two equations into the second two to get the formulas you see below. This is simpler and requires less computation than Josh's method (I use 2 trig and 0 square root calculations compared to josh using 4 trig and 2 sqrt, not to mention he also
+                has conditionals), the problem bust be somewhere else in the code, either with entering the lock state or the computation of the offset angle that is put into the formula
+                 */
+                //leftDiagPower = ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.cos(angle))+((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.sin(angle);
+                //rightDiagPower = (((-(-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.sin(angle)) + (((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.cos(angle))));
 ////              This is Josh's idea that may work if any of the above doesn't (He's pretty confidant about it.... He tested it in Desmos and everything). The operative idea below is that it just adjusts the input vector from the gamepad to one that has the same magnitude but an angle
 ////              that is equal to (originalAngle + angle) which I think then would make it move in the desired direction in real life. Then it just uses the movement code from the nonlock version to move along that new input vector
 //
@@ -306,6 +321,7 @@ public class TeleopTester2 extends LinearOpMode {
             telemetry.addLine("------ Movement ------");
             telemetry.addData("Rotation Locked ", coordinateSystemLock);
             telemetry.addData("Current Rotation ", robot.GetRotation());
+            telemetry.addData("Offset Angle ", angle);
             telemetry.addLine("-------- Arm  --------");
             telemetry.addData("Current Arm Angle", robot.arm.thetaAngle());
             telemetry.addData("Current Potentiometer value", robot.armPotentiometer.getAngle());
