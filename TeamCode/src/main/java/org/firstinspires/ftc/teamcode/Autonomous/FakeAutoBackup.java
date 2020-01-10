@@ -9,12 +9,19 @@ public class FakeAutoBackup extends Auto {
 
     @Override
     public void runOpMode() {
+        //go left
+        //go forward
+        //lower servos
+        //pull it backwards
+
+
+        /*
         StartRobot();
         telemetry.addData("No Victory Fuckers!", "");
         telemetry.update();
         waitForStart();
 
-        telemetry.addData("Smol Victory Fuckers!", "");
+        telemetry.addData("Small Victory Fuckers!", "");
         telemetry.update();
 
         sleep(150);
@@ -27,26 +34,16 @@ public class FakeAutoBackup extends Auto {
         telemetry.addData("No Victory Mother Fuckers!", "");
         telemetry.update();
 
-        double targetRotation = 90;
+        robot.RotatePID(77.5, 0.25, 1000);
 
-        robot.RotatePID(77.5, 1, 1000);
-/*
-        for (int i = 0; i < 100; i++) {
-            robot.MoveComplex(new Double2(0, 0), 1, robot.GetRotation() - 90);
-
-            if (Math.abs(robot.GetRotation() - targetRotation) < 2.5) {
-                break;
-            }
-        }
-
- */
         telemetry.addData("Victory Mother Fuckers!", "");
         telemetry.update();
 
-        robot.foundationServo0.setPosition(1);
-        robot.foundationServo1.setPosition(0);
+        robot.foundationServo0.setPosition(0.8);
+        robot.foundationServo1.setPosition(0.2);
 
         StopMovement();
         StopRobot();
+         */
     }
 }
