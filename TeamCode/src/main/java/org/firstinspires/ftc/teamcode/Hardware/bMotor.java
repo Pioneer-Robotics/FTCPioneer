@@ -116,7 +116,7 @@ public class bMotor {
         lastEncoderReading = motor.getCurrentPosition();
 
 
-        return bencoderDelta < 3;
+        return bencoderDelta > 2 / assignedPower + 0.025;
     }
 
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior behavior) {

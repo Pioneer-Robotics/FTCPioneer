@@ -733,19 +733,19 @@ public class Robot extends Thread {
     }
     // can go forward, backwards, or sideways
     //distance should be in cm
-    public void DriveByDistancePoorly(double distance, simpleDirection direction) {
+    public void DriveByDistancePoorly(double distance, simpleDirection direction, double speedMultiplier) {
         SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         int targetEncoders = (int) ((480.0 / RobotConfiguration.wheel_circumference) * distance);
         SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         if (direction == simpleDirection.FORWARD) { //if you wanna go forward, this is the stuff
-            SetPowerDouble4(1, 1, 1, 1, 1);
+            SetPowerDouble4(1, 1, 1, 1, speedMultiplier);
             while (driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders) {
             } //empty while loop works as waitUntil command
-            SetPowerDouble4(1, 1, 1, 1, 0.5);
+            SetPowerDouble4(1, 1, 1, 1, 0.5 * speedMultiplier);
             while (driveManager.backLeft.getCurrentPosition() < 0.75 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.75 * targetEncoders) {
             } //empty while loop works as waitUntil command
-            SetPowerDouble4(1, 1, 1, 1, 0.25);
+            SetPowerDouble4(1, 1, 1, 1, 0.25 * speedMultiplier);
             while (driveManager.backLeft.getCurrentPosition() < targetEncoders && driveManager.backRight.getCurrentPosition() < targetEncoders) {
             } //empty while loop works as waitUntil command
             SetPowerDouble4(0, 0, 0, 0, 0);

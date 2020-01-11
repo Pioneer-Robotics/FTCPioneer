@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
+import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 
@@ -37,7 +38,7 @@ public class SkystoneSelectionSabotage extends Auto {
 //        sleep(10000);
 
         bTelemetry.Print("Status: ", "Driving");
-        robot.DriveByDistancePoorly(0.5, 15);
+        robot.DriveByDistancePoorly(0.5, Robot.simpleDirection.FORWARD, 1);
 
         bTelemetry.Print("Status: ", "Grabbing");
         GrabArm(0.55, 0.35);
