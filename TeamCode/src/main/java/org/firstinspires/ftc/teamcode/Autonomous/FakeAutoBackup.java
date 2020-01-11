@@ -12,6 +12,7 @@ public class FakeAutoBackup extends Auto {
     public void runOpMode() {
         StartRobot();
         robot.SetFoundationGripperState(0);
+        waitForStart();
         //go forward 70 cm
         robot.DriveByDistancePoorly(60, Robot.simpleDirection.FORWARD, 1);
         //go left 35 cm
@@ -31,10 +32,10 @@ public class FakeAutoBackup extends Auto {
         robot.SetFoundationGripperState(1);
         telemetry.addLine("servo moved?");
         telemetry.update();
-        //go toward the bridge
+        //go under the bridge
         robot.DriveByDistancePoorly(50, Robot.simpleDirection.RIGHT,1);
-
-
+        StopMovement();
+        StopRobot();
         /*
         StartRobot();
         telemetry.addData("No Victory Fuckers!", "");
