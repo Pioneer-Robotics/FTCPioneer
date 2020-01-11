@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.Robot.Robot;
 
 //Holds all of the current jobs for using in other scripts
 public class JobManager {
-    public FindSkystoneJob findSkystoneJob = new FindSkystoneJob();
+    //public FindSkystoneJob findSkystoneJob = new FindSkystoneJob();
 
     //This aJob is used in all other jobs that use tensor flow
     public static TensorFlowaJob tensorFlowaJob = new TensorFlowaJob();
@@ -37,12 +37,12 @@ public class JobManager {
         tensorFlowaJob.Init(op);
 
         //Setup the skystone job
-        findSkystoneJob.Init(op);
+        //findSkystoneJob.Init(op);
     }
 
     public void stopAll() {
         tensorFlowaJob.Stop();
-        findSkystoneJob.Stop();
+        //findSkystoneJob.Stop();
     }
 }
 

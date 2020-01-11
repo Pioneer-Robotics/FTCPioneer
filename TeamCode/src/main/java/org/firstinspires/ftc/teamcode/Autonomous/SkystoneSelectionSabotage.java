@@ -37,6 +37,7 @@ public class SkystoneSelectionSabotage extends Auto {
 //        robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
 //        sleep(10000);
 
+        /*
         bTelemetry.Print("Status: ", "Driving");
         robot.DriveByDistancePoorly(0.5, Robot.simpleDirection.FORWARD, 1);
 
@@ -49,6 +50,7 @@ public class SkystoneSelectionSabotage extends Auto {
         } else {
             //90
         }
+        */
 
         robot.RotatePIDRelative(-90, speed_high, 350);
 
