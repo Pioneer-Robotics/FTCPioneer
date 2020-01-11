@@ -3,11 +3,10 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 
-@Autonomous(name = "Skystone Foundation", group = "ftcPio")
-public class SkystoneFoundation extends Auto {
+@Autonomous(name = "Skystone Foundation Joe Red", group = "ftcPio")
+public class SkystoneFoundationJoeRed extends Auto {
 
     @Override
     public void runOpMode() {

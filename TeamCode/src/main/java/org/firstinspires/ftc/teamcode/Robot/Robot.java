@@ -155,6 +155,8 @@ public class Robot extends Thread {
         foundationServo0 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip0);
         foundationServo1 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip1);
 
+        SetFoundationGripperState(1);
+
 
         while (!imu.initComplete.get()) {
 
@@ -723,30 +725,70 @@ public class Robot extends Thread {
         SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    // only goes straight forward
-    public void DriveByDistancePoorly(double speedMultiplier, double distance) {
+    public enum simpleDirection{
+        FORWARD,
+        BACKWARD,
+        RIGHT,
+        LEFT;
+    }
+    // can go forward, backwards, or sideways
+    //distance should be in cm
+    public void DriveByDistancePoorly(double distance, simpleDirection direction, double speedMultiplier) {
         SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         int targetEncoders = (int) ((480.0 / RobotConfiguration.wheel_circumference) * distance);
         SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        SetPowerDouble4(1, 1, 1, 1, speedMultiplier);
+        if (direction == simpleDirection.FORWARD) { //if you wanna go forward, this is the stuff
+            SetPowerDouble4(1, 1, 1, 1, speedMultiplier);
+            while (driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders) {
+            } //empty while loop works as waitUntil command
+            SetPowerDouble4(1, 1, 1, 1, 0.5 * speedMultiplier);
+            while (driveManager.backLeft.getCurrentPosition() < 0.75 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.75 * targetEncoders) {
+            } //empty while loop works as waitUntil command
+            SetPowerDouble4(1, 1, 1, 1, 0.25 * speedMultiplier);
+            while (driveManager.backLeft.getCurrentPosition() < targetEncoders && driveManager.backRight.getCurrentPosition() < targetEncoders) {
+            } //empty while loop works as waitUntil command
+            SetPowerDouble4(0, 0, 0, 0, 0);
+        }
 
-        while (driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders) {
-        } //empty while loop works as waitUntil command
+        if (direction == simpleDirection.LEFT) {
+            SetPowerDouble4(-1, 1, 1, -1, 1);
+            while (driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders) {
+            } //empty while loop works as waitUntil command
+            SetPowerDouble4(-1, 1, 1, -1, 0.5);
+            while (driveManager.backLeft.getCurrentPosition() < 0.75 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.75 * targetEncoders) {
+            } //empty while loop works as waitUntil command
+            SetPowerDouble4(-1, 1, 1, -1, 0.25);
+            while (driveManager.backLeft.getCurrentPosition() < targetEncoders && driveManager.backRight.getCurrentPosition() < targetEncoders) {
+            } //empty while loop works as waitUntil command
+            SetPowerDouble4(-1, 1, 1, -1, 0);
+        }
 
-        SetPowerDouble4(1, 1, 1, 1, 0.5);
+        if (direction == simpleDirection.BACKWARD);{
+            SetPowerDouble4(-1, -1, -1, -1, 1);
+            while (driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders) {
+            } //empty while loop works as waitUntil command
+            SetPowerDouble4(-1, -1, -1, -1, 0.5);
+            while (driveManager.backLeft.getCurrentPosition() < 0.75 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.75 * targetEncoders) {
+            } //empty while loop works as waitUntil command
+            SetPowerDouble4(-1, -1, -1, -1, 0.25);
+            while (driveManager.backLeft.getCurrentPosition() < targetEncoders && driveManager.backRight.getCurrentPosition() < targetEncoders) {
+            } //empty while loop works as waitUntil command
+            SetPowerDouble4(-1, -1, -1, -1, 0);
+        }
 
-        while (driveManager.backLeft.getCurrentPosition() < 0.75 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.75 * targetEncoders) {
-        } //empty while loop works as waitUntil command
-
-        SetPowerDouble4(1, 1, 1, 1, 0.25);
-
-        while (driveManager.backLeft.getCurrentPosition() < targetEncoders && driveManager.backRight.getCurrentPosition() < targetEncoders) {
-        } //empty while loop works as waitUntil command
-
-
-        SetPowerDouble4(0, 0, 0, 0, 0);
-
+        if (direction == simpleDirection.RIGHT);{
+            SetPowerDouble4(1, -1, -1, 1, 1);
+            while (driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders) {
+            } //empty while loop works as waitUntil command
+            SetPowerDouble4(1, -1, -1, 1, 0.5);
+            while (driveManager.backLeft.getCurrentPosition() < 0.75 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.75 * targetEncoders) {
+            } //empty while loop works as waitUntil command
+            SetPowerDouble4(1, -1, -1, 1, 0.25);
+            while (driveManager.backLeft.getCurrentPosition() < targetEncoders && driveManager.backRight.getCurrentPosition() < targetEncoders) {
+            } //empty while loop works as waitUntil command
+            SetPowerDouble4(1, -1, -1, 1, 0);
+        }
     }
 
 

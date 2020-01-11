@@ -3,18 +3,45 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.Robot.Robot;
+
 @Autonomous(name = "fakeAuto", group = "Sensor")
 public class FakeAutoBackup extends Auto {
 
-
     @Override
     public void runOpMode() {
+        StartRobot();
+        robot.SetFoundationGripperState(0);
+        //go forward 70 cm
+        robot.DriveByDistancePoorly(60, Robot.simpleDirection.FORWARD, 1);
+        //go left 35 cm
+        robot.DriveByDistancePoorly(35, Robot.simpleDirection.LEFT, 1);
+        //lower servos
+        robot.SetFoundationGripperState(1);
+        int a = 0;
+        while (a < 40000){
+            a++;
+        }
+        //go left 6 more cm
+        robot.DriveByDistancePoorly(6, Robot.simpleDirection.LEFT,0.5);
+        //pull it backwards
+        robot.DriveByDistancePoorly(50, Robot.simpleDirection.BACKWARD,1);
+        //release foundation
+        telemetry.addLine("should move servo");
+        robot.SetFoundationGripperState(1);
+        telemetry.addLine("servo moved?");
+        telemetry.update();
+        //go toward the bridge
+        robot.DriveByDistancePoorly(50, Robot.simpleDirection.RIGHT,1);
+
+
+        /*
         StartRobot();
         telemetry.addData("No Victory Fuckers!", "");
         telemetry.update();
         waitForStart();
 
-        telemetry.addData("Smol Victory Fuckers!", "");
+        telemetry.addData("Small Victory Fuckers!", "");
         telemetry.update();
 
         sleep(150);
@@ -27,26 +54,16 @@ public class FakeAutoBackup extends Auto {
         telemetry.addData("No Victory Mother Fuckers!", "");
         telemetry.update();
 
-        double targetRotation = 90;
+        robot.RotatePID(77.5, 0.25, 1000);
 
-        robot.RotatePID(77.5, 1, 1000);
-/*
-        for (int i = 0; i < 100; i++) {
-            robot.MoveComplex(new Double2(0, 0), 1, robot.GetRotation() - 90);
-
-            if (Math.abs(robot.GetRotation() - targetRotation) < 2.5) {
-                break;
-            }
-        }
-
- */
         telemetry.addData("Victory Mother Fuckers!", "");
         telemetry.update();
 
-        robot.foundationServo0.setPosition(1);
-        robot.foundationServo1.setPosition(0);
+        robot.foundationServo0.setPosition(0.8);
+        robot.foundationServo1.setPosition(0.2);
 
         StopMovement();
         StopRobot();
+         */
     }
 }
