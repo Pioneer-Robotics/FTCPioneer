@@ -216,7 +216,7 @@ public class TeleopTester2 extends LinearOpMode {
                 telemetry.addLine("Arm Control: Radial");
 
                 extension += gamepad2.right_trigger * deltaTime.seconds() * 2;    //extend arm when right trigger held
-                extension -= gamepad2.left_trigger * deltaTime.seconds() * 2;     //retract arm when left trigger held
+                extension -= gamepad2.left_trigger * deltaTime.seconds() * 2;     //retra ct arm when left trigger held
 
                 raiseSpeed = bMath.Clamp(gamepad2.left_stick_y, -1, 1);
                 extension = bMath.Clamp(extension, 0, 1);
