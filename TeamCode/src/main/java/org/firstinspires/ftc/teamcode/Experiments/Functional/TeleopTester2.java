@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
+import org.firstinspires.ftc.teamcode.Robot.RobotConfiguration;
 
 @TeleOp(name = "Teleop2", group = "Sensor")
 public class TeleopTester2 extends LinearOpMode {
@@ -180,40 +181,14 @@ public class TeleopTester2 extends LinearOpMode {
             robot.driveManager.backLeft.setPower(moveSpeed*(rightDiagPower+leftRotatePower));
             robot.driveManager.backRight.setPower(moveSpeed*(leftDiagPower+rightRotatePower));
 
-//            if (gamepad1.x != servoLastToggle) {
-//                if (gamepad1.x) {
-//                    fineServoControl = !fineServoControl;
-//                }
-//                servoLastToggle = gamepad1.x;
-//            }
-//
-//            if (fineServoControl) {
-
+            //The following is used for recalibrating the lunchbox servo
+            /*
             //rotate lunchbox up with the up dpad
             lunchboxRot -= gamepad1.dpad_up ? deltaTime.seconds() * 1 : 0;
             //rotate lunchbox down with the down dpad
             lunchboxRot += gamepad1.dpad_down ? deltaTime.seconds() * 1 : 0;
             lunchboxRot = bMath.Clamp(lunchboxRot, 0, 1);
             robot.lunchBox.setPosition(lunchboxRot);
-
-//            } else {
-//                robot.lunchbox.setPosition(0.4333);
-//                telemetry.addData("LunchboxRot Position Yeeted", lunchboxRot);
-//
-//            }
-
-            /*
-            if (gamepad1.a) {
-                lockRotation = !lockRotation;
-                sleep(100);
-            }
-
-            if (lastLockRotation != lockRotation) {
-                lastLockRotation = lockRotation;
-                if (lockRotation) {
-                    targetRotation = robot.GetRotation();
-                }
-            }
 */
 
 
@@ -236,11 +211,12 @@ public class TeleopTester2 extends LinearOpMode {
                 //set power and distance to the Arm.
                 robot.arm.SetArmStatePowerCm(robot.arm.RectExtension(rectControls_goingUp),
                                            rectControls_goingUp ? gamepad2.right_stick_y : -gamepad2.right_stick_x);
+                extension = robot.arm.CmToTicks( robot.arm.RectExtension(rectControls_goingUp) ) / RobotConfiguration.arm_ticksMax;
             } else {
                 telemetry.addLine("Arm Control: Radial");
 
-                extension += gamepad2.right_trigger * deltaTime.seconds();    //extend arm when right trigger held
-                extension -= gamepad2.left_trigger * deltaTime.seconds();     //retract arm when left trigger held
+                extension += gamepad2.right_trigger * deltaTime.seconds() * 2;    //extend arm when right trigger held
+                extension -= gamepad2.left_trigger * deltaTime.seconds() * 2;     //retract arm when left trigger held
 
                 raiseSpeed = bMath.Clamp(gamepad2.left_stick_y, -1, 1);
                 extension = bMath.Clamp(extension, 0, 1);
@@ -306,8 +282,9 @@ public class TeleopTester2 extends LinearOpMode {
             if (gamepad2.y && !yButton2Check) dropLunchBox = !dropLunchBox;
             yButton2Check = gamepad2.y;
 
-            if (dropLunchBox) lunchboxRot = 0.1 ; //TODO Calibrate
-            else lunchboxRot = 0.6; //TODO Calibrate
+            if (dropLunchBox) lunchboxRot = 0 ;
+            else lunchboxRot = 0.738;
+            robot.lunchBox.setPosition(lunchboxRot);
 
             robot.foundationServo0.setPosition(gripFoundation ? 0 : 1);
             robot.foundationServo1.setPosition(gripFoundation ? 1 : 0);
@@ -325,6 +302,7 @@ public class TeleopTester2 extends LinearOpMode {
             telemetry.addLine("-------- Arm  --------");
             telemetry.addData("Current Arm Angle", robot.arm.thetaAngle());
             telemetry.addData("Current Potentiometer value", robot.armPotentiometer.getAngle());
+            telemetry.addData("Interior Angle",robot.armPotentiometer.getAngle() + RobotConfiguration.pot_interiorOffset);
             telemetry.addData("RectWanted?:", rectControls);
             telemetry.addLine("------ Lunchbox ------");
             telemetry.addData("Current Lunchbox", lunchboxRot);
