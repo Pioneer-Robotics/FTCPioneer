@@ -44,7 +44,7 @@ public class RobotConfiguration {
     public static final double arm_ticksMax = -2613;
 
     //The minimum length of the arm (measured from the tip of the extrusion)
-    public static final double arm_lengthMin = 12; //TODO determine this value
+    public static final double arm_lengthMin = 40; //TODO determine this value
 
     //The motor that is responsible
     public static final String arm_rotationMotor = "Arm Rotation";
@@ -53,7 +53,7 @@ public class RobotConfiguration {
     public static final double arm_rotationMax = -5678;
 
     //The offset to determine the interior angle between member k and L
-    public static final double pot_interiorOffset = 31.5;
+    public static final double pot_interiorOffset = 149.8;
 
     //The servo responsible for controlling the grip state of the arm
     public static final String arm_gripServo = "Grip";

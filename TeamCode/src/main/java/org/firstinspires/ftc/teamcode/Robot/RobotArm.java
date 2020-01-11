@@ -84,7 +84,7 @@ public class RobotArm extends Thread {
         double k = 177;
         double h = 76.9;
         double l = 135;
-        double C = bMath.toRadians(pot + RobotConfiguration.pot_interiorOffset);
+        double C = bMath.toRadians(robot.armPotentiometer.getAngle() + RobotConfiguration.pot_interiorOffset);
 
         if (usePot) {
             double c = Math.sqrt(  (k*k)+(l*l) - 2*k*l*Math.cos(C) );
@@ -226,8 +226,8 @@ length should be specified in cm. Should be between 0 and 100.
     public void SetArmStatePower(double _targetLength, double angleSpeed) {
 
         targetLengthSpeed = 1;
-        targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
-        //if (targetLength > 0 && protectSpool) targetLength = 0; //don't extend the spool past it's starting point
+            targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
+        if (targetLength > 0 && protectSpool) targetLength = 0; //don't extend the spool past it's starting point
 
         rotation.setPower(angleSpeed);
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -243,12 +243,14 @@ length should be specified in cm. Should be between 0 and 100.
     public void SetArmStatePowerCm(double _targetLength, double angleSpeed){
         targetLengthSpeed = 1; //speed of extension
         targetLength = CmToTicks(_targetLength);
-        //if (targetLength > 0 && protectSpool) targetLength = 0; //don't extend the spool past it's starting point
+        if (targetLength > 0 && protectSpool) targetLength = 0; //don't extend the spool past it's starting point
 
 
         rotation.setPower(angleSpeed);
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        length.setPower(1);
+        length.setTargetPosition((int) targetLength);
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
@@ -260,8 +262,8 @@ length should be specified in cm. Should be between 0 and 100.
     (17.8 / 480) cm is one tick, (480/17.8)tick is one cm
     */
 
-    public double TicksToCm(int ticks){ return (double) ticks * (17.8/480) + RobotConfiguration.arm_lengthMin; }
-    public int CmToTicks(double cm){ return  (int)(cm * (480/17.8) - RobotConfiguration.arm_lengthMin); }
+    public double TicksToCm(int ticks){ return (double) -ticks * (17.8/480) + RobotConfiguration.arm_lengthMin; }
+    public int CmToTicks(double cm){ return  -(int)((cm - RobotConfiguration.arm_lengthMin) * (480/17.8)); }
 
 /* Principle for rectangular control
          /|
