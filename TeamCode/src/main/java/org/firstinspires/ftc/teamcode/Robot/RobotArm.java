@@ -198,6 +198,11 @@ length should be specified in cm. Should be between 0 and 100.
 
         }
 
+        if (rotation.getCurrentPosition() < 5) {
+            rotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
+
+
         rotation.setPower(0);
     }
 
