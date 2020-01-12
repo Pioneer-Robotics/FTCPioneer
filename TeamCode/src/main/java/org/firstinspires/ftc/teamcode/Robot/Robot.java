@@ -86,6 +86,8 @@ public class Robot extends Thread {
 
         GetHardware(opmode, useWalltrack);
 
+        lunchBox.setPosition(0.738);
+
         //Starts the 'run' thread
         start();
         bTelemetry.Print("Robot thread initialized.");
@@ -187,36 +189,39 @@ public class Robot extends Thread {
         //Set the opmode
         Op = opmode;
 
-        //Find the motors
-        driveManager = new RobotDriveManager(opmode, RobotConfiguration.wheel_frontLeft, RobotConfiguration.wheel_frontRight, RobotConfiguration.wheel_backLeft, RobotConfiguration.wheel_backRight);
+        GetHardware(opmode, false);
+        SetFoundationGripperState(0);
 
-        bTelemetry.Print("Robot wheels assigned.");
-        bTelemetry.Print("Robot motors configured in the DriveManager.");
-
-        //Left wheels are reversed so power 1,1,1,1 moves us forward
-        driveManager.frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        driveManager.backLeft.setDirection(DcMotor.Direction.REVERSE);
-
-        //Define the arm values for motors and servos (also includes ranges)
-        arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
-
-        //Start the thread that is responsible for fighting gravity and keeping arm position level.
-//        arm.start();
-
-        //Init the motors for use.
-        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        bTelemetry.Print("Wheel encoders initialized.");
-
-
-        //Set up the IMU(s)
-        imu.Start(opmode);
-        bTelemetry.Print("IMU's initialized.");
-
-        //Set up the wall tracker, this uses ALL the lasers so make sure they all work before running this
-        wallTrack.Start(opmode);
-        bTelemetry.Print("Walltracker initialized.");
-
+//        //Find the motors
+//        driveManager = new RobotDriveManager(opmode, RobotConfiguration.wheel_frontLeft, RobotConfiguration.wheel_frontRight, RobotConfiguration.wheel_backLeft, RobotConfiguration.wheel_backRight);
+//
+//        bTelemetry.Print("Robot wheels assigned.");
+//        bTelemetry.Print("Robot motors configured in the DriveManager.");
+//
+//        //Left wheels are reversed so power 1,1,1,1 moves us forward
+//        driveManager.frontLeft.setDirection(DcMotor.Direction.REVERSE);
+//        driveManager.backLeft.setDirection(DcMotor.Direction.REVERSE);
+//
+//        //Define the arm values for motors and servos (also includes ranges)
+//        arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
+//
+//        //Start the thread that is responsible for fighting gravity and keeping arm position level.
+////        arm.start();
+//
+//        //Init the motors for use.
+//        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        bTelemetry.Print("Wheel encoders initialized.");
+//
+//
+//        //Set up the IMU(s)
+//        imu.Start(opmode);
+//        bTelemetry.Print("IMU's initialized.");
+//
+//        //Set up the wall tracker, this uses ALL the lasers so make sure they all work before running this
+//        wallTrack.Start(opmode);
+//        bTelemetry.Print("Walltracker initialized.");
+//
         //Starts the 'run' thread
         start();
         bTelemetry.Print("Robot thread initialized.");
@@ -228,6 +233,8 @@ public class Robot extends Thread {
         bTelemetry.Print("bDataManager started.");
 
         bTelemetry.Print("Robot start up successful. Running initial wheel calibration...");
+
+        SetFoundationGripperState(0);
 
         driveManager.PerformInitialCalibration();
 
@@ -725,12 +732,13 @@ public class Robot extends Thread {
         SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public enum simpleDirection{
+    public enum simpleDirection {
         FORWARD,
         BACKWARD,
         RIGHT,
         LEFT;
     }
+
     // can go forward, backwards, or sideways
     //distance should be in cm
     public void DriveByDistancePoorly(double distance, simpleDirection direction, double speedMultiplier) {
@@ -740,13 +748,13 @@ public class Robot extends Thread {
 
         if (direction == simpleDirection.FORWARD) { //if you wanna go forward, this is the stuff
             SetPowerDouble4(1, 1, 1, 1, speedMultiplier);
-            while (driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders) {
+            while (Op.opModeIsActive() && driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders) {
             } //empty while loop works as waitUntil command
             SetPowerDouble4(1, 1, 1, 1, 0.5 * speedMultiplier);
-            while (driveManager.backLeft.getCurrentPosition() < 0.75 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.75 * targetEncoders) {
+            while (Op.opModeIsActive() && driveManager.backLeft.getCurrentPosition() < 0.75 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.75 * targetEncoders) {
             } //empty while loop works as waitUntil command
             SetPowerDouble4(1, 1, 1, 1, 0.25 * speedMultiplier);
-            while (driveManager.backLeft.getCurrentPosition() < targetEncoders && driveManager.backRight.getCurrentPosition() < targetEncoders) {
+            while (Op.opModeIsActive() && driveManager.backLeft.getCurrentPosition() < targetEncoders && driveManager.backRight.getCurrentPosition() < targetEncoders) {
             } //empty while loop works as waitUntil command
             SetPowerDouble4(0, 0, 0, 0, 0);
         }
@@ -764,7 +772,8 @@ public class Robot extends Thread {
             SetPowerDouble4(-1, 1, 1, -1, 0);
         }
 
-        if (direction == simpleDirection.BACKWARD);{
+        if (direction == simpleDirection.BACKWARD) ;
+        {
             SetPowerDouble4(-1, -1, -1, -1, 1);
             while (driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders) {
             } //empty while loop works as waitUntil command
@@ -777,7 +786,8 @@ public class Robot extends Thread {
             SetPowerDouble4(-1, -1, -1, -1, 0);
         }
 
-        if (direction == simpleDirection.RIGHT);{
+        if (direction == simpleDirection.RIGHT) ;
+        {
             SetPowerDouble4(1, -1, -1, 1, 1);
             while (driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders) {
             } //empty while loop works as waitUntil command
