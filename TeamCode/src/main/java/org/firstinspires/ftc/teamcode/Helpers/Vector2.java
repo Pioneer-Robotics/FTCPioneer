@@ -11,7 +11,8 @@ public class Vector2 {
 
     //Creates a Vector2 from an angle in DEGREES
     public Vector2(double degrees) {
-
+        x = Math.cos(degrees);
+        y = Math.sin(degrees);
     }
 
     public void add(Vector2 value) {
