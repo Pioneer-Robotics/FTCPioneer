@@ -32,9 +32,12 @@ public class bGamepad {
     public boolean dpad_left = false;
     public boolean dpad_down = false;
 
+    public boolean start;
+    public boolean guide;
+    public boolean back;
+
     //Dead zone is set low to allow for more granular controls
     public float deadZone = 0.025f;
-
 
     public Gamepad gamepad;
 
@@ -64,9 +67,6 @@ public class bGamepad {
         bTrigger = bTb.getTrigger();
         xTrigger = xTb.getTrigger();
         yTrigger = yTb.getTrigger();
-
-
-
     }
 
 }
