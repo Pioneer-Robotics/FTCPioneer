@@ -4,6 +4,7 @@ import android.renderscript.Double2;
 import android.renderscript.Double4;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -160,7 +161,7 @@ public class Robot extends Thread {
         SetFoundationGripperState(1);
 
 
-        while (!imu.initComplete.get()) {
+        while (imu.initStatus.get() <= 2) {
 
         }
 

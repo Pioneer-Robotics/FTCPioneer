@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Hardware;
 
+import android.graphics.Path;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -9,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.Robot.RobotConfiguration;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 //Used in place of BNO055IMU, it takes the average of both IMU's for readings
@@ -19,42 +22,51 @@ public class bIMU extends Thread {
 
     private BNO055IMU.Parameters IParameters = new BNO055IMU.Parameters();
 
-    OpMode op;
+//    OpMode op;
 
-    public AtomicBoolean initComplete = new AtomicBoolean(false);
+    public AtomicInteger initStatus = new AtomicInteger(0);
+
+    public IMUStart imuStart0;
+    public IMUStart imuStart1;
 
     public void Start(OpMode opMode) {
-        op = opMode;
+        initStatus.set(0);
+        imu_0 = opMode.hardwareMap.get(BNO055IMU.class, RobotConfiguration.imu_0);
+        imu_1 = opMode.hardwareMap.get(BNO055IMU.class, RobotConfiguration.imu_1);
 
-        initComplete.set(false);
-        start();
+        imuStart0 = new IMUStart(opMode, imu_0, false);
+        imuStart1 = new IMUStart(opMode, imu_1, false);
+
+        imuStart0.run();
+        imuStart1.run();
     }
 
-    @Override
-    public void run() {
+    public class IMUStart implements Runnable {
 
-        //Start up the first IMU
-        imu_0 = op.hardwareMap.get(BNO055IMU.class, RobotConfiguration.imu_0);
-        IParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        IParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        IParameters.calibrationDataFile = "BNO055IMUCalibration.json";
-        IParameters.loggingEnabled = true;
-        IParameters.loggingTag = "IMU 0";
+        public OpMode op;
 
-        imu_0.initialize(IParameters);
+        public BNO055IMU imu;
 
+        boolean useLogging;
 
-        //Start up the first IMU
-        imu_1 = op.hardwareMap.get(BNO055IMU.class, RobotConfiguration.imu_1);
-        IParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        IParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        IParameters.calibrationDataFile = "BNO055IMUCalibration.json";
-        IParameters.loggingEnabled = true;
-        IParameters.loggingTag = "IMU 1";
+        public IMUStart(OpMode _op, BNO055IMU _imu, boolean useLogging) {
+            op = _op;
+            imu = _imu;
+        }
 
-        imu_1.initialize(IParameters);
+        public void run() {
+            IParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+            IParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+            IParameters.calibrationDataFile = "BNO055IMUCalibration.json";
+            IParameters.loggingEnabled = useLogging;
+            if (useLogging) {
+                IParameters.loggingTag = "IMU" + Math.round(Math.random() * 1000);
+            }
 
-        initComplete.set(true);
+            imu.initialize(IParameters);
+            initStatus.set(initStatus.get() + 1);
+        }
+
     }
 
     //Returns the average of both IMU rotations
