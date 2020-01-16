@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
 import org.firstinspires.ftc.teamcode.Robot.RobotConfiguration;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,7 +25,7 @@ public class bIMU extends Thread {
 
 //    OpMode op;
 
-    public AtomicInteger initStatus = new AtomicInteger(0);
+    volatile public AtomicInteger initStatus = new AtomicInteger(0);
 
     public IMUStart imuStart0;
     public IMUStart imuStart1;
@@ -43,18 +44,23 @@ public class bIMU extends Thread {
 
     public class IMUStart implements Runnable {
 
-        public OpMode op;
+        volatile public OpMode op;
 
-        public BNO055IMU imu;
+        volatile public BNO055IMU imu;
 
-        boolean useLogging;
+        volatile boolean useLogging;
 
-        public IMUStart(OpMode _op, BNO055IMU _imu, boolean useLogging) {
+        public IMUStart(OpMode _op, BNO055IMU _imu, boolean _useLogging) {
             op = _op;
             imu = _imu;
+            useLogging = _useLogging;
         }
 
         public void run() {
+
+
+            bTelemetry.Print("Run called!, Beginging to init IMU");
+
             IParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
             IParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
             IParameters.calibrationDataFile = "BNO055IMUCalibration.json";
@@ -62,9 +68,14 @@ public class bIMU extends Thread {
             if (useLogging) {
                 IParameters.loggingTag = "IMU" + Math.round(Math.random() * 1000);
             }
+            bTelemetry.Print("Params configured");
 
             imu.initialize(IParameters);
+            bTelemetry.Print("Params init");
+
             initStatus.set(initStatus.get() + 1);
+            bTelemetry.Print("Init status is now " + initStatus.get());
+
         }
 
     }

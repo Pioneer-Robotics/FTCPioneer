@@ -13,7 +13,6 @@ public class SkystoneFoundationJoeBlu extends Auto {
     @Override
     public void runOpMode() {
         StartRobot();
-        robot.SetFoundationGripperState(0);
         waitForStart();
         //go forward 70 cm
         robot.DriveByDistanceAndAngle(0, 0.5, 90);

@@ -87,7 +87,7 @@ public class Robot extends Thread {
 
         GetHardware(opmode, useWalltrack);
 
-        lunchBox.setPosition(0.738);
+        lunchBox.setPosition(0.733);
 
         //Starts the 'run' thread
         start();
@@ -122,7 +122,6 @@ public class Robot extends Thread {
 //        for (DistanceSensor sensor : wallTrack.sensors) {
 //            experimentalInput.AddSensor(sensor);
 //        }
-
         bTelemetry.Print("Wheel boot successful. Ready to operate!");
     }
 
@@ -161,7 +160,7 @@ public class Robot extends Thread {
         SetFoundationGripperState(1);
 
 
-        while (imu.initStatus.get() <= 2) {
+        while (imu.initStatus.get() < 2) {
 
         }
 

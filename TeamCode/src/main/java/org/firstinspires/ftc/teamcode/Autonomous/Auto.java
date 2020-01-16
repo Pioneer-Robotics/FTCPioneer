@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 
 public class Auto extends LinearOpMode {
 
-    Robot robot = new Robot();
+    public Robot robot = new Robot();
 
     public JobManager jobs = new JobManager();
 
@@ -97,6 +97,8 @@ public class Auto extends LinearOpMode {
 
 
         robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
+        robot.SetFoundationGripperState(0);
+
 //        robot.arm.SetArmStateWait(0, 1, 1);
 //        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
 //        robot.arm.SetArmStateWait(0, 0, 1);
@@ -215,7 +217,7 @@ public class Auto extends LinearOpMode {
         sleep(500);
 
         //Drop the arm
-        robot.arm.SetArmStateWait(0, extensionLength, 1);
+        robot.arm.SetArmStateWait(0, extensionLength, 0.75);
 
         //Close the gripper
         robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
