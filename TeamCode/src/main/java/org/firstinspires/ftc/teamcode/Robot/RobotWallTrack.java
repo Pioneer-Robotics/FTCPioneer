@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Robot;
 
-import android.graphics.Path;
-
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -237,7 +235,7 @@ public class RobotWallTrack extends Thread {
     @Override
     public void run() {
 
-        //Start up thread
+        //start up thread
         sensorIDGroupPairs.put(groupID.Group90, new SensorGroup(op, RobotConfiguration.distanceSensor_90A, RobotConfiguration.distanceSensor_90B, RobotConfiguration.distance_90AB, 90));
         sensorIDGroupPairs.put(groupID.Group180, new SensorGroup(op, RobotConfiguration.distanceSensor_180A, RobotConfiguration.distanceSensor_180B, RobotConfiguration.distance_180AB, 180));
         sensorIDGroupPairs.put(groupID.Group270, new SensorGroup(op, RobotConfiguration.distanceSensor_270A, RobotConfiguration.distanceSensor_270B, RobotConfiguration.distance_270AB, -90));
@@ -298,7 +296,7 @@ public class RobotWallTrack extends Thread {
         curDriveAngle = angleOffset - wallAngle + avoidanceConfig.CorrectionCoefficient();
 
         //MOVE
-        robot.MoveSimple(angleOffset - wallAngle - avoidanceConfig.targetDirection(), speed);
+        robot.moveSimple(angleOffset - wallAngle - avoidanceConfig.targetDirection(), speed);
     }
 
 
@@ -358,12 +356,12 @@ public class RobotWallTrack extends Thread {
         Robot.instance.Op.telemetry.addData("Correction Number", correctionAngle);
         Robot.instance.Op.telemetry.addData("Corrected to ", correctedDriveAngle);
         Robot.instance.Op.telemetry.addData("Corrected by ", driveAngle - correctedDriveAngle);
-        Robot.instance.Op.telemetry.addData("Current Distnace ", robot.GetDistance(groupID.Group180, DistanceUnit.CM));
+        Robot.instance.Op.telemetry.addData("Current Distnace ", robot.getDistance(groupID.Group180, DistanceUnit.CM));
         Robot.instance.Op.telemetry.addData("Current Angle ", wallAngle);
         Robot.instance.Op.telemetry.addData("Current Distnace Goal ", distance);
 
         //Move while keeping our rotation angle the same
-        robot.MoveComplex(correctedDriveAngle, speed, robot.GetRotation() - rotationAngle, 0);
+        robot.moveComplex(correctedDriveAngle, speed, robot.getRotation() - rotationAngle, 0);
     }
 
     ElapsedTime debuggingDeltaTime = new ElapsedTime();
@@ -415,8 +413,8 @@ public class RobotWallTrack extends Thread {
         debuggingDeltaTime.reset();
 
 
-//        Robot.instance.Op.telemetry.addData("Move offset ", angleOffset);
-//        Robot.instance.Op.telemetry.addData("Real offset ", physicalOffset);
+//        Robot.instance.op.telemetry.addData("Move offset ", angleOffset);
+//        Robot.instance.op.telemetry.addData("Real offset ", physicalOffset);
 
         //Add the avoidance offset to our wall angle (to maintain the 'distance' from the wall)
         driveAngle = angleOffset - wallAngle + physicalOffset;
@@ -442,7 +440,7 @@ public class RobotWallTrack extends Thread {
 
         Robot.instance.Op.telemetry.addData("Current Distnace ", currentGroup.getDistanceAverage(DistanceUnit.CM));
         Robot.instance.Op.telemetry.addData("Current Error", distance - currentGroup.getDistanceAverage(DistanceUnit.CM));
-//        Robot.instance.Op.telemetry.addData("PID value", controller.State());
+//        Robot.instance.op.telemetry.addData("PID value", controller.State());
 
         //Move while keeping our rotation angle the same
         // 0 - 0 - 180 + 0
@@ -454,7 +452,7 @@ public class RobotWallTrack extends Thread {
         //0 - 0 - 90
         //-90 - 0 + 90
         //-90 -
-        robot.MoveComplex(correctedDriveAngle, speed, robot.GetRotation() - rotationAngle, 0);
+        robot.moveComplex(correctedDriveAngle, speed, robot.getRotation() - rotationAngle, 0);
 
     }
 
@@ -471,7 +469,7 @@ public class RobotWallTrack extends Thread {
         wallAngle = currentGroup.getWallAngle();
 
         //Move while keeping our rotation angle the same
-        robot.MoveComplex(angleOffset - wallAngle + physicalOffset, speed, robot.GetRotation() - rotationAngle, 0);
+        robot.moveComplex(angleOffset - wallAngle + physicalOffset, speed, robot.getRotation() - rotationAngle, 0);
     }
 
 

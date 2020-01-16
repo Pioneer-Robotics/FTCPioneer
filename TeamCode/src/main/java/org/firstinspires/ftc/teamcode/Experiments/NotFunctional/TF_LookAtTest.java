@@ -28,16 +28,16 @@ public class TF_LookAtTest extends LinearOpMode {
 //        TF_thread.startFromOpmode(this);
 //        TF_thread.start();
 
-        hwInf.SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hwInf.SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hwInf.setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hwInf.setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         double rotationDelta = 0;
 
         //Loopy loop loop that loops
         while (opModeIsActive()) {
-//            hwInf.SetPowerDouble4(new Double4(-1, -1, 1, 1), 1);
+//            hwInf.setPowerDouble4(new Double4(-1, -1, 1, 1), 1);
 
-            hwInf.MoveComplex(90, 1, 0, 0);
+            hwInf.moveComplex(90, 1, 0, 0);
 //            telemetry.addData("Velocity ", hwInf.imu.getVelocity());
             telemetry.update();
             Recognition skystone = TF_thread.skyStone();
@@ -48,20 +48,20 @@ public class TF_LookAtTest extends LinearOpMode {
                 rotationDelta = bMath.MoveTowards(rotationDelta, factor / skystone.getImageWidth(), 1);
                 telemetry.addData("Rotation factor found : ", rotationDelta);
 
-                hwInf.SetPowerDouble4(new Double4(rotationDelta, -rotationDelta, rotationDelta, -rotationDelta), 1);
+                hwInf.setPowerDouble4(new Double4(rotationDelta, -rotationDelta, rotationDelta, -rotationDelta), 1);
 
 
-//                hwInf.MoveComplex(0, 0, hwInf.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle + rotationDelta);
+//                hwInf.moveComplex(0, 0, hwInf.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle + rotationDelta);
                 telemetry.update();
             }
 
         }
 
-        //Stop the thread or die!
+        //shutdown the thread or die!
         TF_thread.stopThread();
 
-        //Stop the motors when the robots done doin what its doin.
-        hwInf.SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //shutdown the motors when the robots done doin what its doin.
+        hwInf.setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
 }

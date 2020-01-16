@@ -41,23 +41,23 @@ public class TestingOpMode2 extends LinearOpMode {
 //        }
 
 
-//        robot.MoveSimple(0, 0.5);
+//        robot.moveSimple(0, 0.5);
 //        sleep(2500);
 //
 //
-//        robot.MoveSimple(90, 0.5);
+//        robot.moveSimple(90, 0.5);
 //        sleep(2500);
 //
 //
-//        robot.MoveSimple(180, 0.5);
+//        robot.moveSimple(180, 0.5);
 //        sleep(2500);
 //
 //
-//        robot.MoveSimple(270, 0.5);
+//        robot.moveSimple(270, 0.5);
 //        sleep(2500);
 
 
-        robot.Stop();
+        robot.shutdown();
 
     }
 }

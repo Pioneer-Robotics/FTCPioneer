@@ -92,7 +92,7 @@ WalltrackPIDTuning extends LinearOpMode {
             dataManger.writeData("wall_PID_Testing_I", PID.y);
             dataManger.writeData("wall_PID_Testing_D", PID.z);
 
-            targetRotation = robot.GetRotation();
+            targetRotation = robot.getRotation();
             controller.Start(PID.x, PID.y, PID.z);
             deltaTime.reset();
 
@@ -124,11 +124,11 @@ WalltrackPIDTuning extends LinearOpMode {
                 }
                 timer = 0;
             }
-            robot.SetPowerDouble4(0, 0, 0, 0, 0);
+            robot.setPowerDouble4(0, 0, 0, 0, 0);
 
         }
 
-        robot.Stop();
+        robot.shutdown();
 
     }
 }

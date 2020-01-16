@@ -23,17 +23,17 @@ public class InputTroubleshooting extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            telemetry.addData("Rotation               : ", robot.GetRotation());
-            telemetry.addData("============================", robot.GetDistance(RobotWallTrack.groupID.Group270, DistanceUnit.CM));
-            telemetry.addData("Distance Sensor 90   : ", robot.GetDistance(RobotWallTrack.groupID.Group90, DistanceUnit.CM));
-            telemetry.addData("Distance Sensor 180  : ", robot.GetDistance(RobotWallTrack.groupID.Group180, DistanceUnit.CM));
-            telemetry.addData("Distance Sensor 270  : ", robot.GetDistance(RobotWallTrack.groupID.Group270, DistanceUnit.CM));
+            telemetry.addData("Rotation               : ", robot.getRotation());
+            telemetry.addData("============================", robot.getDistance(RobotWallTrack.groupID.Group270, DistanceUnit.CM));
+            telemetry.addData("Distance Sensor 90   : ", robot.getDistance(RobotWallTrack.groupID.Group90, DistanceUnit.CM));
+            telemetry.addData("Distance Sensor 180  : ", robot.getDistance(RobotWallTrack.groupID.Group180, DistanceUnit.CM));
+            telemetry.addData("Distance Sensor 270  : ", robot.getDistance(RobotWallTrack.groupID.Group270, DistanceUnit.CM));
             telemetry.addData("Arm Rotation", robot.arm.rotation.getCurrentPosition());
             telemetry.addData("Arm Spool", robot.arm.length.getCurrentPosition());
 
             telemetry.update();
         }
 
-        robot.Stop();
+        robot.shutdown();
     }
 }

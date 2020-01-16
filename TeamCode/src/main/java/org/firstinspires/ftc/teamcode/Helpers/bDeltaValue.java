@@ -17,16 +17,16 @@ public class bDeltaValue {
 //
 //
 //    public void Assign(Double v) {
-//        deltaTime.Stop();
+//        deltaTime.shutdown();
 //        lastValue = value;
 //        value = v;
-//        deltaTime.Start();
+//        deltaTime.start();
 //    }
 //
 //    public void Assign(int v) {
-//        deltaTime.Stop();
+//        deltaTime.shutdown();
 //        lastValue = value;
 //        value = v;
-//        deltaTime.Start();
+//        deltaTime.start();
 //    }
 }

@@ -29,7 +29,7 @@ public class SkystoneAutoBridge extends Auto {
             if (gamepad1.b) {
                 inverted = false;
             }
-            telemetry.addData("Start Delay (seconds) ", startDelay);
+            telemetry.addData("start Delay (seconds) ", startDelay);
             telemetry.addData("Drive Distance (CM) ", startDistance);
             telemetry.addData("Drive Inverted (True == Left/Right first. False == drive fwrd first) ", inverted);
             telemetry.update();
@@ -40,31 +40,31 @@ public class SkystoneAutoBridge extends Auto {
         sleep((long) startDelay * 1000);
 
         if (inverted) {
-            robot.DriveByDistance(0.25, 5);
+            robot.driveByDistance(0.25, 5);
 
 
             if (side == FieldSide.SIDE_BLUE) {
-                robot.MoveComplex(-90, 0.75, robot.GetRotation() - startRotation, 0);
+                robot.moveComplex(-90, 0.75, robot.getRotation() - startRotation, 0);
             }
             if (side == FieldSide.SIDE_RED) {
-                robot.MoveComplex(90, 0.75, robot.GetRotation() - startRotation, 0);
+                robot.moveComplex(90, 0.75, robot.getRotation() - startRotation, 0);
             }
 
             sleep(1500);
 
-            robot.DriveByDistance(0.25, startDistance - 5);
+            robot.driveByDistance(0.25, startDistance - 5);
 
         } else {
 
-//        robot.DriveByDistance(0.25, 5);
-            robot.DriveByDistance(0.25, startDistance);
+//        robot.driveByDistance(0.25, 5);
+            robot.driveByDistance(0.25, startDistance);
 
 
             if (side == FieldSide.SIDE_BLUE) {
-                robot.MoveComplex(-90, 0.75, robot.GetRotation() - startRotation, 0);
+                robot.moveComplex(-90, 0.75, robot.getRotation() - startRotation, 0);
             }
             if (side == FieldSide.SIDE_RED) {
-                robot.MoveComplex(90, 0.75, robot.GetRotation() - startRotation, 0);
+                robot.moveComplex(90, 0.75, robot.getRotation() - startRotation, 0);
             }
 
             sleep(1500);

@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Hardware;
 
-import android.graphics.Path;
-
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -11,7 +9,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
 import org.firstinspires.ftc.teamcode.Robot.RobotConfiguration;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -59,7 +56,7 @@ public class bIMU extends Thread {
         public void run() {
 
 
-            bTelemetry.Print("Run called!, Beginging to init IMU");
+            bTelemetry.print("Run called!, Beginging to init IMU");
 
             IParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
             IParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -68,13 +65,13 @@ public class bIMU extends Thread {
             if (useLogging) {
                 IParameters.loggingTag = "IMU" + Math.round(Math.random() * 1000);
             }
-            bTelemetry.Print("Params configured");
+            bTelemetry.print("Params configured");
 
             imu.initialize(IParameters);
-            bTelemetry.Print("Params init");
+            bTelemetry.print("Params init");
 
             initStatus.set(initStatus.get() + 1);
-            bTelemetry.Print("Init status is now " + initStatus.get());
+            bTelemetry.print("Init status is now " + initStatus.get());
 
         }
 

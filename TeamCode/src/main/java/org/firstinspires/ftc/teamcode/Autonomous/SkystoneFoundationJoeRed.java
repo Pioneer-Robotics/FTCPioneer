@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.Robot.Robot;
-
 @Autonomous(name = "Skystone Foundation Joe Red", group = "ftcPio")
 public class SkystoneFoundationJoeRed extends Auto {
 
@@ -13,40 +11,40 @@ public class SkystoneFoundationJoeRed extends Auto {
     @Override
     public void runOpMode() {
         StartRobot();
-        robot.SetFoundationGripperState(0);
+        robot.setFoundationGripperState(0);
         waitForStart();
         //go forward 70 cm
-        robot.DriveByDistanceAndAngle(0, 0.5, 90);
+        robot.driveByDistance(0, 0.5, 90);
         //go right 75 cm, (check)
-        robot.DriveByDistanceAndAngle(80, 0.5, 60);
+        robot.driveByDistance(80, 0.5, 60);
         //go forward 20 cm to correct
-        robot.DriveByDistanceAndAngle(0, 0.5, 20);
+        robot.driveByDistance(0, 0.5, 20);
         //grip foundation
-        robot.SetFoundationGripperState(1);
+        robot.setFoundationGripperState(1);
         //delay
         sleep(2000);
-        robot.DriveByDistanceAndAngle(180, 0.5, 100);
+        robot.driveByDistance(180, 0.5, 100);
 
-        robot.RotatePID(-35, 1, 3);
-        robot.SetFoundationGripperState(0);
+        robot.rotatePID(-35, 1, 3);
+        robot.setFoundationGripperState(0);
         sleep(2000);
-        robot.RotatePID(0, 1, 3);
+        robot.rotatePID(0, 1, 3);
 
-        robot.DriveByDistanceAndAngle(180, 0.5, 50);
-//        robot.DriveByDistanceAndAngle(180, 0.5, 120);
+        robot.driveByDistance(180, 0.5, 50);
+//        robot.driveByDistance(180, 0.5, 120);
 
         //pull it backwards
-//        robot.DriveByDistanceAndAngle(180, 0.5, 120);
+//        robot.driveByDistance(180, 0.5, 120);
         //release servos
-//        robot.SetFoundationGripperState(0);
+//        robot.setFoundationGripperState(0);
         //go under bridge (check)
-        robot.DriveByDistanceAndAngle(-100, 1, 250);
+        robot.driveByDistance(-100, 1, 250);
         //pull into the wall, to make sure you're there. Or don't (if/else statement)
         if (endOnWall) {
-            robot.DriveByDistanceAndAngle(180, 1, 5);
+            robot.driveByDistance(180, 1, 5);
         } else {
-            robot.RotatePID(0, 1, 2);
-            robot.DriveByDistanceAndAngle(0, 1, 150);
+            robot.rotatePID(0, 1, 2);
+            robot.driveByDistance(0, 1, 150);
         }
         StopMovement();
         StopRobot();

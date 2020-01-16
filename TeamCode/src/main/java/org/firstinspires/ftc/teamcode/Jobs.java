@@ -1,30 +1,18 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Bitmap;
-import android.renderscript.Double4;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.vuforia.Frame;
 import com.vuforia.PIXEL_FORMAT;
 import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.Helpers.bMath;
-import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
 import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 //A lovely picture of the robot
@@ -105,8 +93,8 @@ class FindSkystoneJob extends NavigationJob {
 
         //Disposes of the thread
         tensorFlowaJob.Stop();
-        robot.Stop();
-        //Stop motorz
+        robot.shutdown();
+        //shutdown motorz
         StopMotors();
     }
 
@@ -188,7 +176,7 @@ class TensorFlowaJob extends aJob implements Runnable {
     @Override
     public void Init(LinearOpMode op) {
         super.Init(op);
-        //Start up the tensor flow stuffs
+        //start up the tensor flow stuffs
         StartTensorFlow(op, "Skystone", 0.65);
     }
 
@@ -263,7 +251,7 @@ class OpJob {
 
     public boolean running = false;
 
-    public void Start() {
+    public void start() {
         OnStart();
         running = true;
         RunLoop();
@@ -284,7 +272,7 @@ class OpJob {
     }
 
     //Stops the current job, don't touch
-    public final void Stop() {
+    public final void shutdown() {
         running = false;
     }
 

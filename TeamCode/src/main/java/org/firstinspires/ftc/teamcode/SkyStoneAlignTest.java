@@ -41,7 +41,7 @@ public class SkyStoneAlignTest extends LinearOpMode {
 
         print("Status: Starting TensorFlow Thread.");
 
-        //Start the TF thread after it's init
+        //start the TF thread after it's init
         jobs.tensorFlowaJob.Start(this);
         print("Status: Ready");
 
@@ -50,7 +50,7 @@ public class SkyStoneAlignTest extends LinearOpMode {
 
         Recognition recognition = null;
 
-        lockedRotation = robot.GetRotation();
+        lockedRotation = robot.getRotation();
 
         //Look for the skystone
         while (opModeIsActive()) {
@@ -66,11 +66,11 @@ public class SkyStoneAlignTest extends LinearOpMode {
                 heading = new Double2(0, 0);
             }
 
-//            robot.MoveComplex(heading, 0.35, robot.GetRotation() - lockedRotation);
+//            robot.moveComplex(heading, 0.35, robot.getRotation() - lockedRotation);
             telemetry.update();
         }
 
-        robot.Stop();
+        robot.shutdown();
     }
 
 

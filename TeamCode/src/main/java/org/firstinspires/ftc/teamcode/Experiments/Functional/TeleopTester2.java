@@ -99,7 +99,7 @@ public class TeleopTester2 extends LinearOpMode {
             if (coordinateSystemLock) {
                 telemetry.addData("Drive System", "New");
 
-                angle = Math.toRadians(robot.GetRotation() - rotationLockAngle);
+                angle = Math.toRadians(robot.getRotation() - rotationLockAngle);
 
                 /*
                 EXAMPLE of the old (and better) math
@@ -132,14 +132,14 @@ public class TeleopTester2 extends LinearOpMode {
 ////              //And so Ends Josh's Idea.
 
                 //this could replace the lines above and the 6 lines after the else but the implementation in this function
-                //robot.MoveComplex(new Double2(gamepad1.left_stick_x,gamepad1.left_stick_y),moveSpeed,gamepad1.right_stick_x,angle);
+                //robot.moveComplex(new Double2(gamepad1.left_stick_x,gamepad1.left_stick_y),moveSpeed,gamepad1.right_stick_x,angle);
             } else {
                 telemetry.addData("Drive System", "Old");
 
                 leftDiagPower = ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2);
                 rightDiagPower = ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2);
 
-                //robot.MoveComplex(new Double2(gamepad1.left_stick_x,gamepad1.left_stick_y),moveSpeed,gamepad1.right_stick_x,0);
+                //robot.moveComplex(new Double2(gamepad1.left_stick_x,gamepad1.left_stick_y),moveSpeed,gamepad1.right_stick_x,0);
 
             }
             leftRotatePower = gamepad1.right_stick_x;
@@ -263,7 +263,7 @@ public class TeleopTester2 extends LinearOpMode {
 
             telemetry.addLine("------ Movement ------");
             telemetry.addData("Rotation Locked ", coordinateSystemLock);
-            telemetry.addData("Current Rotation ", robot.GetRotation());
+            telemetry.addData("Current Rotation ", robot.getRotation());
             telemetry.addData("Offset Angle ", angle);
             telemetry.addLine("-------- Arm  --------");
             telemetry.addData("Current Arm Angle", robot.arm.thetaAngle());
@@ -276,7 +276,7 @@ public class TeleopTester2 extends LinearOpMode {
 
             deltaTime.reset();
         }
-        robot.Stop();
+        robot.shutdown();
     }
 
     double fullRotation = 360;
@@ -288,7 +288,7 @@ public class TeleopTester2 extends LinearOpMode {
 
         // reset the "front" of the robot to be the real front
         if (gamepad1.a) {
-            rotationLockAngle = robot.GetRotation();
+            rotationLockAngle = robot.getRotation();
         }
         // up/down of right stick can incrementally change which way is the "front" of the robot in coordinate lock mode
         rotationLockAngle = ((rotationLockAngle + 3.0 * gamepad1.right_stick_y + fullRotation) % fullRotation) - fullRotation;
@@ -298,7 +298,7 @@ public class TeleopTester2 extends LinearOpMode {
 
         // y button toggles coordinate system lock
         if (gamepad1.y && !movementModeToggleCheck) {
-            rotationLockAngle = robot.GetRotation();
+            rotationLockAngle = robot.getRotation();
             coordinateSystemLock = !coordinateSystemLock;
         }
         movementModeToggleCheck = gamepad1.y;

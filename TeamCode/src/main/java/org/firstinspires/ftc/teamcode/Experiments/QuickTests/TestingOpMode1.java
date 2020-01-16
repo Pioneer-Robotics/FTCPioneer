@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Helpers.PID;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
-import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 
 @Autonomous(name = "TestingOpMode1", group = "Sensor")
 public class TestingOpMode1 extends LinearOpMode {
@@ -29,7 +28,7 @@ public class TestingOpMode1 extends LinearOpMode {
 
 
         while (opModeIsActive()) {
-            robot.SetFoundationGripperState(a);
+            robot.setFoundationGripperState(a);
 
             a += gamepad1.left_stick_x * deltaTime.seconds();
             telemetry.addData("Power", a);
@@ -37,7 +36,7 @@ public class TestingOpMode1 extends LinearOpMode {
             deltaTime.reset();
         }
 
-        robot.Stop();
+        robot.shutdown();
     }
 
 }

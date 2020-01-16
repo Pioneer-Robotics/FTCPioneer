@@ -84,12 +84,12 @@ RotationPIDTuning extends LinearOpMode {
             dataManger.writeData("PID_Testing_I", PID.y);
             dataManger.writeData("PID_Testing_D", PID.z);
 
-            double targetRotation = 90 + robot.GetRotation();
-            robot.RotatePID(targetRotation, 1, 10000, PID.x, PID.y, PID.z);
-            robot.SetPowerDouble4(0, 0, 0, 0, 0);
+            double targetRotation = 90 + robot.getRotation();
+            robot.rotatePID(targetRotation, 1, 10000, PID.x, PID.y, PID.z);
+            robot.setPowerDouble4(0, 0, 0, 0, 0);
         }
 
-        robot.Stop();
+        robot.shutdown();
 
     }
 }

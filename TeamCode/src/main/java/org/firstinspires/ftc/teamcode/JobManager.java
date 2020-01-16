@@ -42,7 +42,7 @@ public class JobManager {
 
     public void stopAll() {
         tensorFlowaJob.Stop();
-        //findSkystoneJob.Stop();
+        //findSkystoneJob.shutdown();
     }
 }
 
@@ -133,13 +133,13 @@ class NavigationJob extends Job {
 
     //Sets up the motors for actual encoder use
     public void PrepareMotors() {
-        robot.SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     //Stops the motors and reset encoders
     public void StopMotors() {
-        robot.SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }
 
@@ -227,12 +227,12 @@ class aJobNavigation extends aJob implements Runnable {
 
     //Sets up the motors for actual encoder use
     public void PrepareMotors() {
-        robot.SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     //Stops the motors and reset encoders
     public void StopMotors() {
-        robot.SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }

@@ -18,7 +18,7 @@ public class SkystoneSelectionTest extends Auto {
     public void runOpMode() {
         StartRobot();
 
-        startRotation = robot.GetRotation();
+        startRotation = robot.getRotation();
 
         detector.Start(this);
 
@@ -37,7 +37,7 @@ public class SkystoneSelectionTest extends Auto {
             while (opModeIsActive()) {
                 deltaTime.reset();
 
-                robot.MoveComplex(-90, speed_low, startRotation - robot.GetRotation(), 0);
+                robot.moveComplex(-90, speed_low, startRotation - robot.getRotation(), 0);
 
                 moveTime += deltaTime.time();
 
@@ -50,7 +50,7 @@ public class SkystoneSelectionTest extends Auto {
             while (opModeIsActive()) {
                 deltaTime.reset();
 
-                robot.MoveComplex(90, speed_low, startRotation - robot.GetRotation(), 0);
+                robot.moveComplex(90, speed_low, startRotation - robot.getRotation(), 0);
 
                 moveTime += deltaTime.time();
 
@@ -65,14 +65,14 @@ public class SkystoneSelectionTest extends Auto {
 
 
         if (side == FieldSide.SIDE_BLUE) {
-            robot.RotateSimple(-90, 1, 5, 0.2);
+            robot.rotateSimple(-90, 1, 5, 0.2);
         } else {
-            robot.RotateSimple(90, 1, 5, 0.2);
+            robot.rotateSimple(90, 1, 5, 0.2);
         }
 
         DepositeArm(0.35, 1);
 
-        robot.RotateSimple(0, 1, 5, 0.2);
+        robot.rotateSimple(0, 1, 5, 0.2);
 
         //Move to the next skystone, all stones have the same offset this will need big calibration
 

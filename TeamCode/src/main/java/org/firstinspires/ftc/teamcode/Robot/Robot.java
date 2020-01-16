@@ -67,19 +67,19 @@ public class Robot extends Thread {
 
 
     public void init(HardwareMap hardwareMap, LinearOpMode opmode, boolean useWalltrack) {
-        //Start the printer service
-        bTelemetry.Start(opmode);
+        //start the printer service
+        bTelemetry.start(opmode);
 
         //Fail safe to make sure there is only one Robot.java running.
 //        if (instance != null) {
-//            bTelemetry.Print("FATAL ERROR: THERE CAN ONLY BE ONE INSTANCE OF ROBOT.JAVA");
+//            bTelemetry.print("FATAL ERROR: THERE CAN ONLY BE ONE INSTANCE OF ROBOT.JAVA");
 //            return;
 //        }
 
 
         //Set up the instance
         instance = this;
-        bTelemetry.Print("Robot instance assigned.");
+        bTelemetry.print("Robot instance assigned.");
 
         //Set the opmode
         Op = opmode;
@@ -90,30 +90,30 @@ public class Robot extends Thread {
 
         //Starts the 'run' thread
         start();
-        bTelemetry.Print("Robot thread initialized.");
+        bTelemetry.print("Robot thread initialized.");
 
-        bTelemetry.Print("Robot start up successful. Preparing to read wheel calibration data...");
+        bTelemetry.print("Robot start up successful. Preparing to read wheel calibration data...");
 
         //Starts the dataManager to read calibration data
         dataManger.Start();
 
-        bTelemetry.Print("bDataManager started.");
+        bTelemetry.print("bDataManager started.");
 
 
         //Assign and display calibration data for debugging purposes
         driveManager.frontLeft.powerCoefficent = dataManger.readData("wheel_front_left_powerCo", -1);
-        bTelemetry.Print("      Front Left  : " + driveManager.frontLeft.powerCoefficent);
+        bTelemetry.print("      Front Left  : " + driveManager.frontLeft.powerCoefficent);
         driveManager.frontRight.powerCoefficent = dataManger.readData("wheel_front_right_powerCo", -1);
-        bTelemetry.Print("      Front Right : " + driveManager.frontRight.powerCoefficent);
+        bTelemetry.print("      Front Right : " + driveManager.frontRight.powerCoefficent);
         driveManager.backLeft.powerCoefficent = dataManger.readData("wheel_back_left_powerCo", -1);
-        bTelemetry.Print("      Back Left   : " + driveManager.backLeft.powerCoefficent);
+        bTelemetry.print("      Back Left   : " + driveManager.backLeft.powerCoefficent);
         driveManager.backRight.powerCoefficent = dataManger.readData("wheel_back_right_powerCo", -1);
-        bTelemetry.Print("      Back Right  : " + driveManager.backRight.powerCoefficent);
+        bTelemetry.print("      Back Right  : " + driveManager.backRight.powerCoefficent);
 
 
         //Adds the motors and distance sensors to the expInput manager to allow for faster reads
         //DISABLED BUT WORKS
-//        bTelemetry.Print("Initializing Experimental Input...");
+//        bTelemetry.print("Initializing Experimental Input...");
 //        for (bMotor motor : driveManager.driveMotors) {
 //            experimentalInput.AddMotor(motor);
 //        }
@@ -121,13 +121,13 @@ public class Robot extends Thread {
 //        for (DistanceSensor sensor : wallTrack.sensors) {
 //            experimentalInput.AddSensor(sensor);
 //        }
-        bTelemetry.Print("Wheel boot successful. Ready to operate!");
+        bTelemetry.print("Wheel boot successful. Ready to operate!");
     }
 
     public void getHardware(LinearOpMode opmode, boolean useWallTracking) {
 
         //Sets up the drive train hardware
-        bTelemetry.Print("Configuring drive train...");
+        bTelemetry.print("Configuring drive train...");
         driveManager = new RobotDriveManager(opmode, RobotConfiguration.wheel_frontLeft, RobotConfiguration.wheel_frontRight, RobotConfiguration.wheel_backLeft, RobotConfiguration.wheel_backRight);
 
         //Invert the left side wheels
@@ -135,67 +135,67 @@ public class Robot extends Thread {
         driveManager.backLeft.setDirection(DcMotor.Direction.REVERSE);
 
         //Reset drive train encoders
-        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
         //Sets up the arms hardware
-        bTelemetry.Print("Configuring arm motors...");
+        bTelemetry.print("Configuring arm motors...");
         armPotentiometer = new Potentiometer(opmode, RobotConfiguration.armPotentiometer);
         arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
 
         lunchBox = opmode.hardwareMap.get(Servo.class, RobotConfiguration.lunchboxGrip);
 
-        bTelemetry.Print("Configuring IMU...");
+        bTelemetry.print("Configuring IMU...");
         imu.Start(opmode);
 
         if (useWallTracking) {
-            bTelemetry.Print("Configuring wall tracking...");
+            bTelemetry.print("Configuring wall tracking...");
             wallTrack.Start(opmode);
         }
         foundationServo0 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip0);
         foundationServo1 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip1);
 
-        SetFoundationGripperState(1);
+        setFoundationGripperState(1);
 
 
         while (imu.initStatus.get() < 2) {
 
         }
 
-        bTelemetry.Print("Completed IMU start up.");
+        bTelemetry.print("Completed IMU start up.");
 
         while (useWallTracking && !wallTrack.startUpComplete.get()) {
 
         }
 
-        bTelemetry.Print("Completed walltrack start up.");
+        bTelemetry.print("Completed walltrack start up.");
 
-        bTelemetry.Print("Hardware configuration complete.");
+        bTelemetry.print("Hardware configuration complete.");
     }
 
 
     //A fancy version of init used for calibrating the robot, not to be used in any offical match as calibration will take anywhere from 10 to 30 seconds
     public void initCalibration(HardwareMap hardwareMap, LinearOpMode opmode) {
 
-        //Start the printer
-        bTelemetry.Start(opmode);
+        //start the printer
+        bTelemetry.start(opmode);
 
         //Set up the instance (safety checks might be a good idea at some point)
         instance = this;
-        bTelemetry.Print("Robot instance assigned.");
+        bTelemetry.print("Robot instance assigned.");
 
         //Set the opmode
         Op = opmode;
 
         getHardware(opmode, false);
-        SetFoundationGripperState(0);
+        setFoundationGripperState(0);
 
 //        //Find the motors
 //        driveManager = new RobotDriveManager(opmode, RobotConfiguration.wheel_frontLeft, RobotConfiguration.wheel_frontRight, RobotConfiguration.wheel_backLeft, RobotConfiguration.wheel_backRight);
 //
-//        bTelemetry.Print("Robot wheels assigned.");
-//        bTelemetry.Print("Robot motors configured in the DriveManager.");
+//        bTelemetry.print("Robot wheels assigned.");
+//        bTelemetry.print("Robot motors configured in the DriveManager.");
 //
 //        //Left wheels are reversed so power 1,1,1,1 moves us forward
 //        driveManager.frontLeft.setDirection(DcMotor.Direction.REVERSE);
@@ -204,49 +204,49 @@ public class Robot extends Thread {
 //        //Define the arm values for motors and servos (also includes ranges)
 //        arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
 //
-//        //Start the thread that is responsible for fighting gravity and keeping arm position level.
+//        //start the thread that is responsible for fighting gravity and keeping arm position level.
 ////        arm.start();
 //
 //        //Init the motors for use.
-//        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        bTelemetry.Print("Wheel encoders initialized.");
+//        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        bTelemetry.print("Wheel encoders initialized.");
 //
 //
 //        //Set up the IMU(s)
-//        imu.Start(opmode);
-//        bTelemetry.Print("IMU's initialized.");
+//        imu.start(opmode);
+//        bTelemetry.print("IMU's initialized.");
 //
 //        //Set up the wall tracker, this uses ALL the lasers so make sure they all work before running this
-//        wallTrack.Start(opmode);
-//        bTelemetry.Print("Walltracker initialized.");
+//        wallTrack.start(opmode);
+//        bTelemetry.print("Walltracker initialized.");
 //
         //Starts the 'run' thread
         start();
-        bTelemetry.Print("Robot thread initialized.");
+        bTelemetry.print("Robot thread initialized.");
 
-        bTelemetry.Print("Robot start up successful. Preparing for initial wheel calibration!");
+        bTelemetry.print("Robot start up successful. Preparing for initial wheel calibration!");
 
         dataManger.Start();
 
-        bTelemetry.Print("bDataManager started.");
+        bTelemetry.print("bDataManager started.");
 
-        bTelemetry.Print("Robot start up successful. Running initial wheel calibration...");
+        bTelemetry.print("Robot start up successful. Running initial wheel calibration...");
 
-        SetFoundationGripperState(0);
+        setFoundationGripperState(0);
 
         driveManager.PerformInitialCalibration();
 
-        bTelemetry.Print("Wheel boot successful. Writing results...");
+        bTelemetry.print("Wheel boot successful. Writing results...");
 
         dataManger.writeData("wheel_front_left_powerCo", driveManager.frontLeft.powerCoefficent);
         dataManger.writeData("wheel_front_right_powerCo", driveManager.frontRight.powerCoefficent);
         dataManger.writeData("wheel_back_left_powerCo", driveManager.backLeft.powerCoefficent);
         dataManger.writeData("wheel_back_right_powerCo", driveManager.backRight.powerCoefficent);
 
-        bTelemetry.Print("Wheel write successful.");
+        bTelemetry.print("Wheel write successful.");
 
-        bTelemetry.Print("Calibration complete, pleasure doing business with you.");
+        bTelemetry.print("Calibration complete, pleasure doing business with you.");
 
 
     }
@@ -258,14 +258,14 @@ public class Robot extends Thread {
         while (threadRunning.get()) {
 
             //Update our 'rotation' value
-            BackgroundRotation();
+            updateBackgroundRotation();
 
 //            threadTimer += threadDeltaTime.seconds();
-//            Op.telemetry.update();
+//            op.telemetry.update();
 
             //Make sure that the robot stops once we request a stop
             if (Op.isStopRequested()) {
-                SetPowerDouble4(0, 0, 0, 0, 0);
+                setPowerDouble4(0, 0, 0, 0, 0);
                 threadRunning.set(false);
             }
 
@@ -277,18 +277,18 @@ public class Robot extends Thread {
     }
 
 
-    public void BackgroundRotation() {
+    public void updateBackgroundRotation() {
         //Updates the current rotation
         rotation = imu.getRotation(AngleUnit.DEGREES);
     }
 
 
-    public void Stop() {
+    public void shutdown() {
         arm.Stop();
         experimentalInput.Stop();
         threadRunning.set(false);
-        SetPowerDouble4(0, 0, 0, 0, 0);
-        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setPowerDouble4(0, 0, 0, 0, 0);
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
 
@@ -301,9 +301,9 @@ public class Robot extends Thread {
      * @param movementSpeed How fast we want to move to move along 'headingAngle'. 1 is very fast, 0 is anti-fast (brakes).
      */
 
-    public void MoveSimple(double headingAngle, double movementSpeed) {
+    public void moveSimple(double headingAngle, double movementSpeed) {
         Double4 v = bMath.getMecMovementSimple(headingAngle);
-        SetPowerDouble4(v, movementSpeed);
+        setPowerDouble4(v, movementSpeed);
     }
 
     /**
@@ -313,9 +313,9 @@ public class Robot extends Thread {
      * @param movementSpeed How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
      */
 
-    public void MoveSimple(Double2 headingVector, double movementSpeed) {
+    public void moveSimple(Double2 headingVector, double movementSpeed) {
         Double4 v = bMath.getMecMovementSimple(headingVector);
-        SetPowerDouble4(v, movementSpeed);
+        setPowerDouble4(v, movementSpeed);
     }
 
     /**
@@ -325,9 +325,9 @@ public class Robot extends Thread {
      * @param movementSpeed How fast we want to move to move along 'headingAngle'. 1 is very fast, 0 is anti-fast (brakes).
      */
 
-    public void MoveSimple(double headingAngle, double movementSpeed, double rotationPower) {
+    public void moveSimple(double headingAngle, double movementSpeed, double rotationPower) {
         Double4 v = bMath.getMecMovementSimple(headingAngle, rotationPower);
-        SetPowerDouble4(v, movementSpeed);
+        setPowerDouble4(v, movementSpeed);
     }
 
     /**
@@ -337,9 +337,9 @@ public class Robot extends Thread {
      * @param movementSpeed How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
      */
 
-    public void MoveSimple(Double2 headingVector, double movementSpeed, double rotationSpeed) {
+    public void moveSimple(Double2 headingVector, double movementSpeed, double rotationSpeed) {
         Double4 v = bMath.getMecMovementSimple(headingVector, rotationSpeed);
-        SetPowerDouble4(v, movementSpeed);
+        setPowerDouble4(v, movementSpeed);
     }
 
 
@@ -349,9 +349,9 @@ public class Robot extends Thread {
      * @param rotationSpeed The angle that we want the robot to rotate too. It's actually witchcraft and might need some more research/testing
      * @param offsetAngle
      */
-    public void MoveComplex(double headingAngle, double movementSpeed, double rotationSpeed, double offsetAngle) {
+    public void moveComplex(double headingAngle, double movementSpeed, double rotationSpeed, double offsetAngle) {
         Double4 v = bMath.getMecMovement(headingAngle, rotationSpeed, offsetAngle);
-        SetPowerDouble4(v, movementSpeed);
+        setPowerDouble4(v, movementSpeed);
     }
 
     /**
@@ -360,33 +360,33 @@ public class Robot extends Thread {
      * @param rotationSpeed The angle that we want the robot to rotate too. It's actually witchcraft and might need some more research/testing
      * @param offsetAngle
      */
-    public void MoveComplex(Double2 headingVector, double movementSpeed, double rotationSpeed, double offsetAngle) {
+    public void moveComplex(Double2 headingVector, double movementSpeed, double rotationSpeed, double offsetAngle) {
         Double4 v = bMath.getMecMovement(headingVector, rotationSpeed, offsetAngle);
-        SetPowerDouble4(v, movementSpeed);
+        setPowerDouble4(v, movementSpeed);
     }
 
-    public void RotateSimple(double rotationSpeed) {
+    public void rotateSimple(double rotationSpeed) {
         Double4 v = bMath.getRotationSimple(rotationSpeed);
-        SetPowerDouble4(v, 1);
+        setPowerDouble4(v, 1);
     }
 
     PID rotationPID_test = new PID();
 
     //
-    public void RotatePID(double targetAngle, double rotationSpeed, double maxTime) {
+    public void rotatePID(double targetAngle, double rotationSpeed, double maxTime) {
 
         //P of 3 and 0 for other gains seems to work really well
-//        rotationPID_test.Start(3, 0, 0.1);
+//        rotationPID_test.start(3, 0, 0.1);
 
         rotationPID_test.Start(4.02, 0.0032, 0.0876);
-//        rotationPID_test.Start(4.01, 0.003, 0.0876);
+//        rotationPID_test.start(4.01, 0.003, 0.0876);
 
-//        rotationPID_test.Start(1, 0.075, 0.022);
+//        rotationPID_test.start(1, 0.075, 0.022);
 
-//        rotationPID_test.Start(3, 0.21, 0.69);
-//        rotationPID_test.Start(0.5, 0.075, 0.015);
-//        rotationPID_test.Start(1, 0.25, 0.035);
-//        rotationPID_test.Start(0.025, 0.005, 0);
+//        rotationPID_test.start(3, 0.21, 0.69);
+//        rotationPID_test.start(0.5, 0.075, 0.015);
+//        rotationPID_test.start(1, 0.25, 0.035);
+//        rotationPID_test.start(0.025, 0.005, 0);
 
         double ticker = 0;
         double startAngle = rotation;
@@ -413,14 +413,14 @@ public class Robot extends Thread {
             Op.telemetry.addData("rotationSpeed ", rotationSpeed);
             Op.telemetry.addData("yeets", directionChanges);
             Op.telemetry.update();
-            RotateSimple(rotationPower * rotationSpeed);
+            rotateSimple(rotationPower * rotationSpeed);
 
             if (lastPositiveState != rotationPower > 0) {
                 directionChanges++;
                 lastPositiveState = rotationPower > 0;
             }
 
-            if (Math.abs(GetRotation() - targetAngle) < 0.15 * rotationPower) {
+            if (Math.abs(getRotation() - targetAngle) < 0.15 * rotationPower) {
                 break;
             }
 
@@ -438,33 +438,33 @@ public class Robot extends Thread {
 //
 //            if (directionChanges > 3) {
 //                ticker += cycles * 2;
-//                Op.telemetry.addData("Rotation ended", directionChanges);
-//                Op.telemetry.update();
+//                op.telemetry.addData("Rotation ended", directionChanges);
+//                op.telemetry.update();
 //            }
             ticker += dt.seconds();
             dt.reset();
         }
 
-        SetPowerDouble4(0, 0, 0, 0, 0);
+        setPowerDouble4(0, 0, 0, 0, 0);
     }
 
-    public void RotatePIDRelative(double relativeTargetAngle, double rotationSpeed, double maxTime) {
+    public void rotatePIDRelative(double relativeTargetAngle, double rotationSpeed, double maxTime) {
 
         //P of 3 and 0 for other gains seems to work really well
-//        rotationPID_test.Start(3, 0, 0.1);
+//        rotationPID_test.start(3, 0, 0.1);
 
         rotationPID_test.Start(4.02, 0.0032, 0.0876);
-//        rotationPID_test.Start(4.01, 0.003, 0.0876);
+//        rotationPID_test.start(4.01, 0.003, 0.0876);
 
-//        rotationPID_test.Start(1, 0.075, 0.022);
+//        rotationPID_test.start(1, 0.075, 0.022);
 
-//        rotationPID_test.Start(3, 0.21, 0.69);
-//        rotationPID_test.Start(0.5, 0.075, 0.015);
-//        rotationPID_test.Start(1, 0.25, 0.035);
-//        rotationPID_test.Start(0.025, 0.005, 0);
+//        rotationPID_test.start(3, 0.21, 0.69);
+//        rotationPID_test.start(0.5, 0.075, 0.015);
+//        rotationPID_test.start(1, 0.25, 0.035);
+//        rotationPID_test.start(0.025, 0.005, 0);
 
         double ticker = 0;
-        double startAngle = GetRotation();
+        double startAngle = getRotation();
         double targetAngle = ((startAngle + relativeTargetAngle + 360) % 360) - 360;
 
         targetAngle = bMath.Loop(targetAngle, 180);
@@ -491,14 +491,14 @@ public class Robot extends Thread {
             Op.telemetry.addData("rotationSpeed ", rotationSpeed);
             Op.telemetry.addData("yeets", directionChanges);
             Op.telemetry.update();
-            RotateSimple(rotationPower * rotationSpeed);
+            rotateSimple(rotationPower * rotationSpeed);
 
             if (lastPositiveState != rotationPower > 0) {
                 directionChanges++;
                 lastPositiveState = rotationPower > 0;
             }
 
-            if (Math.abs(GetRotation() - targetAngle) < 0.15 * rotationPower) {
+            if (Math.abs(getRotation() - targetAngle) < 0.15 * rotationPower) {
                 break;
             }
 
@@ -510,14 +510,14 @@ public class Robot extends Thread {
             dt.reset();
         }
 
-        SetPowerDouble4(0, 0, 0, 0, 0);
+        setPowerDouble4(0, 0, 0, 0, 0);
     }
 
-    public void RotatePID(double targetAngle, double rotationSpeed, int cycles, double p, double i, double d) {
+    public void rotatePID(double targetAngle, double rotationSpeed, int cycles, double p, double i, double d) {
 
-//        rotationPID_test.Start(3, 0.21, 0.69);
+//        rotationPID_test.start(3, 0.21, 0.69);
         rotationPID_test.Start(p, i, d);
-//        rotationPID_test.Start(0.025, 0.005, 0);
+//        rotationPID_test.start(0.025, 0.005, 0);
 
         int ticker = 0;
         double startAngle = rotation;
@@ -541,7 +541,7 @@ public class Robot extends Thread {
             Op.telemetry.addData("rotationSpeed ", rotationSpeed);
             Op.telemetry.addData("yeets", directionChanges);
             Op.telemetry.update();
-            RotateSimple(rotationPower * rotationSpeed);
+            rotateSimple(rotationPower * rotationSpeed);
 
             if (lastPositiveState != rotationPower > 0) {
                 directionChanges++;
@@ -554,11 +554,11 @@ public class Robot extends Thread {
 
         }
 
-        SetPowerDouble4(0, 0, 0, 0, 0);
+        setPowerDouble4(0, 0, 0, 0, 0);
     }
 
 
-    public void RotateSimple(double targetAngle, double rotationSpeed, double tolerance, double exitTime) {
+    public void rotateSimple(double targetAngle, double rotationSpeed, double tolerance, double exitTime) {
         double exitTimer = 0;
         ElapsedTime deltaTime = new ElapsedTime();
 
@@ -566,9 +566,9 @@ public class Robot extends Thread {
         while (Op.opModeIsActive()) {
             deltaTime.reset();
 
-            MoveComplex(new Double2(0, 0), rotationSpeed, GetRotation() - targetAngle, 0);
+            moveComplex(new Double2(0, 0), rotationSpeed, getRotation() - targetAngle, 0);
 
-            if (Math.abs(GetRotation() - targetAngle) < tolerance) {
+            if (Math.abs(getRotation() - targetAngle) < tolerance) {
                 exitTimer += deltaTime.seconds();
             }
 
@@ -577,7 +577,7 @@ public class Robot extends Thread {
             }
         }
 
-        SetPowerDouble4(0, 0, 0, 0, 0);
+        setPowerDouble4(0, 0, 0, 0, 0);
     }
 
     /**
@@ -588,7 +588,7 @@ public class Robot extends Thread {
      * @param multiplier the coefficient of 'v'
      */
 
-    public void SetPowerDouble4(Double4 v, double multiplier) {
+    public void setPowerDouble4(Double4 v, double multiplier) {
         driveManager.frontLeft.setPower(v.x * multiplier);
         driveManager.frontRight.setPower(v.y * multiplier);
         driveManager.backLeft.setPower(v.z * multiplier);
@@ -607,7 +607,7 @@ public class Robot extends Thread {
     //Front right power is the Y value
     //Back left power is the Z value
     //Back right power is the W value
-    public void SetPowerDouble4(double x, double y, double z, double w, double multiplier) {
+    public void setPowerDouble4(double x, double y, double z, double w, double multiplier) {
         Double4 v = new Double4(x, y, z, w);
 
         driveManager.frontLeft.setPower(v.x * multiplier);
@@ -621,14 +621,14 @@ public class Robot extends Thread {
 //        backLeft.setPower(v.y * multiplier);
     }
 
-    public void SetDriveMode(DcMotor.RunMode mode) {
+    public void setDriveMode(DcMotor.RunMode mode) {
         driveManager.frontLeft.setMode(mode);
         driveManager.backLeft.setMode(mode);
         driveManager.frontRight.setMode(mode);
         driveManager.backRight.setMode(mode);
     }
 
-    public void SetRelativeEncoderPosition(double delta) {
+    public void setRelativeEncoderPosition(double delta) {
 
         driveManager.frontLeft.setTargetPosition(driveManager.frontLeft.getCurrentPosition() + (int) delta);
         driveManager.backLeft.setTargetPosition(driveManager.backLeft.getCurrentPosition() + (int) delta);
@@ -636,7 +636,7 @@ public class Robot extends Thread {
         driveManager.backRight.setTargetPosition(driveManager.backRight.getCurrentPosition() + (int) delta);
     }
 
-    public void SetRelativeEncoderPosition(double deltaX, double deltaY, double deltaZ, double deltaW) {
+    public void setRelativeEncoderPosition(double deltaX, double deltaY, double deltaZ, double deltaW) {
 
         driveManager.frontLeft.setTargetPosition(driveManager.frontLeft.getCurrentPosition() + (int) deltaX);
         driveManager.backLeft.setTargetPosition(driveManager.backLeft.getCurrentPosition() + (int) deltaY);
@@ -645,29 +645,29 @@ public class Robot extends Thread {
     }
 
     //Returns IMU rotation on the zed axies
-    public double GetRotation() {
+    public double getRotation() {
         //returns the threaded rotation values for speeeed
         return rotation;
     }
 
     //Returns true if any wheels are currently busy
-    public boolean WheelsBusy() {
+    public boolean wheelsBusy() {
         return driveManager.frontRight.isBusy() || driveManager.frontLeft.isBusy() || driveManager.backLeft.isBusy() || driveManager.backRight.isBusy();
 //        return driveManager.frontRight.isBusy() || driveManager.frontLeft.isBusy() || driveManager.backLeft.isBusy() || driveManager.backRight.isBusy();
     }
     //</editor-fold>
 
     //Drive forward a set distance at a set speed, distance is measured in CM
-    public void DriveByDistance(double speed, double distance) {
+    public void driveByDistance(double speed, double distance) {
 
-        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        SetRelativeEncoderPosition((480 / RobotConfiguration.wheel_circumference) * distance);
-        SetPowerDouble4(1, 1, 1, 1, speed);
-        SetDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setRelativeEncoderPosition((480 / RobotConfiguration.wheel_circumference) * distance);
+        setPowerDouble4(1, 1, 1, 1, speed);
+        setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         Op.telemetry.addData("Driving by distance ", distance * ((RobotConfiguration.wheel_circumference * RobotConfiguration.wheel_ticksPerRotation)));
         Op.telemetry.update();
-        while (Op.opModeIsActive() && WheelsBusy()) {
+        while (Op.opModeIsActive() && wheelsBusy()) {
             Op.telemetry.addData("Wheel Busy", "");
             Op.telemetry.addData("Wheel Front Right Postion", driveManager.frontRight.getCurrentPosition());
             Op.telemetry.addData("Wheel Front Right Target", driveManager.frontRight.motor.getTargetPosition());
@@ -682,33 +682,33 @@ public class Robot extends Thread {
         Op.telemetry.addData("Target Reached", "");
         Op.telemetry.update();
 
-        //Stop motors
-        SetPowerDouble4(0, 0, 0, 0, 0);
+        //shutdown motors
+        setPowerDouble4(0, 0, 0, 0, 0);
 
         //Set up for normal driving
-        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void DriveByDistanceAndAngle(double angle, double speed, double distance) {
+    public void driveByDistance(double angle, double speed, double distance) {
 
-        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
         Double4 a = bMath.getMecMovement(angle, 0, 0);
 
-        SetRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
-        SetPowerDouble4(1, 1, 1, 1, speed);
+        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
+        setPowerDouble4(1, 1, 1, 1, speed);
 
-        SetRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
-        SetPowerDouble4(a.x, a.y, a.z, a.w, speed);
+        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
+        setPowerDouble4(a.x, a.y, a.z, a.w, speed);
 
 
-        SetDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
+        setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         Op.telemetry.addData("Driving by distance ", distance * ((RobotConfiguration.wheel_circumference * RobotConfiguration.wheel_ticksPerRotation)));
         Op.telemetry.update();
-        while (Op.opModeIsActive() && WheelsBusy()) {
+        while (Op.opModeIsActive() && wheelsBusy()) {
             Op.telemetry.addData("Wheel Busy", "");
             Op.telemetry.addData("Wheel Front Right Postion", driveManager.frontRight.getCurrentPosition());
             Op.telemetry.addData("Wheel Front Right Target", driveManager.frontRight.motor.getTargetPosition());
@@ -723,12 +723,12 @@ public class Robot extends Thread {
         Op.telemetry.addData("Target Reached", "");
         Op.telemetry.update();
 
-        //Stop motors
-        SetPowerDouble4(0, 0, 0, 0, 0);
+        //shutdown motors
+        setPowerDouble4(0, 0, 0, 0, 0);
 
         //Set up for normal driving
-        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public enum simpleDirection {
@@ -740,63 +740,64 @@ public class Robot extends Thread {
 
     // can go forward, backwards, or sideways
     //distance should be in cm
-    public void DriveByDistancePoorly(double distance, simpleDirection direction, double speedMultiplier) {
-        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    @Deprecated
+    public void driveByDistancePoorly(double distance, simpleDirection direction, double speedMultiplier) {
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         int targetEncoders = (int) ((480.0 / RobotConfiguration.wheel_circumference) * distance);
-        SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         if (direction == simpleDirection.FORWARD) { //if you wanna go forward, this is the stuff
-            SetPowerDouble4(1, 1, 1, 1, speedMultiplier);
+            setPowerDouble4(1, 1, 1, 1, speedMultiplier);
             while (Op.opModeIsActive() && driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders) {
             } //empty while loop works as waitUntil command
-            SetPowerDouble4(1, 1, 1, 1, 0.5 * speedMultiplier);
+            setPowerDouble4(1, 1, 1, 1, 0.5 * speedMultiplier);
             while (Op.opModeIsActive() && driveManager.backLeft.getCurrentPosition() < 0.75 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.75 * targetEncoders) {
             } //empty while loop works as waitUntil command
-            SetPowerDouble4(1, 1, 1, 1, 0.25 * speedMultiplier);
+            setPowerDouble4(1, 1, 1, 1, 0.25 * speedMultiplier);
             while (Op.opModeIsActive() && driveManager.backLeft.getCurrentPosition() < targetEncoders && driveManager.backRight.getCurrentPosition() < targetEncoders) {
             } //empty while loop works as waitUntil command
-            SetPowerDouble4(0, 0, 0, 0, 0);
+            setPowerDouble4(0, 0, 0, 0, 0);
         }
 
         if (direction == simpleDirection.LEFT) {
-            SetPowerDouble4(-1, 1, 1, -1, 1);
+            setPowerDouble4(-1, 1, 1, -1, 1);
             while (driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders) {
             } //empty while loop works as waitUntil command
-            SetPowerDouble4(-1, 1, 1, -1, 0.5);
+            setPowerDouble4(-1, 1, 1, -1, 0.5);
             while (driveManager.backLeft.getCurrentPosition() < 0.75 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.75 * targetEncoders) {
             } //empty while loop works as waitUntil command
-            SetPowerDouble4(-1, 1, 1, -1, 0.25);
+            setPowerDouble4(-1, 1, 1, -1, 0.25);
             while (driveManager.backLeft.getCurrentPosition() < targetEncoders && driveManager.backRight.getCurrentPosition() < targetEncoders) {
             } //empty while loop works as waitUntil command
-            SetPowerDouble4(-1, 1, 1, -1, 0);
+            setPowerDouble4(-1, 1, 1, -1, 0);
         }
 
         if (direction == simpleDirection.BACKWARD) ;
         {
-            SetPowerDouble4(-1, -1, -1, -1, 1);
+            setPowerDouble4(-1, -1, -1, -1, 1);
             while (driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders) {
             } //empty while loop works as waitUntil command
-            SetPowerDouble4(-1, -1, -1, -1, 0.5);
+            setPowerDouble4(-1, -1, -1, -1, 0.5);
             while (driveManager.backLeft.getCurrentPosition() < 0.75 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.75 * targetEncoders) {
             } //empty while loop works as waitUntil command
-            SetPowerDouble4(-1, -1, -1, -1, 0.25);
+            setPowerDouble4(-1, -1, -1, -1, 0.25);
             while (driveManager.backLeft.getCurrentPosition() < targetEncoders && driveManager.backRight.getCurrentPosition() < targetEncoders) {
             } //empty while loop works as waitUntil command
-            SetPowerDouble4(-1, -1, -1, -1, 0);
+            setPowerDouble4(-1, -1, -1, -1, 0);
         }
 
         if (direction == simpleDirection.RIGHT) ;
         {
-            SetPowerDouble4(1, -1, -1, 1, 1);
+            setPowerDouble4(1, -1, -1, 1, 1);
             while (driveManager.backLeft.getCurrentPosition() < 0.5 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.5 * targetEncoders) {
             } //empty while loop works as waitUntil command
-            SetPowerDouble4(1, -1, -1, 1, 0.5);
+            setPowerDouble4(1, -1, -1, 1, 0.5);
             while (driveManager.backLeft.getCurrentPosition() < 0.75 * targetEncoders && driveManager.backRight.getCurrentPosition() < 0.75 * targetEncoders) {
             } //empty while loop works as waitUntil command
-            SetPowerDouble4(1, -1, -1, 1, 0.25);
+            setPowerDouble4(1, -1, -1, 1, 0.25);
             while (driveManager.backLeft.getCurrentPosition() < targetEncoders && driveManager.backRight.getCurrentPosition() < targetEncoders) {
             } //empty while loop works as waitUntil command
-            SetPowerDouble4(1, -1, -1, 1, 0);
+            setPowerDouble4(1, -1, -1, 1, 0);
         }
     }
 
@@ -807,38 +808,38 @@ public class Robot extends Thread {
     //3666 X
     //11577
     //16884
-//    public void DriveByDistance(double speed, double distance, double targetRotation) {
+//    public void driveByDistance(double speed, double distance, double targetRotation) {
 //
 //        double distances = (480 / RobotConfiguration.wheel_circumference) * distance;
 //        Double4 targetDistances = new Double4(distances, distances, distances, distances);
 //
-//        SetPowerDouble4(1, 1, 1, 1, speed);
-//        while (Op.opModeIsActive() && driveManager.backRight > targetDistances.x) {
-//            SetPowerDouble4();
+//        setPowerDouble4(1, 1, 1, 1, speed);
+//        while (op.opModeIsActive() && driveManager.backRight > targetDistances.x) {
+//            setPowerDouble4();
 //
 //
-//            if (!Op.opModeIsActive()) {
+//            if (!op.opModeIsActive()) {
 //                break;
 //            }
 //        }
 //
-//        Op.telemetry.addData("Target Reached", "");
-//        Op.telemetry.update();
+//        op.telemetry.addData("Target Reached", "");
+//        op.telemetry.update();
 //
-//        //Stop motors
-//        SetPowerDouble4(0, 0, 0, 0, 0);
+//        //shutdown motors
+//        setPowerDouble4(0, 0, 0, 0, 0);
 //
 //        //Set up for normal driving
-//        SetDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        SetDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //    }
 
     //Returns the distance using a sensor group
-    public double GetDistance(RobotWallTrack.groupID group, DistanceUnit unit) {
+    public double getDistance(RobotWallTrack.groupID group, DistanceUnit unit) {
         return wallTrack.sensorIDGroupPairs.get(group).getDistanceAverage(unit);
     }
 
-    public void SetFoundationGripperState(double value) {
+    public void setFoundationGripperState(double value) {
         foundationServo0.setPosition(1 - value);
         foundationServo1.setPosition(value);
     }

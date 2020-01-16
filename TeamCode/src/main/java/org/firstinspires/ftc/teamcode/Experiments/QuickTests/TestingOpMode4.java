@@ -41,7 +41,7 @@ public class TestingOpMode4 extends LinearOpMode {
         }
 
 
-        robot.Stop();
+        robot.shutdown();
 
     }
 }

@@ -14,7 +14,7 @@ public class SkystoneMain extends Auto {
     public void runOpMode() {
         StartRobot();
 
-        startRotation = robot.GetRotation();
+        startRotation = robot.getRotation();
 
         waitForStart();
 
@@ -22,9 +22,9 @@ public class SkystoneMain extends Auto {
         GrabArm(0.35, 0.35);
 
         if (side == FieldSide.SIDE_BLUE) {
-            robot.RotateSimple(-90, 1, 5, 0.2);
+            robot.rotateSimple(-90, 1, 5, 0.2);
         } else {
-            robot.RotateSimple(90, 1, 5, 0.2);
+            robot.rotateSimple(90, 1, 5, 0.2);
         }
 
         //Extend the arm all of the way
@@ -32,7 +32,7 @@ public class SkystoneMain extends Auto {
 //
 //        DepositeArm(0.35, 1);
 //
-//        robot.RotateSimple(0, 1, 5, 0.2);
+//        robot.rotateSimple(0, 1, 5, 0.2);
 
 
         StopMovement();
