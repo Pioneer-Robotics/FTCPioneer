@@ -16,7 +16,7 @@ public class SkystoneSelectionTest extends Auto {
 
     @Override
     public void runOpMode() {
-        StartRobot();
+        startRobot();
 
         startRotation = robot.getRotation();
 

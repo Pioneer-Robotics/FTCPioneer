@@ -1,1 +1,0 @@
-This directory is for scripts n functions n systems that do not work and are likely obsolete.

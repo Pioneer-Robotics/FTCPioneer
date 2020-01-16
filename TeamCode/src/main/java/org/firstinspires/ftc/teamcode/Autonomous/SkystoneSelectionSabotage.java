@@ -18,7 +18,7 @@ public class SkystoneSelectionSabotage extends Auto {
 
     @Override
     public void runOpMode() {
-        StartRobot();
+        startRobot();
 
         startRotation = robot.getRotation();
 
@@ -61,7 +61,7 @@ public class SkystoneSelectionSabotage extends Auto {
 
 // loop code for multiple skystones
 //        for (int i = 0; i <= 2; i++) {
-//            bTelemetry.print("Loop: ", Integer.toString(i));
+//            bTelemetry.print("loop: ", Integer.toString(i));
 //            bTelemetry.print("Status: ", "Grabbing");
 //            GrabArm(0.5, 0.2);
 //            bTelemetry.print("Status: ", "Rotating");

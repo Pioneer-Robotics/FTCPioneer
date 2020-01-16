@@ -18,7 +18,7 @@ public class SkystoneAutoBridge extends Auto {
 
     @Override
     public void runOpMode() {
-        StartRobot();
+        startRobot();
 
         while (!opModeIsActive()) {
             startDelay += gamepad1.left_stick_x * deltaTime.seconds() * 5;

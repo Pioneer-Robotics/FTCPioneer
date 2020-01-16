@@ -8,7 +8,7 @@ import android.content.SharedPreferences;
 
 public class bDataManager {
 
-    //We add an ID to all key names to avoid interfering with other parts of the code that use the PrefHelper
+    //We add an ID to all key names to avoid interfering with other parts of the code that use the PrefHelper, please do not change this before asking b.
     private static final String id = "Very_Cool_Robot_code";
     protected PreferencesHelper preferencesHelper;
 
@@ -16,7 +16,7 @@ public class bDataManager {
         preferencesHelper = new PreferencesHelper("bDataManager");
     }
 
-    //Writes data via the sharedPrefs manager, the key is its name and value is its value!
+    //Writes data via the sharedPrefs manager, the key is its name and value is its value.
     public void writeData(String key, double value) {
         preferencesHelper.writeFloatPrefIfDifferent(id + key, (float) value);
     }
@@ -26,7 +26,7 @@ public class bDataManager {
         return (double) preferencesHelper.readFloat(id + key, (float) defaultValue);
     }
 
-    //Writes data via the sharedPrefs manager, the key is its name and value is its value!
+    //Writes data via the sharedPrefs manager, the key is its name and value is its value.
     public void writeData(String key, Object value) {
         preferencesHelper.writePrefIfDifferent(id + key, value);
     }

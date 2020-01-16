@@ -56,7 +56,7 @@ public class Robot extends Thread {
 
 
     //The data manager serves to store data locally on the phone, used in calibration and PID tuning.
-    private  bDataManager dataManger = new bDataManager();
+    private bDataManager dataManger = new bDataManager();
 
 
     public LinearOpMode Op;
@@ -122,6 +122,10 @@ public class Robot extends Thread {
 //        for (DistanceSensor sensor : wallTrack.sensors) {
 //            experimentalInput.AddSensor(sensor);
 //        }
+
+        arm.SetGripState(RobotArm.GripState.IDLE, 1);
+        setFoundationGripperState(0);
+
         bTelemetry.print("Wheel boot successful. Ready to operate!");
     }
 
@@ -360,7 +364,7 @@ public class Robot extends Thread {
         //P of 3 and 0 for other gains seems to work really well
 //        rotationPID.start(3, 0, 0.1);
 
-        rotationPID.Start(4.02, 0.0032, 0.0876);
+        rotationPID.start(4.02, 0.0032, 0.0876);
 //        rotationPID.start(4.01, 0.003, 0.0876);
 
 //        rotationPID.start(1, 0.075, 0.022);
@@ -380,7 +384,7 @@ public class Robot extends Thread {
         double correctTime = 0;
 
         while (ticker < maxTime && Op.opModeIsActive()) {
-            rotationPower = rotationPID.Loop(targetAngle, rotation);
+            rotationPower = rotationPID.loop(targetAngle, rotation);
             rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - targetAngle));
             rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
             Op.telemetry.addData("Error ", rotationPID.error);
@@ -435,7 +439,7 @@ public class Robot extends Thread {
         //P of 3 and 0 for other gains seems to work really well
 //        rotationPID.start(3, 0, 0.1);
 
-        rotationPID.Start(4.02, 0.0032, 0.0876);
+        rotationPID.start(4.02, 0.0032, 0.0876);
 //        rotationPID.start(4.01, 0.003, 0.0876);
 
 //        rotationPID.start(1, 0.075, 0.022);
@@ -458,7 +462,7 @@ public class Robot extends Thread {
 
 
         while (ticker < maxTime && Op.opModeIsActive()) {
-            rotationPower = rotationPID.Loop(targetAngle, rotation);
+            rotationPower = rotationPID.loop(targetAngle, rotation);
             rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - relativeTargetAngle));
             rotationPower += (Math.copySign(0.1, rotationPower));
             Op.telemetry.addData("Error ", rotationPID.error);
@@ -498,7 +502,7 @@ public class Robot extends Thread {
     public void rotatePID(double targetAngle, double rotationSpeed, int cycles, double p, double i, double d) {
 
 //        rotationPID.start(3, 0.21, 0.69);
-        rotationPID.Start(p, i, d);
+        rotationPID.start(p, i, d);
 //        rotationPID.start(0.025, 0.005, 0);
 
         int ticker = 0;
@@ -508,7 +512,7 @@ public class Robot extends Thread {
 
         while (ticker < cycles && Op.opModeIsActive()) {
             ticker++;
-            double rotationPower = rotationPID.Loop(targetAngle, rotation);
+            double rotationPower = rotationPID.loop(targetAngle, rotation);
             rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - targetAngle));
             rotationPower += (0.01 * (rotationPower > 0 ? 1 : -1));
             Op.telemetry.addData("Error ", rotationPID.error);
@@ -821,6 +825,10 @@ public class Robot extends Thread {
         return wallTrack.sensorIDGroupPairs.get(group).getDistanceAverage(unit);
     }
 
+    //Sets the position of the foundation 'arm' servos,
+    //Setting this value to 0 will raise the arms all of the way
+    //Setting this value to 0.73 will lower the arms without impacting wheels
+    //Setting this value to 1 will lower the arms and strain on the wheels, should only be used when dragging the foundation
     public void setFoundationGripperState(double value) {
         foundationServo0.setPosition(1 - value);
         foundationServo1.setPosition(value);

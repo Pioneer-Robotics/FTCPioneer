@@ -1,0 +1,1 @@
+This directory is for scripts that should never be run during a competition, that instead help with calibration.

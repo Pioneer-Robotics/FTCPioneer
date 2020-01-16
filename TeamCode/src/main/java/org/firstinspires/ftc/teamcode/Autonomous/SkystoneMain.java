@@ -12,7 +12,7 @@ public class SkystoneMain extends Auto {
 
     @Override
     public void runOpMode() {
-        StartRobot();
+        startRobot();
 
         startRotation = robot.getRotation();
 

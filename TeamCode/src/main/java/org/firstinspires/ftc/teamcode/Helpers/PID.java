@@ -18,7 +18,7 @@ public class PID {
 
     double lastReturnValue;
 
-    public void Start(double p, double i, double d) {
+    public void start(double p, double i, double d) {
         P = p;
         I = i;
         D = d;
@@ -33,7 +33,7 @@ public class PID {
     }
 
     //Double spits out the PID'd value
-    public double Loop(double targetState, double currentState) {
+    public double loop(double targetState, double currentState) {
 
         error = targetState - currentState;
         integral += error * deltaTime.seconds();
@@ -44,7 +44,7 @@ public class PID {
         return (P * error) + (I * integral) + (D * derivative);
     }
 
-    public double State() {
+    public double state() {
         return lastReturnValue;
     }
 

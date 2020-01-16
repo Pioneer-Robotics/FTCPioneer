@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Experiments.Functional;
+package org.firstinspires.ftc.teamcode.TeleOp;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -12,14 +12,14 @@ import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 import org.firstinspires.ftc.teamcode.Robot.RobotConfiguration;
 
 @TeleOp(name = "Teleop2", group = "Sensor")
-public class TeleopTester2 extends LinearOpMode {
+public class Teleop extends LinearOpMode {
 
 
     private Robot robot = new Robot();
 
     private ElapsedTime deltaTime = new ElapsedTime();
 
-    //Program State
+    //Program state
 
     //Driver Control Variables
     private double moveSpeed;
@@ -71,7 +71,6 @@ public class TeleopTester2 extends LinearOpMode {
     private boolean fineServoControl = true;
 
     private double lunchboxRot = 0.5;
-
 
     private boolean gripFoundation = false;
     private boolean bButton1Check = false;

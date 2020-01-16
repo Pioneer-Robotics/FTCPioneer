@@ -1,0 +1,1 @@
+Used to test basic functions outside of an autonomous or teleop. Used in debugging and mechanical troubleshooting

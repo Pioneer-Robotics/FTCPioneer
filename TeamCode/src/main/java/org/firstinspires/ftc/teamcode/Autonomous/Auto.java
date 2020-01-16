@@ -34,7 +34,7 @@ public class Auto extends LinearOpMode {
 
     }
 
-    public void StartRobot() {
+    public void startRobot() {
 
         print("Status: Initiating robot.");
 
@@ -43,14 +43,7 @@ public class Auto extends LinearOpMode {
 
         print("Status: Initiating all jobs.");
 
-//        //Init's all of jobs we can use in the OpMode. Right now the job system isnt super useful so just use Tfod jobs
-//        jobs.initAll(this);
-//
-//        print("Status: Starting TensorFlow Thread.");
-//        //start the TF thread after it's init
-//        jobs.tensorFlowaJob.start(this);
-
-        print("Status: Determining current play side");
+//        print("Status: Determining current play side");
 
         //If we are closest to the 90 degree side we know were playing on the BLUE side
 //        if (robot.getDistance(RobotWallTrack.groupID.Group90, DistanceUnit.CM) < robot.getDistance(RobotWallTrack.groupID.Group270, DistanceUnit.CM)) {
@@ -60,7 +53,7 @@ public class Auto extends LinearOpMode {
 //        }
 //        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
 
-        print("Status: Waiting for play side input. Please press the button thats color corresponds to the side your robot is on (see bridge). Press A to continue");
+//        print("Status: Waiting for play side input. Please press the button thats color corresponds to the side your robot is on (see bridge). Press A to continue");
 
 
         //Manually set the side based on gamepad input
@@ -93,8 +86,7 @@ public class Auto extends LinearOpMode {
 //        }
 
 
-        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
-        robot.setFoundationGripperState(0);
+
 
 //        robot.arm.setArmStateWait(0, 1, 1);
 //        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
@@ -198,7 +190,7 @@ public class Auto extends LinearOpMode {
 
     public void ResetWallPID() {
 //        walltrackingController.start(15, 0.0, 0);
-        walltrackingController.Start(4.95, 0.0, 0.1);
+        walltrackingController.start(4.95, 0.0, 0.1);
     }
 
 

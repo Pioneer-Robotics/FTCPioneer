@@ -4,13 +4,13 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name = "Skystone Foundation Joe Blue", group = "ftcPio")
-public class SkystoneFoundationJoeBlu extends Auto {
+public class SkystoneFoundationBlu extends Auto {
 
     private boolean endOnWall = true;
 
     @Override
     public void runOpMode() {
-        StartRobot();
+        startRobot();
         waitForStart();
         //go forward 70 cm
         robot.driveByDistance(0, 0.5, 90);

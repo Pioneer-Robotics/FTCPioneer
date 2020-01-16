@@ -1,1 +1,0 @@
-This directory is for scripts n functions n systems that work but are not part of the main opmode's. Most of them will be / are implemented into the Robot.java in some way or another
