@@ -16,7 +16,7 @@ import static java.lang.Thread.sleep;
 
 public class RobotArm extends Thread {
 
-    LinearOpMode op;
+    private LinearOpMode op;
 
     public Robot robot;
     //Arm height motor
@@ -29,14 +29,14 @@ public class RobotArm extends Thread {
     public Servo grip;
 
     public double targetLength;
-    public double targetLengthSpeed;
-    public double xExtConst;
-    public double yExtConst;
-    public double pot;
+    private  double targetLengthSpeed;
+    private  double xExtConst;
+    private  double yExtConst;
+    private  double pot;
 
-    public boolean protectSpool = true;
+    private  boolean protectSpool = true;
 
-    public boolean usePot = true;
+    private  boolean usePot = true;
 
     public enum GripState {
         OPEN,
@@ -45,9 +45,9 @@ public class RobotArm extends Thread {
     }
 
     // lets make some real changes
-    AtomicBoolean runningThread = new AtomicBoolean();
+    private AtomicBoolean runningThread = new AtomicBoolean();
 
-    ElapsedTime deltaTime = new ElapsedTime();
+    private ElapsedTime deltaTime = new ElapsedTime();
 
     //The scale range Double2's are interpreted as X = min and Y = max.
     public RobotArm(LinearOpMode opMode, String armRotationMotor, String armSpoolMotor, String gripServo, String gripRotationServo, Double2 gripRange, Double2 gripRotationRange) {
@@ -105,7 +105,7 @@ public class RobotArm extends Thread {
     put that angle between 0 and PI/2 (in radians)
     not exact, we try to get it within a certain threshold but the arm jerks
      */
-    public void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
+    private  void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
     {
         double thetaThreshold = Math.PI * (5 / 180);
         double thetaPower = 0.25;
@@ -247,7 +247,7 @@ public class RobotArm extends Thread {
      */
     public void SetArmStatePowerCm(double _targetLength, double angleSpeed) {
         targetLengthSpeed = 1; //speed of extension
-        targetLength = CmToTicks(_targetLength);
+        targetLength = cmToTicks(_targetLength);
         if (targetLength > 0 && protectSpool)
             targetLength = 0; //don't extend the spool past it's starting point
 
@@ -268,11 +268,11 @@ public class RobotArm extends Thread {
     (17.8 / 480) cm is one tick, (480/17.8)tick is one cm
     */
 
-    public double TicksToCm(int ticks) {
+    public double ticksToCm(int ticks) {
         return (double) -ticks * (17.8 / 480) + RobotConfiguration.arm_lengthMin;
     }
 
-    public int CmToTicks(double cm) {
+    public int cmToTicks(double cm) {
         return -(int) ((cm - RobotConfiguration.arm_lengthMin) * (480 / 17.8));
     }
 
@@ -290,9 +290,9 @@ public class RobotArm extends Thread {
 
     //returns and sets the above x and y values (in cm)
     public void ExtConstCalc() {
-        xExtConst = TicksToCm(length.getCurrentPosition()) * Math.cos(thetaAngle());
+        xExtConst = ticksToCm(length.getCurrentPosition()) * Math.cos(thetaAngle());
 
-        yExtConst = TicksToCm(length.getCurrentPosition()) * Math.sin(thetaAngle());
+        yExtConst = ticksToCm(length.getCurrentPosition()) * Math.sin(thetaAngle());
     }
 
 

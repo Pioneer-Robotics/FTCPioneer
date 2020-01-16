@@ -216,7 +216,7 @@ class aJobNavigation extends aJob implements Runnable {
     @Override
     public void Init(LinearOpMode op) {
         super.Init(op);
-        robot.init(op.hardwareMap, op, true);
+        robot.init(op, true);
 
     }
 

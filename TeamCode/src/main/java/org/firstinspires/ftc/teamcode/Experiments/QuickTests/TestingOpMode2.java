@@ -9,12 +9,12 @@ import org.firstinspires.ftc.teamcode.Robot.Robot;
 @Autonomous(name = "TestingOpMode2", group = "Sensor")
 public class TestingOpMode2 extends LinearOpMode {
 
-    Robot robot = new Robot();
+    private Robot robot = new Robot();
 
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, this, true);
+    public void runOpMode()  {
+        robot.init(this, true);
 
         waitForStart();
 

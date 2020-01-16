@@ -15,16 +15,16 @@ public class SkyStoneAlignTest extends LinearOpMode {
 
 
     //This robot is the one used for all jobs!
-    Robot robot = new Robot();
+    private Robot robot = new Robot();
 
-    public double lockedRotation;
+    private  double lockedRotation;
 
-    double speed;
-    Double2 heading;
+    private double speed;
+    private Double2 heading;
 
 //    public TensorFlow_bThread tensorFlowThread = new TensorFlow_bThread();
 
-    public JobManager jobs = new JobManager();
+    private JobManager jobs = new JobManager();
 
     @Override
     public void runOpMode() {
@@ -32,7 +32,7 @@ public class SkyStoneAlignTest extends LinearOpMode {
         print("Status: Initiating robot.");
 
         //init the bot! This sets up the static references for the bot as well so make sure to run this early
-        robot.init(hardwareMap, this, true);
+        robot.init(this, true);
 
         print("Status: Initiating all jobs.");
 
@@ -75,7 +75,7 @@ public class SkyStoneAlignTest extends LinearOpMode {
 
 
     //Sends the 'message' to telemetry and updates it, mostly for C#-ness
-    void print(String message) {
+    private void print(String message) {
         telemetry.addData("", message);
         telemetry.update();
     }

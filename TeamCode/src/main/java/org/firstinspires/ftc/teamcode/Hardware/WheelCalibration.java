@@ -10,9 +10,9 @@ import org.firstinspires.ftc.teamcode.Robot.Robot;
 @Autonomous(name = "Wheel Calibration yay", group = "Calibration")
 public class WheelCalibration extends LinearOpMode {
 
-    Robot robot = new Robot();
+    private Robot robot = new Robot();
 
-    ElapsedTime deltaTime = new ElapsedTime();
+    private ElapsedTime deltaTime = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException {

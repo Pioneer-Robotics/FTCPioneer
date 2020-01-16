@@ -20,7 +20,7 @@ public class SensorTesting extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, this, true);
+        robot.init(this, true);
 
         robot.arm.rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.arm.length.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

@@ -6,13 +6,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous(name = "Skystone2", group = "ftcPio")
 public class SkystoneSelectionTest extends Auto {
 
-    public double startRotation;
+    private double startRotation;
 
-    public VuforiaSkystoneDetector detector = new VuforiaSkystoneDetector();
+    private VuforiaSkystoneDetector detector = new VuforiaSkystoneDetector();
 
-    ElapsedTime deltaTime = new ElapsedTime();
+    private ElapsedTime deltaTime = new ElapsedTime();
 
-    double moveTime;
+    private double moveTime;
 
     @Override
     public void runOpMode() {
@@ -32,6 +32,7 @@ public class SkystoneSelectionTest extends Auto {
         detector.Stop();
 
         if (detector.lastState == VuforiaSkystoneDetector.SkystoneState.CENTER) {
+
         }
         if (detector.lastState == VuforiaSkystoneDetector.SkystoneState.PORT) {
             while (opModeIsActive()) {

@@ -12,9 +12,9 @@ import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 @Autonomous(name = "Wheel Calibration", group = "Calibration")
 public class InputTroubleshooting extends LinearOpMode {
 
-    Robot robot = new Robot();
+    private Robot robot = new Robot();
 
-    ElapsedTime deltaTime = new ElapsedTime();
+    private ElapsedTime deltaTime = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException {

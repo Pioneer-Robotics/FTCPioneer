@@ -11,19 +11,19 @@ import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 @TeleOp(name = "Teleop", group = "Sensor")
 public class TeleopTester extends LinearOpMode {
 
-    Robot robot = new Robot();
+    private Robot robot = new Robot();
 
-    ElapsedTime deltaTime = new ElapsedTime();
+    private ElapsedTime deltaTime = new ElapsedTime();
 
-    int last_bl;
+    private int last_bl;
 
-    int last_br;
+    private int last_br;
 
-    double targetRotation;
+    private double targetRotation;
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, this, true);
+    public void runOpMode()   {
+        robot.init(this, true);
 //        robot.armWintch.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //        robot.armWintch.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 

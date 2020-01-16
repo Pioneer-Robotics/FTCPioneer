@@ -15,9 +15,9 @@ import org.firstinspires.ftc.teamcode.Robot.RobotConfiguration;
 public class TeleopTester2 extends LinearOpMode {
 
 
-    Robot robot = new Robot();
+    private Robot robot = new Robot();
 
-    ElapsedTime deltaTime = new ElapsedTime();
+    private ElapsedTime deltaTime = new ElapsedTime();
 
     //Program State
 
@@ -80,7 +80,7 @@ public class TeleopTester2 extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, this, false);
+        robot.init(this, false);
         fineServoControl = true;
 
 
@@ -180,7 +180,7 @@ public class TeleopTester2 extends LinearOpMode {
                 //set power and distance to the Arm.
                 robot.arm.SetArmStatePowerCm(robot.arm.RectExtension(rectControls_goingUp),
                         rectControls_goingUp ? gamepad2.right_stick_y : -gamepad2.right_stick_x);
-                extension = robot.arm.CmToTicks(robot.arm.RectExtension(rectControls_goingUp)) / RobotConfiguration.arm_ticksMax;
+                extension = robot.arm.cmToTicks(robot.arm.RectExtension(rectControls_goingUp)) / RobotConfiguration.arm_ticksMax;
             } else {
                 telemetry.addLine("Arm Control: Radial");
 
@@ -279,7 +279,7 @@ public class TeleopTester2 extends LinearOpMode {
         robot.shutdown();
     }
 
-    double fullRotation = 360;
+    private double fullRotation = 360;
 
 
     private void setupDriverController() {

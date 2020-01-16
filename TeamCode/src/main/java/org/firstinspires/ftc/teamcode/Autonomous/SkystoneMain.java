@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous(name = "Skystone3", group = "ftcPio")
 public class SkystoneMain extends Auto {
 
-    public double startRotation;
+    private double startRotation;
 
     ElapsedTime deltaTime = new ElapsedTime();
 

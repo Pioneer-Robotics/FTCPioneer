@@ -56,17 +56,18 @@ public class Robot extends Thread {
 
 
     //The data manager serves to store data locally on the phone, used in calibration and PID tuning.
-    public bDataManager dataManger = new bDataManager();
+    private  bDataManager dataManger = new bDataManager();
 
 
     public LinearOpMode Op;
 //    public OpMode LinearOpMode;
 
     //If our thread is running, using atomics to avoid thread conflicts. Might not be completely necessary
-    AtomicBoolean threadRunning = new AtomicBoolean();
+    private AtomicBoolean threadRunning = new AtomicBoolean();
 
+    private PID rotationPID = new PID();
 
-    public void init(HardwareMap hardwareMap, LinearOpMode opmode, boolean useWalltrack) {
+    public void init(LinearOpMode opmode, boolean useWalltrack) {
         //start the printer service
         bTelemetry.start(opmode);
 
@@ -330,36 +331,18 @@ public class Robot extends Thread {
         setPowerDouble4(v, movementSpeed);
     }
 
-    /**
-     * Uses
-     *
-     * @param headingVector The vector that we want to move along
-     * @param movementSpeed How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
-     */
-
     public void moveSimple(Double2 headingVector, double movementSpeed, double rotationSpeed) {
         Double4 v = bMath.getMecMovementSimple(headingVector, rotationSpeed);
         setPowerDouble4(v, movementSpeed);
     }
 
 
-    /**
-     * @param headingAngle  The angle (relative to the phoneside of the bot) that we want to move along, try to keep its magnitude under 180
-     * @param movementSpeed How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
-     * @param rotationSpeed The angle that we want the robot to rotate too. It's actually witchcraft and might need some more research/testing
-     * @param offsetAngle
-     */
     public void moveComplex(double headingAngle, double movementSpeed, double rotationSpeed, double offsetAngle) {
         Double4 v = bMath.getMecMovement(headingAngle, rotationSpeed, offsetAngle);
         setPowerDouble4(v, movementSpeed);
     }
 
-    /**
-     * @param headingVector The vector (relative to the phoneside of the bot) that we want to move along
-     * @param movementSpeed How fast we want to move to move along 'movementAngle'. 1 is very fast, 0 is anti-fast (brakes).
-     * @param rotationSpeed The angle that we want the robot to rotate too. It's actually witchcraft and might need some more research/testing
-     * @param offsetAngle
-     */
+
     public void moveComplex(Double2 headingVector, double movementSpeed, double rotationSpeed, double offsetAngle) {
         Double4 v = bMath.getMecMovement(headingVector, rotationSpeed, offsetAngle);
         setPowerDouble4(v, movementSpeed);
@@ -370,23 +353,22 @@ public class Robot extends Thread {
         setPowerDouble4(v, 1);
     }
 
-    PID rotationPID_test = new PID();
 
     //
     public void rotatePID(double targetAngle, double rotationSpeed, double maxTime) {
 
         //P of 3 and 0 for other gains seems to work really well
-//        rotationPID_test.start(3, 0, 0.1);
+//        rotationPID.start(3, 0, 0.1);
 
-        rotationPID_test.Start(4.02, 0.0032, 0.0876);
-//        rotationPID_test.start(4.01, 0.003, 0.0876);
+        rotationPID.Start(4.02, 0.0032, 0.0876);
+//        rotationPID.start(4.01, 0.003, 0.0876);
 
-//        rotationPID_test.start(1, 0.075, 0.022);
+//        rotationPID.start(1, 0.075, 0.022);
 
-//        rotationPID_test.start(3, 0.21, 0.69);
-//        rotationPID_test.start(0.5, 0.075, 0.015);
-//        rotationPID_test.start(1, 0.25, 0.035);
-//        rotationPID_test.start(0.025, 0.005, 0);
+//        rotationPID.start(3, 0.21, 0.69);
+//        rotationPID.start(0.5, 0.075, 0.015);
+//        rotationPID.start(1, 0.25, 0.035);
+//        rotationPID.start(0.025, 0.005, 0);
 
         double ticker = 0;
         double startAngle = rotation;
@@ -398,15 +380,15 @@ public class Robot extends Thread {
         double correctTime = 0;
 
         while (ticker < maxTime && Op.opModeIsActive()) {
-            rotationPower = rotationPID_test.Loop(targetAngle, rotation);
+            rotationPower = rotationPID.Loop(targetAngle, rotation);
             rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - targetAngle));
             rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
-            Op.telemetry.addData("Error ", rotationPID_test.error);
-            Op.telemetry.addData("Last Error  ", rotationPID_test.lastError);
-            Op.telemetry.addData("Derivative ", rotationPID_test.derivative);
-            Op.telemetry.addData("Integral ", rotationPID_test.integral);
+            Op.telemetry.addData("Error ", rotationPID.error);
+            Op.telemetry.addData("Last Error  ", rotationPID.lastError);
+            Op.telemetry.addData("Derivative ", rotationPID.derivative);
+            Op.telemetry.addData("Integral ", rotationPID.integral);
 
-            Op.telemetry.addData("TD ", rotationPID_test.deltaTime.seconds());
+            Op.telemetry.addData("TD ", rotationPID.deltaTime.seconds());
 
             Op.telemetry.addData("Rotation ", rotation);
             Op.telemetry.addData("rotationPower ", rotationPower);
@@ -428,7 +410,7 @@ public class Robot extends Thread {
                 break;
             }
 
-//            if (rotationPID_test.error < 2) {
+//            if (rotationPID.error < 2) {
 //                correctTime += dt.seconds();
 //            }
 //
@@ -451,17 +433,17 @@ public class Robot extends Thread {
     public void rotatePIDRelative(double relativeTargetAngle, double rotationSpeed, double maxTime) {
 
         //P of 3 and 0 for other gains seems to work really well
-//        rotationPID_test.start(3, 0, 0.1);
+//        rotationPID.start(3, 0, 0.1);
 
-        rotationPID_test.Start(4.02, 0.0032, 0.0876);
-//        rotationPID_test.start(4.01, 0.003, 0.0876);
+        rotationPID.Start(4.02, 0.0032, 0.0876);
+//        rotationPID.start(4.01, 0.003, 0.0876);
 
-//        rotationPID_test.start(1, 0.075, 0.022);
+//        rotationPID.start(1, 0.075, 0.022);
 
-//        rotationPID_test.start(3, 0.21, 0.69);
-//        rotationPID_test.start(0.5, 0.075, 0.015);
-//        rotationPID_test.start(1, 0.25, 0.035);
-//        rotationPID_test.start(0.025, 0.005, 0);
+//        rotationPID.start(3, 0.21, 0.69);
+//        rotationPID.start(0.5, 0.075, 0.015);
+//        rotationPID.start(1, 0.25, 0.035);
+//        rotationPID.start(0.025, 0.005, 0);
 
         double ticker = 0;
         double startAngle = getRotation();
@@ -476,15 +458,15 @@ public class Robot extends Thread {
 
 
         while (ticker < maxTime && Op.opModeIsActive()) {
-            rotationPower = rotationPID_test.Loop(targetAngle, rotation);
+            rotationPower = rotationPID.Loop(targetAngle, rotation);
             rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - relativeTargetAngle));
             rotationPower += (Math.copySign(0.1, rotationPower));
-            Op.telemetry.addData("Error ", rotationPID_test.error);
-            Op.telemetry.addData("Last Error  ", rotationPID_test.lastError);
-            Op.telemetry.addData("Derivative ", rotationPID_test.derivative);
-            Op.telemetry.addData("Integral ", rotationPID_test.integral);
+            Op.telemetry.addData("Error ", rotationPID.error);
+            Op.telemetry.addData("Last Error  ", rotationPID.lastError);
+            Op.telemetry.addData("Derivative ", rotationPID.derivative);
+            Op.telemetry.addData("Integral ", rotationPID.integral);
 
-            Op.telemetry.addData("TD ", rotationPID_test.deltaTime.seconds());
+            Op.telemetry.addData("TD ", rotationPID.deltaTime.seconds());
 
             Op.telemetry.addData("Rotation ", rotation);
             Op.telemetry.addData("rotationPower ", rotationPower);
@@ -515,9 +497,9 @@ public class Robot extends Thread {
 
     public void rotatePID(double targetAngle, double rotationSpeed, int cycles, double p, double i, double d) {
 
-//        rotationPID_test.start(3, 0.21, 0.69);
-        rotationPID_test.Start(p, i, d);
-//        rotationPID_test.start(0.025, 0.005, 0);
+//        rotationPID.start(3, 0.21, 0.69);
+        rotationPID.Start(p, i, d);
+//        rotationPID.start(0.025, 0.005, 0);
 
         int ticker = 0;
         double startAngle = rotation;
@@ -526,15 +508,15 @@ public class Robot extends Thread {
 
         while (ticker < cycles && Op.opModeIsActive()) {
             ticker++;
-            double rotationPower = rotationPID_test.Loop(targetAngle, rotation);
+            double rotationPower = rotationPID.Loop(targetAngle, rotation);
             rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - targetAngle));
             rotationPower += (0.01 * (rotationPower > 0 ? 1 : -1));
-            Op.telemetry.addData("Error ", rotationPID_test.error);
-            Op.telemetry.addData("Last Error  ", rotationPID_test.lastError);
-            Op.telemetry.addData("Derivative ", rotationPID_test.derivative);
-            Op.telemetry.addData("Integral ", rotationPID_test.integral);
+            Op.telemetry.addData("Error ", rotationPID.error);
+            Op.telemetry.addData("Last Error  ", rotationPID.lastError);
+            Op.telemetry.addData("Derivative ", rotationPID.derivative);
+            Op.telemetry.addData("Integral ", rotationPID.integral);
 
-            Op.telemetry.addData("TD ", rotationPID_test.deltaTime.seconds());
+            Op.telemetry.addData("TD ", rotationPID.deltaTime.seconds());
 
             Op.telemetry.addData("Rotation ", rotation);
             Op.telemetry.addData("rotationPower ", rotationPower);

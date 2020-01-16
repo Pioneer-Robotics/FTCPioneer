@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Helpers;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 public class bTelemetry {
-    static OpMode opMode;
+   private static OpMode opMode;
 
     public static void start(OpMode op) {
         opMode = op;

@@ -24,8 +24,8 @@ public class bIMU extends Thread {
 
     volatile public AtomicInteger initStatus = new AtomicInteger(0);
 
-    public IMUStart imuStart0;
-    public IMUStart imuStart1;
+    private IMUStart imuStart0;
+    private IMUStart imuStart1;
 
     public void Start(OpMode opMode) {
         initStatus.set(0);

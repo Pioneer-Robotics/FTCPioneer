@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Helpers.PID;
-import org.firstinspires.ftc.teamcode.JobManager;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
@@ -14,8 +13,6 @@ import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 public class Auto extends LinearOpMode {
 
     public Robot robot = new Robot();
-
-    public JobManager jobs = new JobManager();
 
     public double speed_low = 0.15;
     public double speed_med = 0.35;
@@ -25,7 +22,7 @@ public class Auto extends LinearOpMode {
 
     //What side we are playing on, based on the bridge colors
 
-    public FieldSide side;
+    public  FieldSide side;
 
     public enum FieldSide {
         SIDE_BLUE,
@@ -42,7 +39,7 @@ public class Auto extends LinearOpMode {
         print("Status: Initiating robot.");
 
         //init the bot hardware! This sets up the static references for the bot as well so make sure to run this before any other code
-        robot.init(hardwareMap, this, true);
+        robot.init(this, true);
 
         print("Status: Initiating all jobs.");
 
@@ -108,7 +105,6 @@ public class Auto extends LinearOpMode {
 
     public void StopRobot() {
         robot.setPowerDouble4(0, 0, 0, 0, 0);
-        jobs.stopAll();
         robot.shutdown();
     }
 

@@ -6,15 +6,15 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous(name = "SkystoneBridge", group = "ftcPio")
 public class SkystoneAutoBridge extends Auto {
 
-    public double startRotation;
+    private double startRotation;
 
-    ElapsedTime deltaTime = new ElapsedTime();
+    private ElapsedTime deltaTime = new ElapsedTime();
 
-    double startDelay = 5;
+    private double startDelay = 5;
 
-    double startDistance = 25;
+    private double startDistance = 25;
 
-    boolean inverted = false;
+    private boolean inverted = false;
 
     @Override
     public void runOpMode() {

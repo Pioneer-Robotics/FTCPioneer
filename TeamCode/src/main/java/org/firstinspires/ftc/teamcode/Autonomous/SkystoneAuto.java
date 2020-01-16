@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 @Autonomous(name = "Skystone", group = "ftcPio")
 public class SkystoneAuto extends Auto {
 
-    public double startRotation;
+    private double startRotation;
 
     @Override
     public void runOpMode() {

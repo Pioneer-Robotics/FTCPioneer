@@ -12,17 +12,17 @@ import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 //Used to ensure that all wheels are set up correctly
 public class TestingOpMode3 extends LinearOpMode {
 
-    Robot robot = new Robot();
+    private Robot robot = new Robot();
 
 
-    public ElapsedTime deltaTime = new ElapsedTime();
+    private  ElapsedTime deltaTime = new ElapsedTime();
 
 
-    double targetRotation;
+    private double targetRotation;
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, this, true);
+    public void runOpMode() {
+        robot.init(this, true);
 
         waitForStart();
         targetRotation = robot.getRotation();

@@ -8,13 +8,13 @@ import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
 @Autonomous(name = "Skystone Low Key Sabotage", group = "ftcPio")
 public class SkystoneSelectionSabotage extends Auto {
 
-    public double startRotation;
+    private  double startRotation;
 
-    ElapsedTime deltaTime = new ElapsedTime();
+    private  ElapsedTime deltaTime = new ElapsedTime();
 
-    double moveTime;
+    private double moveTime;
 
-    final boolean lasers = true;
+    private final boolean lasers = true;
 
     @Override
     public void runOpMode() {

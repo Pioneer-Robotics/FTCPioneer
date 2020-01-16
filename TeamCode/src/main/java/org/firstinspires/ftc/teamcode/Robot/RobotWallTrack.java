@@ -27,16 +27,16 @@ public class RobotWallTrack extends Thread {
     //<editor-fold desc="Runtime data">
     AvoidanceConfiguration avoidanceConfig = new AvoidanceConfiguration();
 
-    public SensorGroup currentGroup = new SensorGroup();
+    private  SensorGroup currentGroup = new SensorGroup();
 
-    double curDriveAngle = 0;
-    double wallAngle = 0;
+    private double curDriveAngle = 0;
+    private double wallAngle = 0;
 
 
-    double physicalOffset = 0;
-    double driveAngle = 0;
-    double correctionAngle = 0;
-    double correctedDriveAngle = 0;
+    private double physicalOffset = 0;
+    private double driveAngle = 0;
+    private double correctionAngle = 0;
+    private double correctedDriveAngle = 0;
     //</editor-fold>
 
     public static class SensorGroup {

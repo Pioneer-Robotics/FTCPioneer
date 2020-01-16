@@ -16,17 +16,17 @@ import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 public class
 WalltrackPIDTuning extends LinearOpMode {
 
-    Robot robot = new Robot();
+    private Robot robot = new Robot();
 
-    Double3 PID = new Double3();
+    private Double3 PID = new Double3();
 
-    public org.firstinspires.ftc.teamcode.Helpers.PID controller = new PID();
+    private org.firstinspires.ftc.teamcode.Helpers.PID controller = new PID();
 
-    public ElapsedTime deltaTime = new ElapsedTime();
+    private ElapsedTime deltaTime = new ElapsedTime();
 
-    double targetRotation;
+    private double targetRotation;
 
-    double timer;
+    private double timer;
 
     public bDataManager dataManger = new bDataManager();
 
@@ -39,7 +39,7 @@ WalltrackPIDTuning extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, this, true);
+        robot.init(this, true);
         dataManger.Start();
         deltaTime.reset();
 
@@ -106,7 +106,7 @@ WalltrackPIDTuning extends LinearOpMode {
                         break;
                     }
                 }
-                if(gamepad1.a){
+                if (gamepad1.a) {
                     break;
                 }
                 timer = 0;
