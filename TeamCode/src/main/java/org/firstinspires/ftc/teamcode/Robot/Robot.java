@@ -4,7 +4,6 @@ import android.renderscript.Double2;
 import android.renderscript.Double4;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -85,7 +84,7 @@ public class Robot extends Thread {
         //Set the opmode
         Op = opmode;
 
-        GetHardware(opmode, useWalltrack);
+        getHardware(opmode, useWalltrack);
 
         lunchBox.setPosition(0.733);
 
@@ -125,7 +124,7 @@ public class Robot extends Thread {
         bTelemetry.Print("Wheel boot successful. Ready to operate!");
     }
 
-    public void GetHardware(LinearOpMode opmode, boolean useWallTracking) {
+    public void getHardware(LinearOpMode opmode, boolean useWallTracking) {
 
         //Sets up the drive train hardware
         bTelemetry.Print("Configuring drive train...");
@@ -189,7 +188,7 @@ public class Robot extends Thread {
         //Set the opmode
         Op = opmode;
 
-        GetHardware(opmode, false);
+        getHardware(opmode, false);
         SetFoundationGripperState(0);
 
 //        //Find the motors
