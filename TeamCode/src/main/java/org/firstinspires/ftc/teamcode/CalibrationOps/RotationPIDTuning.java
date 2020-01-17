@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Experiments.Functional;
+package org.firstinspires.ftc.teamcode.CalibrationOps;
 
 
 import android.renderscript.Double3;
@@ -14,24 +14,24 @@ import org.firstinspires.ftc.teamcode.Robot.Robot;
 public class
 RotationPIDTuning extends LinearOpMode {
 
-    Robot robot = new Robot();
+    private Robot robot = new Robot();
 
-    Double3 PID = new Double3();
+    private Double3 PID = new Double3();
 
-    ElapsedTime deltaTime = new ElapsedTime();
+    private ElapsedTime deltaTime = new ElapsedTime();
 
-    public bDataManager dataManger = new bDataManager();
+    private bDataManager dataManger = new bDataManager();
 
 
-    TuningMode mode = TuningMode.P;
+    private TuningMode mode = TuningMode.P;
 
     enum TuningMode {
         P, I, D
     }
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, this, true);
+    public void runOpMode() {
+        robot.init(this, true);
         dataManger.Start();
         deltaTime.reset();
 
@@ -84,12 +84,12 @@ RotationPIDTuning extends LinearOpMode {
             dataManger.writeData("PID_Testing_I", PID.y);
             dataManger.writeData("PID_Testing_D", PID.z);
 
-            double targetRotation = 90 + robot.GetRotation();
-            robot.RotatePID(targetRotation, 1, 10000, PID.x, PID.y, PID.z);
-            robot.SetPowerDouble4(0, 0, 0, 0, 0);
+            double targetRotation = 90 + robot.getRotation();
+            robot.rotatePID(targetRotation, 1, 10000, PID.x, PID.y, PID.z);
+            robot.setPowerDouble4(0, 0, 0, 0, 0);
         }
 
-        robot.Stop();
+        robot.shutdown();
 
     }
 }

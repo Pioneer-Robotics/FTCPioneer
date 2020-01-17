@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Experiments.QuickTests;
+package org.firstinspires.ftc.teamcode.Troubleshooting.TestingOps;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -12,18 +12,18 @@ import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 @Autonomous(name = "TestingOpMode4", group = "Sensor")
 public class TestingOpMode4 extends LinearOpMode {
 
-    Robot robot = new Robot();
-    ElapsedTime deltaTime = new ElapsedTime();
+    private Robot robot = new Robot();
+    private ElapsedTime deltaTime = new ElapsedTime();
 
 
-    int last_bl;
+    private int last_bl;
 
-    int last_br;
+    private int last_br;
 
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, this, true);
+    public void runOpMode()   {
+        robot.init(this, true);
 
         waitForStart();
 
@@ -41,7 +41,7 @@ public class TestingOpMode4 extends LinearOpMode {
         }
 
 
-        robot.Stop();
+        robot.shutdown();
 
     }
 }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Hardware;
+package org.firstinspires.ftc.teamcode.Troubleshooting;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -10,35 +10,35 @@ import org.firstinspires.ftc.teamcode.Robot.Robot;
 @Autonomous(name = "Wheel Testing", group = "Calibration")
 public class WheelTesting extends LinearOpMode {
 
-    Robot robot = new Robot();
+    private Robot robot = new Robot();
 
-    public ElapsedTime deltaTime = new ElapsedTime();
+    private  ElapsedTime deltaTime = new ElapsedTime();
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, this, true);
+    public void runOpMode()   {
+        robot.init(this, true);
         waitForStart();
 
         while (opModeIsActive()) {
             telemetry.addData("X", "FL");
             telemetry.update();
-            robot.SetPowerDouble4(1, 0, 0, 0, 1);
+            robot.setPowerDouble4(1, 0, 0, 0, 1);
             sleep(2500);
 
             telemetry.addData("Y", "FR");
             telemetry.update();
-            robot.SetPowerDouble4(0, 1, 0, 0, 1);
+            robot.setPowerDouble4(0, 1, 0, 0, 1);
             sleep(2500);
 
             telemetry.addData("Z", "BL");
             telemetry.update();
-            robot.SetPowerDouble4(0, 0, 1, 0, 1);
+            robot.setPowerDouble4(0, 0, 1, 0, 1);
             sleep(2500);
 
 
             telemetry.addData("W", "BR");
             telemetry.update();
-            robot.SetPowerDouble4(0, 0, 0, 1, 1);
+            robot.setPowerDouble4(0, 0, 0, 1, 1);
             sleep(2500);
 
             deltaTime.reset();

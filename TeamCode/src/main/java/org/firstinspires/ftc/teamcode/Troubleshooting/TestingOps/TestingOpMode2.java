@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Experiments.QuickTests;
+package org.firstinspires.ftc.teamcode.Troubleshooting.TestingOps;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -9,12 +9,12 @@ import org.firstinspires.ftc.teamcode.Robot.Robot;
 @Autonomous(name = "TestingOpMode2", group = "Sensor")
 public class TestingOpMode2 extends LinearOpMode {
 
-    Robot robot = new Robot();
+    private Robot robot = new Robot();
 
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, this, true);
+    public void runOpMode()  {
+        robot.init(this, true);
 
         waitForStart();
 
@@ -41,23 +41,23 @@ public class TestingOpMode2 extends LinearOpMode {
 //        }
 
 
-//        robot.MoveSimple(0, 0.5);
+//        robot.moveSimple(0, 0.5);
 //        sleep(2500);
 //
 //
-//        robot.MoveSimple(90, 0.5);
+//        robot.moveSimple(90, 0.5);
 //        sleep(2500);
 //
 //
-//        robot.MoveSimple(180, 0.5);
+//        robot.moveSimple(180, 0.5);
 //        sleep(2500);
 //
 //
-//        robot.MoveSimple(270, 0.5);
+//        robot.moveSimple(270, 0.5);
 //        sleep(2500);
 
 
-        robot.Stop();
+        robot.shutdown();
 
     }
 }

@@ -16,7 +16,7 @@ import static java.lang.Thread.sleep;
 
 public class RobotArm extends Thread {
 
-    LinearOpMode Op;
+    private LinearOpMode op;
 
     public Robot robot;
     //Arm height motor
@@ -29,14 +29,14 @@ public class RobotArm extends Thread {
     public Servo grip;
 
     public double targetLength;
-    public double targetLengthSpeed;
-    public double xExtConst;
-    public double yExtConst;
-    public double pot;
+    private  double targetLengthSpeed;
+    private  double xExtConst;
+    private  double yExtConst;
+    private  double pot;
 
-    public boolean protectSpool = true;
+    private  boolean protectSpool = true;
 
-    public boolean usePot = true;
+    private  boolean usePot = true;
 
     public enum GripState {
         OPEN,
@@ -45,13 +45,13 @@ public class RobotArm extends Thread {
     }
 
     // lets make some real changes
-    AtomicBoolean runningThread = new AtomicBoolean();
+    private AtomicBoolean runningThread = new AtomicBoolean();
 
-    ElapsedTime deltaTime = new ElapsedTime();
+    private ElapsedTime deltaTime = new ElapsedTime();
 
     //The scale range Double2's are interpreted as X = min and Y = max.
     public RobotArm(LinearOpMode opMode, String armRotationMotor, String armSpoolMotor, String gripServo, String gripRotationServo, Double2 gripRange, Double2 gripRotationRange) {
-        Op = opMode;
+        op = opMode;
         robot = Robot.instance;
 
         grip = opMode.hardwareMap.get(Servo.class, gripServo);
@@ -105,7 +105,7 @@ public class RobotArm extends Thread {
     put that angle between 0 and PI/2 (in radians)
     not exact, we try to get it within a certain threshold but the arm jerks
      */
-    public void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
+    private  void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
     {
         double thetaThreshold = Math.PI * (5.0 / 180.0);
         double thetaPower = 0.25;
@@ -138,7 +138,7 @@ public class RobotArm extends Thread {
     }
 
 
-    public void SetArmStateWait(double targetAngle, double _targetLength, double angleSpeed) {
+    public void setArmStateWait(double targetAngle, double _targetLength, double angleSpeed) {
         // angleSpeed really means the angle you want the arm to be
         targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
@@ -159,26 +159,26 @@ public class RobotArm extends Thread {
 
         dt.reset();
 
-        while (Op.opModeIsActive() /*&& (Math.abs(rotation.getCurrentPosition() - rotation.getTargetPosition()) > 5 || Math.abs(length.getCurrentPosition() - targetLength) > 5)*/) {
+        while (op.opModeIsActive() /*&& (Math.abs(rotation.getCurrentPosition() - rotation.getTargetPosition()) > 5 || Math.abs(length.getCurrentPosition() - targetLength) > 5)*/) {
 
             rotation.setPower(angleSpeed);
             length.setPower(angleSpeed);
-            Op.telemetry.addData("Rotation Power", rotation.getPower());
-            Op.telemetry.addData("Rotation Position", rotation.getCurrentPosition());
-            Op.telemetry.addData("Length Position", length.getCurrentPosition());
-            Op.telemetry.addData("Rotation Goal", rotation.getTargetPosition());
-            Op.telemetry.addData("Rotation Delta", rotationDelta);
-            Op.telemetry.addData("Length Delta", lengthDelta);
+            op.telemetry.addData("Rotation Power", rotation.getPower());
+            op.telemetry.addData("Rotation Position", rotation.getCurrentPosition());
+            op.telemetry.addData("Length Position", length.getCurrentPosition());
+            op.telemetry.addData("Rotation Goal", rotation.getTargetPosition());
+            op.telemetry.addData("Rotation Delta", rotationDelta);
+            op.telemetry.addData("Length Delta", lengthDelta);
 
 
-            Op.telemetry.addData("Length DT", deltaTime.seconds());
+            op.telemetry.addData("Length DT", deltaTime.seconds());
 
-            Op.telemetry.update();
+            op.telemetry.update();
 
 
             if (runtime > 0.25) {
 
-                Op.telemetry.addData("Arm Telem", rotationDelta);
+                op.telemetry.addData("Arm Telem", rotationDelta);
 
                 rotationDelta = Math.abs((int) lastrotationDelta - rotation.getCurrentPosition());
                 lastrotationDelta = rotation.getCurrentPosition();
@@ -247,7 +247,7 @@ public class RobotArm extends Thread {
      */
     public void SetArmStatePowerCm(double _targetLength, double angleSpeed) {
         targetLengthSpeed = 1; //speed of extension
-        targetLength = CmToTicks(_targetLength);
+        targetLength = cmToTicks(_targetLength);
         if (targetLength > 0 && protectSpool)
             targetLength = 0; //don't extend the spool past it's starting point
 
@@ -268,11 +268,11 @@ public class RobotArm extends Thread {
     (17.8 / 480) cm is one tick, (480/17.8)tick is one cm
     */
 
-    public double TicksToCm(int ticks) {
+    public double ticksToCm(int ticks) {
         return (double) -ticks * (17.8 / 480) + RobotConfiguration.arm_lengthMin;
     }
 
-    public int CmToTicks(double cm) {
+    public int cmToTicks(double cm) {
         return -(int) ((cm - RobotConfiguration.arm_lengthMin) * (480 / 17.8));
     }
 
@@ -290,9 +290,9 @@ public class RobotArm extends Thread {
 
     //returns and sets the above x and y values (in cm)
     public void ExtConstCalc() {
-        xExtConst = TicksToCm(length.getCurrentPosition()) * Math.cos(thetaAngle());
+        xExtConst = ticksToCm(length.getCurrentPosition()) * Math.cos(thetaAngle());
 
-        yExtConst = TicksToCm(length.getCurrentPosition()) * Math.sin(thetaAngle());
+        yExtConst = ticksToCm(length.getCurrentPosition()) * Math.sin(thetaAngle());
     }
 
 

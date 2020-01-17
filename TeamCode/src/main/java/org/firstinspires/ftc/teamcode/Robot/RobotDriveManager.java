@@ -74,7 +74,7 @@ public class RobotDriveManager {
             try {
                 Thread.sleep((long) bMath.Clamp(100 - caibrationDeltaTime.milliseconds(), 0, 100));
             } catch (InterruptedException ex) {
-                bTelemetry.Print("Wheel calibration failed: InterruptedException on el sleep :(");
+                bTelemetry.print("Wheel calibration failed: InterruptedException on el sleep :(");
             }
 
             caibrationDeltaTime.reset();
@@ -84,17 +84,17 @@ public class RobotDriveManager {
             motor.setPower(0);
         }
 
-        bTelemetry.Print("Verifying calibration integrity...");
+        bTelemetry.print("Verifying calibration integrity...");
 
         //If the the calibration is not valid rerun the calibration
         if (!VerifyCalibration()) {
-            bTelemetry.Print("Calibration INVALID!");
-            bTelemetry.Print("Rerunning calibration.");
+            bTelemetry.print("Calibration INVALID!");
+            bTelemetry.print("Rerunning calibration.");
 
             //Might be good to offset the target values by 250 every time we rerun it
             PerformInitialCalibration();
         } else {
-            bTelemetry.Print("Calibration VALID!");
+            bTelemetry.print("Calibration VALID!");
         }
 
     }

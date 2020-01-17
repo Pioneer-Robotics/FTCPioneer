@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Helpers.PID;
-import org.firstinspires.ftc.teamcode.JobManager;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
@@ -14,8 +13,6 @@ import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 public class Auto extends LinearOpMode {
 
     public Robot robot = new Robot();
-
-    public JobManager jobs = new JobManager();
 
     public double speed_low = 0.15;
     public double speed_med = 0.35;
@@ -25,7 +22,7 @@ public class Auto extends LinearOpMode {
 
     //What side we are playing on, based on the bridge colors
 
-    public FieldSide side;
+    public  FieldSide side;
 
     public enum FieldSide {
         SIDE_BLUE,
@@ -37,33 +34,26 @@ public class Auto extends LinearOpMode {
 
     }
 
-    public void StartRobot() {
+    public void startRobot() {
 
         print("Status: Initiating robot.");
 
         //init the bot hardware! This sets up the static references for the bot as well so make sure to run this before any other code
-        robot.init(hardwareMap, this, true);
+        robot.init(this, true);
 
         print("Status: Initiating all jobs.");
 
-//        //Init's all of jobs we can use in the OpMode. Right now the job system isnt super useful so just use Tfod jobs
-//        jobs.initAll(this);
-//
-//        print("Status: Starting TensorFlow Thread.");
-//        //Start the TF thread after it's init
-//        jobs.tensorFlowaJob.Start(this);
-
-        print("Status: Determining current play side");
+//        print("Status: Determining current play side");
 
         //If we are closest to the 90 degree side we know were playing on the BLUE side
-//        if (robot.GetDistance(RobotWallTrack.groupID.Group90, DistanceUnit.CM) < robot.GetDistance(RobotWallTrack.groupID.Group270, DistanceUnit.CM)) {
+//        if (robot.getDistance(RobotWallTrack.groupID.Group90, DistanceUnit.CM) < robot.getDistance(RobotWallTrack.groupID.Group270, DistanceUnit.CM)) {
 //            side = FieldSide.SIDE_BLUE;
 //        } else {
 //            side = FieldSide.SIDE_RED;
 //        }
 //        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
 
-        print("Status: Waiting for play side input. Please press the button thats color corresponds to the side your robot is on (see bridge). Press A to continue");
+//        print("Status: Waiting for play side input. Please press the button thats color corresponds to the side your robot is on (see bridge). Press A to continue");
 
 
         //Manually set the side based on gamepad input
@@ -96,20 +86,18 @@ public class Auto extends LinearOpMode {
 //        }
 
 
-        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
-        robot.SetFoundationGripperState(0);
 
-//        robot.arm.SetArmStateWait(0, 1, 1);
+
+//        robot.arm.setArmStateWait(0, 1, 1);
 //        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
-//        robot.arm.SetArmStateWait(0, 0, 1);
+//        robot.arm.setArmStateWait(0, 0, 1);
 
         print("Status: Awaiting start. Running on side " + (side == FieldSide.SIDE_BLUE ? "BLU" : "RED"));
     }
 
     public void StopRobot() {
-        robot.SetPowerDouble4(0, 0, 0, 0, 0);
-        jobs.stopAll();
-        robot.Stop();
+        robot.setPowerDouble4(0, 0, 0, 0, 0);
+        robot.shutdown();
     }
 
     /**
@@ -138,17 +126,17 @@ public class Auto extends LinearOpMode {
 //                    onSkystoneTime += deltaTime.seconds();
 //                } else {
 //                    telemetry.addData("Get X factor", deltaTime.seconds());
-//                    robot.MoveComplex(jobs.tensorFlowaJob.getCurrentXFactor(skystone) > 0 ? 90 : -90, 0.15, robot.GetRotation() - startRotation);
+//                    robot.moveComplex(jobs.tensorFlowaJob.getCurrentXFactor(skystone) > 0 ? 90 : -90, 0.15, robot.getRotation() - startRotation);
 //                    telemetry.addData("Move complex", deltaTime.seconds());
 //                }
 //
 //
 ////                telemetry.addData("Skystones distance ", Math.abs(jobs.tensorFlowaJob.getCurrentXFactor(skystone)));
 ////                telemetry.addData("Rotation Goal ", startRotation);
-////                telemetry.addData("Current Rotation     ", robot.GetRotation());
-////                telemetry.addData("Rotation Factor ", robot.GetRotation() - startRotation);
+////                telemetry.addData("Current Rotation     ", robot.getRotation());
+////                telemetry.addData("Rotation Factor ", robot.getRotation() - startRotation);
 //            } else {
-////                robot.MoveComplex(new Double2(0, 0), speed_med, robot.GetRotation() - startRotation);
+////                robot.moveComplex(new Double2(0, 0), speed_med, robot.getRotation() - startRotation);
 //                StopMovement();
 //                telemetry.addData("Move complex", deltaTime.seconds());
 //            }
@@ -178,9 +166,9 @@ public class Auto extends LinearOpMode {
 //            if (skystone == null) {
 //                StopAndMaintainRotation(startRotation);
 //            } else {
-//                robot.MoveComplex(bMath.Lerp(maxCorrectionAngle, -maxCorrectionAngle, (jobs.tensorFlowaJob.getCurrentXFactor(skystone) + 1) / 2), moveSpeed, robot.GetRotation() - startRotation);
+//                robot.moveComplex(bMath.Lerp(maxCorrectionAngle, -maxCorrectionAngle, (jobs.tensorFlowaJob.getCurrentXFactor(skystone) + 1) / 2), moveSpeed, robot.getRotation() - startRotation);
 ////                robot.wallTrack.MoveAlongWallComplex(RobotWallTrack.groupID.Group180, moveSpeed, 180 + bMath.Lerp(maxCorrectionAngle, -maxCorrectionAngle, (jobs.tensorFlowaJob.getCurrentXFactor(skystone) + 1) / 2), startRotation);
-//                if (robot.GetDistance(RobotWallTrack.groupID.Group180, DistanceUnit.CM) > wallStopDistance) {
+//                if (robot.getDistance(RobotWallTrack.groupID.Group180, DistanceUnit.CM) > wallStopDistance) {
 //                    StopMovement();
 //                    break;
 //                }
@@ -192,17 +180,17 @@ public class Auto extends LinearOpMode {
 
     //Freezes the robots movement but continues to seek its correct rotation
     public void StopAndMaintainRotation(double rotation) {
-        robot.MoveComplex(new Double2(0, 0), 1, robot.GetRotation() - rotation, 0);
+        robot.moveComplex(new Double2(0, 0), 1, robot.getRotation() - rotation, 0);
     }
 
     //Freezes the robots movement but continues to seek its correct rotation
     public void StopMovement() {
-        robot.SetPowerDouble4(0, 0, 0, 0, 0);
+        robot.setPowerDouble4(0, 0, 0, 0, 0);
     }
 
     public void ResetWallPID() {
-//        walltrackingController.Start(15, 0.0, 0);
-        walltrackingController.Start(4.95, 0.0, 0.1);
+//        walltrackingController.start(15, 0.0, 0);
+        walltrackingController.start(4.95, 0.0, 0.1);
     }
 
 
@@ -210,14 +198,14 @@ public class Auto extends LinearOpMode {
     public void GrabArm(double extensionLength, double liftFactor) {
 
         //Open the gripper, raise the arm, and extend out
-        robot.arm.SetArmStateWait(liftFactor, extensionLength, 1);
+        robot.arm.setArmStateWait(liftFactor, extensionLength, 1);
 
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
 
         sleep(500);
 
         //Drop the arm
-        robot.arm.SetArmStateWait(0, extensionLength, 0.75);
+        robot.arm.setArmStateWait(0, extensionLength, 0.75);
 
         //Close the gripper
         robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
@@ -225,7 +213,7 @@ public class Auto extends LinearOpMode {
         sleep(500);
 
         //Raise the arm again
-        robot.arm.SetArmStateWait(liftFactor, extensionLength, 1);
+        robot.arm.setArmStateWait(liftFactor, extensionLength, 1);
 
     }
 
@@ -234,17 +222,17 @@ public class Auto extends LinearOpMode {
         //Open the gripper, raise the arm, and extend out
         robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
 
-        robot.arm.SetArmStateWait(0, lastLength, 1);
+        robot.arm.setArmStateWait(0, lastLength, 1);
 
         //Extend the arm
-        robot.arm.SetArmStateWait(0, extensionLength, 1);
+        robot.arm.setArmStateWait(0, extensionLength, 1);
         sleep(1000);
 
         //Close the gripper
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
 
         //Retract the arm again
-        robot.arm.SetArmStateWait(0, lastLength, 1);
+        robot.arm.setArmStateWait(0, lastLength, 1);
     }
 
 
@@ -253,7 +241,7 @@ public class Auto extends LinearOpMode {
     }
 
     public void InitArm() {
-        robot.arm.SetArmStateWait(0.2, 0, 1);
+        robot.arm.setArmStateWait(0.2, 0, 1);
 
     }
 

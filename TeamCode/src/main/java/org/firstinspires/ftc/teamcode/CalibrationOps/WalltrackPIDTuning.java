@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Experiments.Functional;
+package org.firstinspires.ftc.teamcode.CalibrationOps;
 
 
 import android.renderscript.Double3;
@@ -16,17 +16,17 @@ import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 public class
 WalltrackPIDTuning extends LinearOpMode {
 
-    Robot robot = new Robot();
+    private Robot robot = new Robot();
 
-    Double3 PID = new Double3();
+    private Double3 PID = new Double3();
 
-    public org.firstinspires.ftc.teamcode.Helpers.PID controller = new PID();
+    private org.firstinspires.ftc.teamcode.Helpers.PID controller = new PID();
 
-    public ElapsedTime deltaTime = new ElapsedTime();
+    private ElapsedTime deltaTime = new ElapsedTime();
 
-    double targetRotation;
+    private double targetRotation;
 
-    double timer;
+    private double timer;
 
     public bDataManager dataManger = new bDataManager();
 
@@ -39,7 +39,7 @@ WalltrackPIDTuning extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, this, true);
+        robot.init(this, true);
         dataManger.Start();
         deltaTime.reset();
 
@@ -92,8 +92,8 @@ WalltrackPIDTuning extends LinearOpMode {
             dataManger.writeData("wall_PID_Testing_I", PID.y);
             dataManger.writeData("wall_PID_Testing_D", PID.z);
 
-            targetRotation = robot.GetRotation();
-            controller.Start(PID.x, PID.y, PID.z);
+            targetRotation = robot.getRotation();
+            controller.start(PID.x, PID.y, PID.z);
             deltaTime.reset();
 
             while (opModeIsActive()) {
@@ -106,7 +106,7 @@ WalltrackPIDTuning extends LinearOpMode {
                         break;
                     }
                 }
-                if(gamepad1.a){
+                if (gamepad1.a) {
                     break;
                 }
                 timer = 0;
@@ -124,11 +124,11 @@ WalltrackPIDTuning extends LinearOpMode {
                 }
                 timer = 0;
             }
-            robot.SetPowerDouble4(0, 0, 0, 0, 0);
+            robot.setPowerDouble4(0, 0, 0, 0, 0);
 
         }
 
-        robot.Stop();
+        robot.shutdown();
 
     }
 }

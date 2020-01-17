@@ -1,21 +1,15 @@
-package org.firstinspires.ftc.teamcode.Experiments.QuickTests;
+package org.firstinspires.ftc.teamcode.Troubleshooting.TestingOps;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Autonomous.Auto;
-import org.firstinspires.ftc.teamcode.Helpers.PID;
-import org.firstinspires.ftc.teamcode.Autonomous.Auto;
-import org.firstinspires.ftc.teamcode.Robot.Robot;
-import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 
 @Autonomous(name = "TestingOpMode", group = "Sensor")
 public class TestingOpMode extends Auto {
     @Override
     public void runOpMode() {
-        StartRobot();
+        startRobot();
 
         waitForStart();
 

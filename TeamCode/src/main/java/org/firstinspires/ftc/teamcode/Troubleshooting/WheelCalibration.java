@@ -1,12 +1,8 @@
-package org.firstinspires.ftc.teamcode.Hardware;
+package org.firstinspires.ftc.teamcode.Troubleshooting;
 
-
-import android.renderscript.Double2;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Robot.Robot;
@@ -14,9 +10,9 @@ import org.firstinspires.ftc.teamcode.Robot.Robot;
 @Autonomous(name = "Wheel Calibration yay", group = "Calibration")
 public class WheelCalibration extends LinearOpMode {
 
-    Robot robot = new Robot();
+    private Robot robot = new Robot();
 
-    ElapsedTime deltaTime = new ElapsedTime();
+    private ElapsedTime deltaTime = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -33,6 +29,6 @@ public class WheelCalibration extends LinearOpMode {
 
         }
 
-        robot.Stop();
+        robot.shutdown();
     }
 }

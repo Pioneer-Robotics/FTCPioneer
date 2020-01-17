@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Experiments.QuickTests;
+package org.firstinspires.ftc.teamcode.Troubleshooting.TestingOps;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -7,11 +7,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Helpers.PID;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
-import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 
 @Autonomous(name = "TestingOpMode1", group = "Sensor")
 public class TestingOpMode1 extends LinearOpMode {
-    Robot robot = new Robot();
+    private Robot robot = new Robot();
 
     public PID controller = new PID();
 
@@ -19,17 +18,17 @@ public class TestingOpMode1 extends LinearOpMode {
 
     double targetRotation;
 
-    double a;
+    private double a;
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        robot.init(hardwareMap, this, false);
+    public void runOpMode()   {
+        robot.init(this, false);
 
         waitForStart();
 
 
         while (opModeIsActive()) {
-            robot.SetFoundationGripperState(a);
+            robot.setFoundationGripperState(a);
 
             a += gamepad1.left_stick_x * deltaTime.seconds();
             telemetry.addData("Power", a);
@@ -37,7 +36,7 @@ public class TestingOpMode1 extends LinearOpMode {
             deltaTime.reset();
         }
 
-        robot.Stop();
+        robot.shutdown();
     }
 
 }

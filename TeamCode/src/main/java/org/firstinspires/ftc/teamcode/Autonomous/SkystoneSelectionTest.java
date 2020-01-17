@@ -6,19 +6,19 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous(name = "Skystone2", group = "ftcPio")
 public class SkystoneSelectionTest extends Auto {
 
-    public double startRotation;
+    private double startRotation;
 
-    public VuforiaSkystoneDetector detector = new VuforiaSkystoneDetector();
+    private VuforiaSkystoneDetector detector = new VuforiaSkystoneDetector();
 
-    ElapsedTime deltaTime = new ElapsedTime();
+    private ElapsedTime deltaTime = new ElapsedTime();
 
-    double moveTime;
+    private double moveTime;
 
     @Override
     public void runOpMode() {
-        StartRobot();
+        startRobot();
 
-        startRotation = robot.GetRotation();
+        startRotation = robot.getRotation();
 
         detector.Start(this);
 
@@ -32,12 +32,13 @@ public class SkystoneSelectionTest extends Auto {
         detector.Stop();
 
         if (detector.lastState == VuforiaSkystoneDetector.SkystoneState.CENTER) {
+
         }
         if (detector.lastState == VuforiaSkystoneDetector.SkystoneState.PORT) {
             while (opModeIsActive()) {
                 deltaTime.reset();
 
-                robot.MoveComplex(-90, speed_low, startRotation - robot.GetRotation(), 0);
+                robot.moveComplex(-90, speed_low, startRotation - robot.getRotation(), 0);
 
                 moveTime += deltaTime.time();
 
@@ -50,7 +51,7 @@ public class SkystoneSelectionTest extends Auto {
             while (opModeIsActive()) {
                 deltaTime.reset();
 
-                robot.MoveComplex(90, speed_low, startRotation - robot.GetRotation(), 0);
+                robot.moveComplex(90, speed_low, startRotation - robot.getRotation(), 0);
 
                 moveTime += deltaTime.time();
 
@@ -65,14 +66,14 @@ public class SkystoneSelectionTest extends Auto {
 
 
         if (side == FieldSide.SIDE_BLUE) {
-            robot.RotateSimple(-90, 1, 5, 0.2);
+            robot.rotateSimple(-90, 1, 5, 0.2);
         } else {
-            robot.RotateSimple(90, 1, 5, 0.2);
+            robot.rotateSimple(90, 1, 5, 0.2);
         }
 
         DepositeArm(0.35, 1);
 
-        robot.RotateSimple(0, 1, 5, 0.2);
+        robot.rotateSimple(0, 1, 5, 0.2);
 
         //Move to the next skystone, all stones have the same offset this will need big calibration
 

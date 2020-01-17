@@ -56,7 +56,7 @@ class DistanceSensorInputThread extends Thread {
     public void run() {
         threadRunning.set(true);
 
-        //Loop to assign all distance values
+        //loop to assign all distance values
         while (threadRunning.get()) {
             for (DistanceSensor distanceSensor : sensorDistancePairs.keySet()) {
                 sensorDistancePairs.put(distanceSensor, distanceSensor.getDistance(DistanceUnit.CM));
@@ -79,7 +79,7 @@ class MotorEncoderInputThread extends Thread {
     public void run() {
         threadRunning.set(true);
 
-        //Loop to assign all distance values
+        //loop to assign all distance values
         while (threadRunning.get()) {
             for (bMotor motor : bMotorPositionPairs.keySet()) {
                 bMotorPositionPairs.put(motor, motor.getCurrentPosition());
