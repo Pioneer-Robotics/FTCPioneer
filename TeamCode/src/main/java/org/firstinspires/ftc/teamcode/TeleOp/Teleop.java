@@ -100,26 +100,6 @@ public class Teleop extends LinearOpMode {
 
                 angle = Math.toRadians(robot.getRotation() - rotationLockAngle);
 
-                /*
-                EXAMPLE of the old (and better) math
-
-                first the original diag powers are used
-                ogLeftDiagPower = ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2);
-                ogRightDiagPower = ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2);
-
-                then we use use the coordinate rotation formula (see https://en.wikipedia.org/wiki/Rotation_of_axes#Derivation) to get the new coordinates
-
-                leftDiagPower = ogLeftDiagPower*Math.cos(angle)+ogRightDiagPower*Math.sin(angle);
-                rightDiagPower = -ogLeftDiagPower*Math.sin(angle)+ogRightDiagPower*Math.cos(angle);
-
-                Finally we compose the first two equations into the second two to get the formulas you see below. This is simpler and requires less computation than Josh's method (I use 2 trig and 0 square root calculations compared to josh using 4 trig and 2 sqrt, not to mention he also
-                has conditionals), the problem bust be somewhere else in the code, either with entering the lock state or the computation of the offset angle that is put into the formula
-                 */
-                //leftDiagPower = ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.cos(angle))+((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.sin(angle);
-                //rightDiagPower = (((-(-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2) * Math.sin(angle)) + (((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2 * Math.cos(angle))));
-////              This is Josh's idea that may work if any of the above doesn't (He's pretty confidant about it.... He tested it in Desmos and everything). The operative idea below is that it just adjusts the input vector from the gamepad to one that has the same magnitude but an angle
-////              that is equal to (originalAngle + angle) which I think then would make it move in the desired direction in real life. Then it just uses the movement code from the nonlock version to move along that new input vector
-//
                 newGamepadX = (Math.sqrt(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(gamepad1.left_stick_y, 2))) * Math.cos(angle + Math.atan(gamepad1.left_stick_y / gamepad1.left_stick_x));
                 newGamepadY = (Math.sqrt(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(gamepad1.left_stick_y, 2))) * Math.sin(angle + Math.atan(gamepad1.left_stick_y / gamepad1.left_stick_x));
 //
@@ -143,6 +123,7 @@ public class Teleop extends LinearOpMode {
             }
             leftRotatePower = gamepad1.right_stick_x;
             rightRotatePower = -gamepad1.right_stick_x;
+
             robot.driveManager.frontLeft.setPower(moveSpeed * (leftDiagPower + leftRotatePower));
             robot.driveManager.frontRight.setPower(moveSpeed * (rightDiagPower + rightRotatePower));
             robot.driveManager.backLeft.setPower(moveSpeed * (rightDiagPower + leftRotatePower));
