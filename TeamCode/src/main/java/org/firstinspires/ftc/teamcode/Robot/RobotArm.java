@@ -107,7 +107,7 @@ public class RobotArm extends Thread {
      */
     private  void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
     {
-        double thetaThreshold = Math.PI * (5 / 180);
+        double thetaThreshold = Math.PI * (5.0 / 180.0);
         double thetaPower = 0.25;
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //depending on if the angle needs to be increased or decreased, turn on the motors
