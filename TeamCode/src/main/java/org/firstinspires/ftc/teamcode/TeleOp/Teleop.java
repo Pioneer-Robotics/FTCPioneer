@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Helpers.Vector2;
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
@@ -27,7 +28,6 @@ public class Teleop extends LinearOpMode {
     private boolean leftRotateCoordCheck = false;
     private boolean rightRotateCoordCheck = false;
 
-    private double angle = 0;
     private double leftDiagPower = 0;
     private double rightDiagPower = 0;
     private double ogLeftDiagPower = 0;
@@ -40,9 +40,6 @@ public class Teleop extends LinearOpMode {
 
     private boolean movementModeToggleCheck = false;
     private boolean coordinateSystemLock = false;
-
-    private double newGamepadX;
-    private double newGamepadY;
 
     //Arm Control Variables
     private double raiseSpeed = 0;
@@ -94,50 +91,17 @@ public class Teleop extends LinearOpMode {
             ///DRIVER CONTROLS
             setupDriverController();
 
-            // drive code
-            if (coordinateSystemLock) {
-                telemetry.addData("Drive System", "New");
+            getRightDiagPower(true, gamepad1.left_stick_x, gamepad1.left_stick_y, 90, 90);
 
-                angle = Math.toRadians(robot.getRotation() - rotationLockAngle);
-
-                newGamepadX = (Math.sqrt(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(gamepad1.left_stick_y, 2))) * Math.cos(angle + Math.atan(gamepad1.left_stick_y / gamepad1.left_stick_x));
-                newGamepadY = (Math.sqrt(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(gamepad1.left_stick_y, 2))) * Math.sin(angle + Math.atan(gamepad1.left_stick_y / gamepad1.left_stick_x));
-//
-////              The following two lines just correct the signs of newGamePadX and newGamePadY because the domain of the Math.atan function will make this always return angles in Q1 and Q4, so when the point is in Q2 and Q3 then you gotta adjust it
-                newGamepadX = (gamepad1.left_stick_x <= 0) ? -newGamepadX : newGamepadX;
-                newGamepadY = (gamepad1.left_stick_x <= 0) ? -newGamepadY : newGamepadY;
-                leftDiagPower = ((-newGamepadY + newGamepadX) / sq2);
-                rightDiagPower = ((-newGamepadY - newGamepadX) / sq2);
-////              //And so Ends Josh's Idea.
-
-                //this could replace the lines above and the 6 lines after the else but the implementation in this function
-                //robot.moveComplex(new Double2(gamepad1.left_stick_x,gamepad1.left_stick_y),moveSpeed,gamepad1.right_stick_x,angle);
-            } else {
-                telemetry.addData("Drive System", "Old");
-
-                leftDiagPower = ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2);
-                rightDiagPower = ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2);
-
-                //robot.moveComplex(new Double2(gamepad1.left_stick_x,gamepad1.left_stick_y),moveSpeed,gamepad1.right_stick_x,0);
-
-            }
             leftRotatePower = gamepad1.right_stick_x;
             rightRotatePower = -gamepad1.right_stick_x;
 
-            robot.driveManager.frontLeft.setPower(moveSpeed * (leftDiagPower + leftRotatePower));
-            robot.driveManager.frontRight.setPower(moveSpeed * (rightDiagPower + rightRotatePower));
-            robot.driveManager.backLeft.setPower(moveSpeed * (rightDiagPower + leftRotatePower));
-            robot.driveManager.backRight.setPower(moveSpeed * (leftDiagPower + rightRotatePower));
+            double frontLeftWheelPower = moveSpeed * (leftDiagPower + leftRotatePower);
+            double frontRightWheelPower = moveSpeed * (rightDiagPower + rightRotatePower);
+            double backLeftWheelPower = moveSpeed * (rightDiagPower + leftRotatePower);
+            double backRightWheelPower = moveSpeed * (leftDiagPower + rightRotatePower);
+            updateRobotDrive(frontLeftWheelPower, frontRightWheelPower, backLeftWheelPower, backRightWheelPower);
 
-            //The following is used for recalibrating the lunchbox servo
-            /*
-            //rotate lunchbox up with the up dpad
-            lunchboxRot -= gamepad1.dpad_up ? deltaTime.seconds() * 1 : 0;
-            //rotate lunchbox down with the down dpad
-            lunchboxRot += gamepad1.dpad_down ? deltaTime.seconds() * 1 : 0;
-            lunchboxRot = bMath.Clamp(lunchboxRot, 0, 1);
-            robot.lunchBox.setPosition(lunchboxRot);
-*/
 
 
             //ARM CONTROLS//
@@ -171,7 +135,6 @@ public class Teleop extends LinearOpMode {
                 extension = bMath.Clamp(extension, 0, 1);
                 robot.arm.SetArmStatePower(extension, raiseSpeed);
             }
-
 
             //Gripper Controls//
 
@@ -233,7 +196,7 @@ public class Teleop extends LinearOpMode {
 
             if (dropLunchBox) lunchboxRot = 0;
             else lunchboxRot = 0.738;
-            robot.lunchBox.setPosition(lunchboxRot);
+            robot.capstoneServo.setPosition(lunchboxRot);
 
             robot.foundationServo0.setPosition(gripFoundation ? 0 : 1);
             robot.foundationServo1.setPosition(gripFoundation ? 1 : 0);
@@ -244,7 +207,7 @@ public class Teleop extends LinearOpMode {
             telemetry.addLine("------ Movement ------");
             telemetry.addData("Rotation Locked ", coordinateSystemLock);
             telemetry.addData("Current Rotation ", robot.getRotation());
-            telemetry.addData("Offset Angle ", angle);
+//            telemetry.addData("Offset Angle ", angle);
             telemetry.addLine("-------- Arm  --------");
             telemetry.addData("Current Arm Angle", robot.arm.thetaAngle());
             telemetry.addData("Current Potentiometer value", robot.armPotentiometer.getAngle());
@@ -261,6 +224,65 @@ public class Teleop extends LinearOpMode {
 
     private double fullRotation = 360;
 
+    private void updateRobotDrive(double frontLeft, double frontRight, double backLeft, double backRight) {
+        robot.driveManager.frontLeft.setPower(frontLeft);
+        robot.driveManager.frontRight.setPower(frontRight);
+        robot.driveManager.backLeft.setPower(backLeft);
+        robot.driveManager.backRight.setPower(backRight);
+    }
+
+    private double getLeftDiagPower(boolean useLockedRotation,
+                                    double movementInput_x,
+                                    double movementInput_y,
+                                    double currentRobotRotation,
+                                    double targetRotation) {
+        // drive code
+        if (useLockedRotation) {
+            telemetry.addData("Drive System", "New");
+
+            Vector2 movementVector = getMovementVector(movementInput_x, movementInput_y);
+            return ((-movementVector.y + movementVector.x) / sq2);
+        } else {
+            telemetry.addData("Drive System", "Old");
+
+            return ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2);
+        }
+
+    }
+
+    private double getRightDiagPower(boolean useLockedRotation,
+                                     double movementInput_x,
+                                     double movementInput_y,
+                                     double currentRobotRotation,
+                                     double targetRotation) {
+
+        if (useLockedRotation) {
+            telemetry.addData("Drive System", "New");
+
+            Vector2 movementVector = getMovementVector(movementInput_x, movementInput_y);
+            return ((-movementVector.y - movementVector.x) / sq2);
+
+        } else {
+            telemetry.addData("Drive System", "Old");
+            return ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2);
+        }
+    }
+
+
+    private Vector2 getMovementVector(double movementInput_x, double movementInput_y) {
+        double angle = Math.toRadians(robot.getRotation() - rotationLockAngle);
+
+        double movementSpeed = (Math.sqrt(Math.pow(movementInput_x, 2) + Math.pow(movementInput_y, 2)));
+
+        double _newGamepadX = movementSpeed * Math.cos(angle + Math.atan(movementInput_y / movementInput_x));
+        double _newGamepadY = movementSpeed * Math.sin(angle + Math.atan(movementInput_y / movementInput_x));
+
+        double newGamepadX = (gamepad1.left_stick_x <= 0) ? -_newGamepadX : _newGamepadX;
+        double newGamepadY = (gamepad1.left_stick_x <= 0) ? -_newGamepadY : _newGamepadY;
+
+
+        return new Vector2(newGamepadX, newGamepadY);
+    }
 
     private void setupDriverController() {
 

@@ -38,7 +38,7 @@ public class Robot extends Thread {
 
     public Potentiometer armPotentiometer = new Potentiometer();
 
-    public Servo lunchBox;
+    public Servo capstoneServo;
     public Servo foundationServo0;
     public Servo foundationServo1;
 
@@ -87,7 +87,7 @@ public class Robot extends Thread {
 
         getHardware(opmode, useWalltrack);
 
-        lunchBox.setPosition(0.733);
+        capstoneServo.setPosition(0.733);
 
         //Starts the 'run' thread
         start();
@@ -149,7 +149,7 @@ public class Robot extends Thread {
         armPotentiometer = new Potentiometer(opmode, RobotConfiguration.armPotentiometer);
         arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
 
-        lunchBox = opmode.hardwareMap.get(Servo.class, RobotConfiguration.lunchboxGrip);
+        capstoneServo = opmode.hardwareMap.get(Servo.class, RobotConfiguration.capstoneServo);
 
         bTelemetry.print("Configuring IMU...");
         imu.Start(opmode);
