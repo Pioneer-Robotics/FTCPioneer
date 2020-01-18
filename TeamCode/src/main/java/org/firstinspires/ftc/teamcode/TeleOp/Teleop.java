@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 import org.firstinspires.ftc.teamcode.Robot.RobotConfiguration;
 
 @TeleOp(name = "Teleop2", group = "Sensor")
-public class Teleop extends LinearOpMode {
+public class Teleop extends TeleOpMode {
 
 
     private Robot robot = new Robot();
@@ -79,7 +79,7 @@ public class Teleop extends LinearOpMode {
         robot.init(this, false);
         fineServoControl = true;
 
-
+        initControllers();
         waitForStart();
 
         lunchboxRot = 1;
@@ -101,7 +101,6 @@ public class Teleop extends LinearOpMode {
             double backLeftWheelPower = moveSpeed * (rightDiagPower + leftRotatePower);
             double backRightWheelPower = moveSpeed * (leftDiagPower + rightRotatePower);
             updateRobotDrive(frontLeftWheelPower, frontRightWheelPower, backLeftWheelPower, backRightWheelPower);
-
 
 
             //ARM CONTROLS//
