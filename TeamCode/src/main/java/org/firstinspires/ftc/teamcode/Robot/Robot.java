@@ -834,4 +834,13 @@ public class Robot extends Thread {
         foundationServo1.setPosition(value);
     }
 
+    //grips the foundation, meant to be human readable (by judges)
+    public void gripFoundation() {
+        setFoundationGripperState(0);
+    }
+
+    //lets go of the foundation, meant to be human readable (by judges)
+    public void releaseFoundation() {
+        setFoundationGripperState(0.9);
+    }
 }
