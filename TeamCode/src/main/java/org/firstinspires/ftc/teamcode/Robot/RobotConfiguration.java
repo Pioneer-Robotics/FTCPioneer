@@ -62,7 +62,7 @@ public class RobotConfiguration {
     public static final String arm_gripRotationServo = "Grip Rotation";
 
     //The Lunch.
-    public static final String lunchboxGrip = "Lunchbox";
+    public static final String capstoneServo = "Lunchbox";
 
     //The servos responsible for moving the foundation
     //Grip 0 position 1 is top
