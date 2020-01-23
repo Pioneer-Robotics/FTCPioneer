@@ -128,8 +128,8 @@ public class Teleop extends TeleOpMode {
             } else {
                 telemetry.addLine("Arm Control: Radial");
 
-                extension += gamepad2.right_trigger * deltaTime.seconds() * 2;    //extend arm when right trigger held
-                extension -= gamepad2.left_trigger * deltaTime.seconds() * 2;     //retra ct arm when left trigger held
+                extension += gamepad2.right_trigger * deltaTime.seconds() * 1;    //extend arm when right trigger held
+                extension -= gamepad2.left_trigger * deltaTime.seconds() * 1;     //retra ct arm when left trigger held
 
                 raiseSpeed = bMath.Clamp(gamepad2.left_stick_y, -1, 1);
                 extension = bMath.Clamp(extension, 0, 1);
@@ -176,14 +176,14 @@ public class Teleop extends TeleOpMode {
             }
 
             //rotate gripper down with the left dpad
-            if (gamepad2.dpad_left) {
-                gripAngle += deltaTime.seconds() * 135;
+            if (gamepad2.left_bumper) {
+                gripAngle += deltaTime.seconds() * 135 * 1.5;
                 pointDown = false;
             }
 
             //rotate gripper up with the right dpad
-            if (gamepad2.dpad_right) {
-                gripAngle -= deltaTime.seconds() * 135;
+            if (gamepad2.right_bumper) {
+                gripAngle -= deltaTime.seconds() * 135 * 1.5;
                 pointDown = false;
             }
 
@@ -198,8 +198,8 @@ public class Teleop extends TeleOpMode {
             else lunchboxRot = 0.738;
             robot.capstoneServo.setPosition(lunchboxRot);
 
-            robot.foundationServo0.setPosition(gripFoundation ? 0 : 1);
-            robot.foundationServo1.setPosition(gripFoundation ? 1 : 0);
+            robot.foundationServo0.setPosition(gripFoundation ? 0 : 0.85);
+            robot.foundationServo1.setPosition(gripFoundation ? 1 : 0.15);
 
             gripAngle = bMath.Clamp(gripAngle, 0, 180);
 
@@ -309,9 +309,9 @@ public class Teleop extends TeleOpMode {
 
     private void updateBoostorSlowMotion(Gamepad gamePad) {
         //let left bumper toggle boost vs slow mode on the right trigger for fine control of the robot
-        if (gamePad.left_bumper) {
+        if (!gamePad.left_bumper) {
             //trigger makes robot slower
-            moveSpeed = bMath.Clamp(0.5 - gamepad1.right_trigger / 2, 0, 1);
+            moveSpeed = bMath.Clamp(0.25*(0.5*(1-gamepad1.right_trigger)+(1-gamepad1.left_trigger)+0.5), 0, 1);
         } else {
             //trigger makes robot faster
             moveSpeed = bMath.Clamp(0.5 + gamepad1.right_trigger / 2, 0, 1);
