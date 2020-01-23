@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 import org.firstinspires.ftc.teamcode.Robot.RobotConfiguration;
 
-@TeleOp(name = "Teleop2", group = "Sensor")
+@TeleOp(name = "TeleOp", group = "Sensor")
 public class Teleop extends TeleOpMode {
 
 
@@ -87,6 +87,7 @@ public class Teleop extends TeleOpMode {
         gripAngle = 30;
         while (opModeIsActive()) {
             telemetry.addLine("------ Control  ------");
+            telemetry.addData("spool position", robot.arm.length.getCurrentPosition());
 
             ///DRIVER CONTROLS
             setupDriverController();

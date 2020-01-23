@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -158,7 +159,7 @@ public class Robot extends Thread {
             bTelemetry.print("Configuring wall tracking...");
             wallTrack.Start(opmode);
         }
-        foundationServo0 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip0);
+        foundationServo0 = opmode.hardwareMap.get(ServoImplEx.class, RobotConfiguration.foundationGrip0);
         foundationServo1 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip1);
 
         setFoundationGripperState(1);

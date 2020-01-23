@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import android.renderscript.Double2;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Helpers.PID;
@@ -22,7 +23,7 @@ public class Auto extends LinearOpMode {
 
     //What side we are playing on, based on the bridge colors
 
-    public  FieldSide side;
+    public FieldSide side;
 
     public enum FieldSide {
         SIDE_BLUE,
@@ -84,8 +85,6 @@ public class Auto extends LinearOpMode {
 //
 //
 //        }
-
-
 
 
 //        robot.arm.setArmStateWait(0, 1, 1);
@@ -260,6 +259,10 @@ public class Auto extends LinearOpMode {
     void print(String message) {
         telemetry.addData("", message);
         telemetry.update();
+    }
+
+    public void TransitionToTeleop() {
+        //wip wip wip
     }
 
 }
