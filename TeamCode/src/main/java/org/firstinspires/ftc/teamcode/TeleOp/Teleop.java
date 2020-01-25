@@ -254,8 +254,8 @@ public class Teleop extends LinearOpMode {
             else lunchboxRot = 0.738;
             robot.lunchBox.setPosition(lunchboxRot);
 
-            robot.foundationServo0.setPosition(gripFoundation ? 0 : 0.85);
-            robot.foundationServo1.setPosition(gripFoundation ? 1 : 0.15);
+            robot.foundationServo0.setPosition(gripFoundation ? 0.05 : 1);
+            robot.foundationServo1.setPosition(gripFoundation ? 0.95 : 0);
 
             gripAngle = bMath.Clamp(gripAngle, 0, 180);
 
