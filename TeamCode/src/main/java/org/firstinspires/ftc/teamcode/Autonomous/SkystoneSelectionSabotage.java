@@ -36,19 +36,19 @@ public class SkystoneSelectionSabotage extends Auto {
         sleep(250);
 
         robot.arm.setArmStateWait(0, 0.3, 1);
-        RunDeliveryCycle(93, 1000, 35, 24, 145);
+        RunDeliveryCycle(93, 1000, 35, 24, 160, true);
 ///
-        RunDeliveryCycle(45, 1000, 35, 1 * 24 + 24, 145 + 48);
+        RunDeliveryCycle(45, 1000, 35, 1 * 24 + 24, 145 + 48, true);
 
-        RunDeliveryCycle(45, 1000, 35, 2 * 24 + 24, 145 + (3 * 24));
+        RunDeliveryCycle(45, 1000, 35, 2 * 24 + 24, 145 + (3 * 24), false);
 
-        robot.driveByDistance(180, 0.5, 25);
+//        robot.driveByDistance(180, 0.5, 15);
 
         StopMovement();
         StopRobot();
     }
 
-    private void RunDeliveryCycle(double fwdDistance, long servoDelayMS, double distanceFromStone, double endingOffset, double bridgeDistance) {
+    private void RunDeliveryCycle(double fwdDistance, long servoDelayMS, double distanceFromStone, double endingOffset, double bridgeDistance, boolean moveBackToBridge) {
 
 
         robot.driveByDistance(0, 0.35, fwdDistance);
@@ -74,16 +74,18 @@ public class SkystoneSelectionSabotage extends Auto {
         //Drop stone
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
 
+        if (moveBackToBridge) {
         sleep(servoDelayMS);
 
-        robot.driveByDistance(180, 1, bridgeDistance);
 
-        robot.rotatePID(90, 1, 4);
+            robot.driveByDistance(180, 1, bridgeDistance);
 
-        robot.driveByDistance(180, 0.35, endingOffset);
+            robot.rotatePID(90, 1, 4);
 
-        robot.rotatePID(0, 1, 3);
+            robot.driveByDistance(180, 0.35, endingOffset);
 
+            robot.rotatePID(0, 1, 3);
+        }
 //        robot.driveByDistance(180, 1, 90);
 
 //        robot.rotatePID(0, 1, 2);
