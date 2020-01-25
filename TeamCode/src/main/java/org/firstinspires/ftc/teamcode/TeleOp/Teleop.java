@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -88,6 +87,9 @@ public class Teleop extends TeleOpMode {
         while (opModeIsActive()) {
             telemetry.addLine("------ Control  ------");
             telemetry.addData("spool position", robot.arm.length.getCurrentPosition());
+            telemetry.addData("spool position as percent", robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_lengthMax);
+            telemetry.addData("arm rotation as percent", robot.arm.rotation.getCurrentPosition() / RobotConfiguration.arm_rotationMax);
+
 
             ///DRIVER CONTROLS
             setupDriverController();
@@ -124,7 +126,7 @@ public class Teleop extends TeleOpMode {
                 //set power and distance to the Arm.
                 robot.arm.SetArmStatePowerCm(robot.arm.RectExtension(rectControls_goingUp),
                         rectControls_goingUp ? gamepad2.right_stick_y : -gamepad2.right_stick_x);
-                extension = robot.arm.cmToTicks(robot.arm.RectExtension(rectControls_goingUp)) / RobotConfiguration.arm_ticksMax;
+                extension = robot.arm.cmToTicks(robot.arm.RectExtension(rectControls_goingUp)) / RobotConfiguration.arm_lengthMax;
             } else {
                 telemetry.addLine("Arm Control: Radial");
 
@@ -311,7 +313,7 @@ public class Teleop extends TeleOpMode {
         //let left bumper toggle boost vs slow mode on the right trigger for fine control of the robot
         if (!gamePad.left_bumper) {
             //trigger makes robot slower
-            moveSpeed = bMath.Clamp(0.25*(0.5*(1-gamepad1.right_trigger)+(1-gamepad1.left_trigger)+0.5), 0, 1);
+            moveSpeed = bMath.Clamp(0.25 * (0.5 * (1 - gamepad1.right_trigger) + (1 - gamepad1.left_trigger) + 0.5), 0, 1);
         } else {
             //trigger makes robot faster
             moveSpeed = bMath.Clamp(0.5 + gamepad1.right_trigger / 2, 0, 1);

@@ -24,6 +24,11 @@ public class SkystoneSelectionSabotage extends Auto {
 
         waitForStart();
 
+
+
+
+
+
 //        robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
 //
 //        sleep(10000);

@@ -124,7 +124,7 @@ public class Robot extends Thread {
 //            experimentalInput.AddSensor(sensor);
 //        }
 
-        arm.SetGripState(RobotArm.GripState.IDLE, 1);
+        arm.SetGripState(RobotArm.GripState.IDLE, 0.8);
         setFoundationGripperState(0);
 
         bTelemetry.print("Wheel boot successful. Ready to operate!");

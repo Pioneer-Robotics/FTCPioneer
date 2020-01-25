@@ -140,7 +140,7 @@ public class RobotArm extends Thread {
 
     public void setArmStateWait(double targetAngle, double _targetLength, double angleSpeed) {
         targetLengthSpeed = 1;
-        targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
+        targetLength = (RobotConfiguration.arm_lengthMax * _targetLength);
         rotation.setPower(angleSpeed);
         int targetPosition = (int) (RobotConfiguration.arm_rotationMax * targetAngle);
 
@@ -202,7 +202,7 @@ public class RobotArm extends Thread {
 //    public void setArmStateWait(double targetAngle, double _targetLength, double angleSpeed) {
 //        // angleSpeed really means the angle you want the arm to be
 //        targetLengthSpeed = 1;
-//        targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
+//        targetLength = (RobotConfiguration.arm_lengthMax * _targetLength);
 //        rotation.setPower(angleSpeed);
 //
 //        rotation.setTargetPosition((int) (RobotConfiguration.arm_rotationMax * targetAngle));
@@ -272,7 +272,7 @@ public class RobotArm extends Thread {
     public void SetArmState(double targetAngle, double _targetLength, double angleSpeed) {
         // angleSpeed really means the angle you want the arm to be
         targetLengthSpeed = 1;
-        targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
+        targetLength = (RobotConfiguration.arm_lengthMax * _targetLength);
         if (targetLength > 0 && protectSpool)
             targetLength = 0; //don't extend the spool past it's starting point
 
@@ -291,7 +291,7 @@ public class RobotArm extends Thread {
     public void SetArmStatePower(double _targetLength, double angleSpeed) {
 
         targetLengthSpeed = 1;
-        targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
+        targetLength = (RobotConfiguration.arm_lengthMax * _targetLength);
         if (targetLength > 0 && protectSpool)
             targetLength = 0; //don't extend the spool past it's starting point
 

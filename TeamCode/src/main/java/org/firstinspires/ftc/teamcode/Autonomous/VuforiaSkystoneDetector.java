@@ -28,28 +28,28 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
  * This 2019-2020 OpMode illustrates the basics of using the Vuforia localizer to determine
  * positioning and orientation of robot on the SKYSTONE FTC field.
  * The code is structured as a LinearOpMode
- *
+ * <p>
  * When images are located, Vuforia is able to determine the position and orientation of the
  * image relative to the camera.  This sample code then combines that information with a
  * knowledge of where the target images are on the field, to determine the location of the camera.
- *
+ * <p>
  * From the Audience perspective, the Red Alliance station is on the right and the
  * Blue Alliance Station is on the left.
-
+ * <p>
  * Eight perimeter targets are distributed evenly around the four perimeter walls
  * Four Bridge targets are located on the bridge uprights.
  * Refer to the Field Setup manual for more specific location details
- *
+ * <p>
  * A final calculation then uses the location of the camera on the robot to determine the
  * robot's location and orientation on the field.
  *
  * @see VuforiaLocalizer
  * @see VuforiaTrackableDefaultListener
  * see  skystone/doc/tutorial/FTC_FieldCoordinateSystemDefinition.pdf
- *
+ * <p>
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
- *
+ * <p>
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
@@ -213,14 +213,14 @@ public class VuforiaSkystoneDetector {
             //Gets the offset
             if (Math.abs(translation.get(0)) < 5) {
                 lastState = SkystoneState.CENTER;
-                op.telemetry.addData("Selected center stone", "");
+                op.telemetry.addData("Selected center stone", translation.get(0));
             } else {
                 if (translation.get(0) > 0) {
                     lastState = SkystoneState.STARBOARD;
-                    op.telemetry.addData("Selected starboard stone", "");
+                    op.telemetry.addData("Selected starboard stone", translation.get(0));
                 } else {
                     lastState = SkystoneState.PORT;
-                    op.telemetry.addData("Selected port stone", "");
+                    op.telemetry.addData("Selected port stone", translation.get(0));
                 }
             }
 
