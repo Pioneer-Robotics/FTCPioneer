@@ -211,7 +211,7 @@ public class VuforiaSkystoneDetector {
             op.telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
 
             //Gets the offset
-            if (Math.abs(translation.get(0)) < 5) {
+            if (Math.abs(translation.get(0)) < 2) {
                 lastState = SkystoneState.CENTER;
                 op.telemetry.addData("Selected center stone", translation.get(0));
             } else {

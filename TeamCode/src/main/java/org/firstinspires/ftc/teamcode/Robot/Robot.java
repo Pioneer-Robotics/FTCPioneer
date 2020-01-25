@@ -687,8 +687,8 @@ public class Robot extends Thread {
         setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
         setPowerDouble4(1, 1, 1, 1, speed);
 
-        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
-        setPowerDouble4(a.x, a.y, a.z, a.w, speed);
+//        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
+//        setPowerDouble4(a.x, a.y, a.z, a.w, speed);
 
 
         setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);

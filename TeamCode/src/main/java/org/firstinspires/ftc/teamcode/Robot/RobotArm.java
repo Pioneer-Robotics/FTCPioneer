@@ -29,14 +29,14 @@ public class RobotArm extends Thread {
     public Servo grip;
 
     public double targetLength;
-    private  double targetLengthSpeed;
-    private  double xExtConst;
-    private  double yExtConst;
-    private  double pot;
+    private double targetLengthSpeed;
+    private double xExtConst;
+    private double yExtConst;
+    private double pot;
 
-    private  boolean protectSpool = true;
+    private boolean protectSpool = true;
 
-    private  boolean usePot = true;
+    private boolean usePot = true;
 
     public enum GripState {
         OPEN,
@@ -105,7 +105,7 @@ public class RobotArm extends Thread {
     put that angle between 0 and PI/2 (in radians)
     not exact, we try to get it within a certain threshold but the arm jerks
      */
-    private  void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
+    private void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
     {
         double thetaThreshold = Math.PI * (5.0 / 180.0);
         double thetaPower = 0.25;

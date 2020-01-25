@@ -23,14 +23,19 @@ public class SkystoneSelectionTest extends Auto {
         detector.Start(this);
 
         while (!opModeIsActive()) {
-            detector.Update(this);
         }
 
 
         waitForStart();
 
-        detector.Stop();
-//
+        robot.driveByDistance(0, 0.35, 70);
+
+        while (opModeIsActive()) {
+            detector.Update(this);
+            telemetry.addData("Selection ", detector.lastState.toString());
+            telemetry.update();
+        }
+        //
 //        if (detector.lastState == VuforiaSkystoneDetector.SkystoneState.CENTER) {
 //
 //        }
