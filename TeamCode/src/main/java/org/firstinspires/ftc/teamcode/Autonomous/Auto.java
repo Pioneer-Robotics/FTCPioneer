@@ -197,14 +197,14 @@ public class Auto extends LinearOpMode {
     public void GrabArm(double extensionLength, double liftFactor) {
 
         //Open the gripper, raise the arm, and extend out
-        robot.arm.setArmStateWait(liftFactor, extensionLength, 1);
+        robot.arm.setArmStateWait(liftFactor, extensionLength);
 
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
 
         sleep(500);
 
         //Drop the arm
-        robot.arm.setArmStateWait(0, extensionLength, 0.75);
+        robot.arm.setArmStateWait(0, extensionLength);
 
         //Close the gripper
         robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
@@ -212,7 +212,7 @@ public class Auto extends LinearOpMode {
         sleep(500);
 
         //Raise the arm again
-        robot.arm.setArmStateWait(liftFactor, extensionLength, 1);
+        robot.arm.setArmStateWait(liftFactor, extensionLength);
 
     }
 
@@ -221,17 +221,17 @@ public class Auto extends LinearOpMode {
         //Open the gripper, raise the arm, and extend out
         robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
 
-        robot.arm.setArmStateWait(0, lastLength, 1);
+        robot.arm.setArmStateWait(0, lastLength);
 
         //Extend the arm
-        robot.arm.setArmStateWait(0, extensionLength, 1);
+        robot.arm.setArmStateWait(0, extensionLength);
         sleep(1000);
 
         //Close the gripper
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
 
         //Retract the arm again
-        robot.arm.setArmStateWait(0, lastLength, 1);
+        robot.arm.setArmStateWait(0, lastLength);
     }
 
 
@@ -240,7 +240,7 @@ public class Auto extends LinearOpMode {
     }
 
     public void InitArm() {
-        robot.arm.setArmStateWait(0.2, 0, 1);
+        robot.arm.setArmStateWait(0.2, 0);
 
     }
 

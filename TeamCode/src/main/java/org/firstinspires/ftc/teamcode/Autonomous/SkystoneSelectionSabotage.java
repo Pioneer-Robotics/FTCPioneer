@@ -29,13 +29,13 @@ public class SkystoneSelectionSabotage extends Auto {
         //MIN IS .17
 //        robot.arm.setArmStateWait(0, 0, 1);
 
-        robot.arm.setArmStateWait(0, 0.5, 1);
+        robot.arm.setArmStateWait(0, 0.5);
 
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
 
         sleep(250);
 
-        robot.arm.setArmStateWait(0, 0.3, 1);
+        robot.arm.setArmStateWait(0, 0.3 );
         RunDeliveryCycle(93, 1000, 35, 24, 160, true);
 ///
         RunDeliveryCycle(45, 1000, 35, 1 * 24 + 24, 145 + 48, true);
