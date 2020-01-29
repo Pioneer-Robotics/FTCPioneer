@@ -91,8 +91,8 @@ public class RobotArm extends Thread {
             double lowerPartialAngle = Math.asin(l * Math.sin(C) / hypotenuse);
             double lengthBottom = Math.sqrt(hypotenuse * hypotenuse - (h * h));
             double upperPartialAngle = Math.asin(lengthBottom / hypotenuse);
-            double Ans = lowerPartialAngle + upperPartialAngle - (Math.PI / 2);
-            return Ans;
+            return lowerPartialAngle + upperPartialAngle - (Math.PI / 2);
+
         } else {
             double d = (rotation.getCurrentPosition() * 0.5) / 480; //TODO add offset to this value so it actually works lol: starts at 0 rn
             double c = ((k * k) - (h * h) - (l * l) - (d * d)) / 2;
@@ -109,6 +109,7 @@ public class RobotArm extends Thread {
     put that angle between 0 and PI/2 (in radians)
     not exact, we try to get it within a certain threshold but the arm jerks
      */
+    @Deprecated
     private  void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
     {
         double thetaThreshold = Math.PI * (5.0 / 180.0);
@@ -125,6 +126,7 @@ public class RobotArm extends Thread {
             make sure the current angle doesn't exceed max/min
              */
     }
+
 
     /*
     This method will move the arm to match a desired length and angle.
@@ -216,7 +218,7 @@ public class RobotArm extends Thread {
         // angleSpeed really means the angle you want the arm to be
         targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
-        if (targetLength > 0 && protectSpool)
+        if (targetLength < 0 && protectSpool)
             targetLength = 0; //don't extend the spool past it's starting point
 
         rotation.setPower(angleSpeed);
@@ -235,7 +237,7 @@ public class RobotArm extends Thread {
 
         targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
-        if (targetLength > 0 && protectSpool)
+        if (targetLength < 0 && protectSpool)
             targetLength = 0; //don't extend the spool past it's starting point
 
         rotation.setPower(angleSpeed);
@@ -273,11 +275,11 @@ public class RobotArm extends Thread {
     */
 
     public double ticksToCm(int ticks) {
-        return (double) -ticks * (17.8 / 480) + RobotConfiguration.arm_lengthMin;
+        return (double) ticks * (15.7 / 960) + RobotConfiguration.arm_lengthMin;
     }
 
     public int cmToTicks(double cm) {
-        return -(int) ((cm - RobotConfiguration.arm_lengthMin) * (480 / 17.8));
+        return (int) ((cm - RobotConfiguration.arm_lengthMin) * (960 / 15.7));
     }
 
 /* Principle for rectangular control
