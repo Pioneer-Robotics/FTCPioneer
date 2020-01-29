@@ -28,7 +28,16 @@ public class RobotArm extends Thread {
     public Servo gripRotation;
     public Servo grip;
 
+    public ArmRotationMode rotationMode;
+
+    //Arm rotation mode, setting to 'threaded' will arm rotation handled by a thread while 'disabled' will not effect arm rotation
+    public enum ArmRotationMode {
+        Threaded,
+        Disabled
+    }
+
     public double targetLength;
+    public double targetRotation;
     private double targetLengthSpeed;
     private double xExtConst;
     private double yExtConst;
@@ -145,65 +154,38 @@ public class RobotArm extends Thread {
     }
 
 
-    public void setArmStateWait(double targetAngle, double _targetLength, double angleSpeed) {
+    public void setArmStateWait(double targetAngle, double _targetLength) {
         targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_lengthMax * _targetLength);
-        rotation.setPower(angleSpeed);
-        int targetPosition = (int) (RobotConfiguration.arm_rotationMax * targetAngle);
+        targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
 
         rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        double runtime = 0;
-        double rotationDelta = 0;
-        double lastrotationDelta = 1000000;
-        double lengthDelta = 0;
-        double lastlengthDelta = 100000;
-        ElapsedTime dt = new ElapsedTime();
 
-        dt.reset();
-
-        while (op.opModeIsActive() /*&& (Math.abs(rotation.getCurrentPosition() - rotation.getTargetPosition()) > 5 || Math.abs(length.getCurrentPosition() - targetLength) > 5)*/) {
-
-            rotation.setPower(((rotation.getCurrentPosition() - targetPosition) / (RobotConfiguration.arm_rotationMax * 0.5)) * angleSpeed);
-
-
-            length.setPower(angleSpeed);
-            op.telemetry.addData("Rotation Power", rotation.getPower());
-            op.telemetry.addData("Rotation Position", rotation.getCurrentPosition());
-            op.telemetry.addData("Length Position", length.getCurrentPosition());
-            op.telemetry.addData("Rotation Goal", rotation.getTargetPosition());
-            op.telemetry.addData("Rotation Delta", rotationDelta);
-            op.telemetry.addData("Length Delta", lengthDelta);
-
-
-            op.telemetry.addData("Length DT", deltaTime.seconds());
-
-            op.telemetry.update();
-
-
-            if (runtime > 0.25) {
-
-                op.telemetry.addData("Arm Telem", rotationDelta);
-
-                rotationDelta = Math.abs((int) lastrotationDelta - rotation.getCurrentPosition());
-                lastrotationDelta = rotation.getCurrentPosition();
-
-                lengthDelta = Math.abs((int) lastlengthDelta - length.getCurrentPosition());
-                lastlengthDelta = length.getCurrentPosition();
-
-                if (rotationDelta <= 3 && lengthDelta <= 3) {
-                    break;
-                }
-            }
-
-            runtime += dt.seconds();
-            dt.reset();
+        while (op.opModeIsActive() && (!armRotationTargetReached() || !armLengthTargetReached())) {
 
         }
 
-
         rotation.setPower(0);
+    }
+
+    public void setArmStateAsync(double targetAngle, double _targetLength) {
+        targetLengthSpeed = 1;
+        targetLength = (RobotConfiguration.arm_lengthMax * _targetLength);
+        targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
+
+        rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    public boolean armRotationTargetReached() {
+        return Math.abs(rotation.getCurrentPosition() - targetRotation) < 10;
+    }
+
+
+    public boolean armLengthTargetReached() {
+        return Math.abs(length.getCurrentPosition() - length.getTargetPosition()) < 10;
     }
 
 //    public void setArmStateWait(double targetAngle, double _targetLength, double angleSpeed) {
