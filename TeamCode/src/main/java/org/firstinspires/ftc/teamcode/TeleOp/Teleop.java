@@ -260,17 +260,17 @@ public class Teleop extends LinearOpMode {
             gripAngle = bMath.Clamp(gripAngle, 0, 180);
 
 
-            telemetry.addLine("------ Movement ------");
-            telemetry.addData("Rotation Locked ", coordinateSystemLock);
-            telemetry.addData("Current Rotation ", robot.getRotation());
-            telemetry.addData("Offset Angle ", angle);
+            //telemetry.addLine("------ Movement ------");
+            //telemetry.addData("Rotation Locked ", coordinateSystemLock);
+            //telemetry.addData("Current Rotation ", robot.getRotation());
+            //telemetry.addData("Offset Angle ", angle);
             telemetry.addLine("-------- Arm  --------");
-            telemetry.addData("Current Arm Angle", robot.arm.thetaAngle());
-            telemetry.addData("Current Potentiometer value", robot.armPotentiometer.getAngle());
-            telemetry.addData("Interior Angle", robot.armPotentiometer.getAngle() + RobotConfiguration.pot_interiorOffset);
-            telemetry.addData("RectWanted?:", rectControls);
-            telemetry.addLine("------ Lunchbox ------");
-            telemetry.addData("Current Lunchbox", lunchboxRot);
+            telemetry.addData("Current Arm Angle", bMath.toDegrees(robot.arm.thetaAngle()));
+            telemetry.addData("Current Potentiometer angle", robot.armPotentiometer.getAngle());
+            telemetry.addData("Current Potentiometer voltage", robot.armPotentiometer.getVoltage());
+            //telemetry.addData("RectWanted?:", rectControls);
+            //telemetry.addLine("------ Lunchbox ------");
+            //telemetry.addData("Current Lunchbox", lunchboxRot);
             telemetry.update();
 
             deltaTime.reset();
