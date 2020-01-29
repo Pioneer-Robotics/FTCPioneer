@@ -268,9 +268,11 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("Current Arm Angle", bMath.toDegrees(robot.arm.thetaAngle()));
             telemetry.addData("Current Potentiometer angle", robot.armPotentiometer.getAngle());
             telemetry.addData("Current Potentiometer voltage", robot.armPotentiometer.getVoltage());
-            //telemetry.addData("RectWanted?:", rectControls);
-            //telemetry.addLine("------ Lunchbox ------");
-            //telemetry.addData("Current Lunchbox", lunchboxRot);
+            telemetry.addData("RectWanted?:", rectControls);
+            telemetry.addData("ExtensionCurrent", robot.arm.rotation.getCurrentPosition());
+            telemetry.addData("ExtensionWanted", extension);
+            telemetry.addLine("------ Lunchbox ------");
+            telemetry.addData("Current Lunchbox", lunchboxRot);
             telemetry.update();
 
             deltaTime.reset();

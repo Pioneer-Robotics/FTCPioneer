@@ -34,7 +34,7 @@ public class RobotArm extends Thread {
     private  double yExtConst;
     private  double pot;
 
-    private  boolean protectSpool = true;
+    private  boolean protectSpool = false;
 
     private  boolean usePot = true;
 
