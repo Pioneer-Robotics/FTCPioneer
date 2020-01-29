@@ -96,7 +96,7 @@ public class RobotArm extends Thread {
         double C = bMath.toRadians(robot.armPotentiometer.getAngle());
 
         if (usePot) {
-            double hypotenuse = Math.sqrt( (k * k) + (l * l)  - (2 * k * l * Math.cos(C)));
+            double hypotenuse = Math.sqrt((k * k) + (l * l) - (2 * k * l * Math.cos(C)));
             double lowerPartialAngle = Math.asin(l * Math.sin(C) / hypotenuse);
             double lengthBottom = Math.sqrt(hypotenuse * hypotenuse - (h * h));
             double upperPartialAngle = Math.asin(lengthBottom / hypotenuse);
@@ -120,7 +120,7 @@ public class RobotArm extends Thread {
      */
 
     @Deprecated
-    private  void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
+    private void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
     {
         double thetaThreshold = Math.PI * (5.0 / 180.0);
         double thetaPower = 0.25;
@@ -186,6 +186,10 @@ public class RobotArm extends Thread {
 
     public boolean armLengthTargetReached() {
         return Math.abs(length.getCurrentPosition() - length.getTargetPosition()) < 10;
+    }
+
+    public boolean armAsyncTargetReached() {
+        return armRotationTargetReached() && armLengthTargetReached();
     }
 
 //    public void setArmStateWait(double targetAngle, double _targetLength, double angleSpeed) {
@@ -262,7 +266,7 @@ public class RobotArm extends Thread {
         // angleSpeed really means the angle you want the arm to be
         targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
-        
+
         if (targetLength < 0 && protectSpool)
             targetLength = 0; //don't extend the spool past it's starting point
 

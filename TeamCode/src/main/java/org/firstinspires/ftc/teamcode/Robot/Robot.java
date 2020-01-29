@@ -744,7 +744,7 @@ public class Robot extends Thread {
         double runTime = 0;
         ElapsedTime deltaTime = new ElapsedTime();
 
-        while (Op.opModeIsActive() && wheelsBusy() && !arm.armLengthTargetReached() && !arm.armRotationTargetReached()) {
+        while (Op.opModeIsActive() && wheelsBusy() && !arm.armAsyncTargetReached()) {
             deltaTime.reset();
 
             if (runTime > targetArmDelay) {
@@ -897,4 +897,6 @@ public class Robot extends Thread {
     public void releaseFoundation() {
         setFoundationGripperState(0.9);
     }
+
+
 }
