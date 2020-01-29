@@ -156,7 +156,7 @@ public class RobotArm extends Thread {
 
     public void setArmStateWait(double targetAngle, double _targetLength) {
         targetLengthSpeed = 1;
-        targetLength = (RobotConfiguration.arm_lengthMax * _targetLength);
+        targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
         targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
 
         rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -172,7 +172,7 @@ public class RobotArm extends Thread {
 
     public void setArmStateAsync(double targetAngle, double _targetLength) {
         targetLengthSpeed = 1;
-        targetLength = (RobotConfiguration.arm_lengthMax * _targetLength);
+        targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
         targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
 
         rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

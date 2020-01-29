@@ -725,6 +725,52 @@ public class Robot extends Thread {
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    public void driveByDistanceArmAsync(double angle, double speed, double distance, double targetArmDelay, double targetArmLength, double targetArmRotation) {
+
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
+        Double4 a = bMath.getMecMovement(angle, 0, 0);
+
+        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
+        setPowerDouble4(1, 1, 1, 1, speed);
+
+//        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
+//        setPowerDouble4(a.x, a.y, a.z, a.w, speed);
+
+
+        setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        double runTime = 0;
+        ElapsedTime deltaTime = new ElapsedTime();
+
+        while (Op.opModeIsActive() && wheelsBusy() && !arm.armLengthTargetReached() && !arm.armRotationTargetReached()) {
+            deltaTime.reset();
+
+            if (runTime > targetArmDelay) {
+                arm.setArmStateAsync(targetArmRotation, targetArmLength);
+            }
+
+            runTime += deltaTime.seconds();
+
+            if (!Op.opModeIsActive()) {
+                break;
+            }
+            //Wait until we are at our target distance
+        }
+
+        Op.telemetry.addData("Target Reached", "");
+        Op.telemetry.update();
+
+        //shutdown motors
+        setPowerDouble4(0, 0, 0, 0, 0);
+
+        //Set up for normal driving
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    @Deprecated
     public enum simpleDirection {
         FORWARD,
         BACKWARD,

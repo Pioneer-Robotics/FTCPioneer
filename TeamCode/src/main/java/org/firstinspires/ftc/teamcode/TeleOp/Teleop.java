@@ -87,7 +87,7 @@ public class Teleop extends TeleOpMode {
         while (opModeIsActive()) {
             telemetry.addLine("------ Control  ------");
             telemetry.addData("spool position", robot.arm.length.getCurrentPosition());
-            telemetry.addData("spool position as percent", robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_lengthMax);
+            telemetry.addData("spool position as percent", robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_ticksMax);
             telemetry.addData("arm rotation as percent", robot.arm.rotation.getCurrentPosition() / RobotConfiguration.arm_rotationMax);
 
 
@@ -126,7 +126,7 @@ public class Teleop extends TeleOpMode {
                 //set power and distance to the Arm.
                 robot.arm.SetArmStatePowerCm(robot.arm.RectExtension(rectControls_goingUp),
                         rectControls_goingUp ? gamepad2.right_stick_y : -gamepad2.right_stick_x);
-                extension = robot.arm.cmToTicks(robot.arm.RectExtension(rectControls_goingUp)) / RobotConfiguration.arm_lengthMax;
+                extension = robot.arm.cmToTicks(robot.arm.RectExtension(rectControls_goingUp)) / RobotConfiguration.arm_ticksMax;
             } else {
                 telemetry.addLine("Arm Control: Radial");
 
@@ -204,7 +204,6 @@ public class Teleop extends TeleOpMode {
             robot.foundationServo1.setPosition(gripFoundation ? 0.95 : 0);
 
             gripAngle = bMath.Clamp(gripAngle, 0, 180);
-
 
 
             telemetry.addLine("------ Movement ------");
