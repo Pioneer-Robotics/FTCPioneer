@@ -81,14 +81,18 @@ public class RobotArm extends Thread {
     //I think "usePot" math is off by 90 radians, am subtracting 90 radians
 
     public double thetaAngle() {
-        double k = 177;
+        double k = 134.0;
         double h = 76.9;
-        double l = 135;
-        double C = bMath.toRadians(robot.armPotentiometer.getAngle() + RobotConfiguration.pot_interiorOffset);
+        double l = 177.0;
+        double C = bMath.toRadians(robot.armPotentiometer.getAngle());
 
         if (usePot) {
-            double c = Math.sqrt((k * k) + (l * l) - 2 * k * l * Math.cos(C));
-            return Math.asin((k * Math.sin(C)) / c) - Math.asin(h / c);
+            double hypotenuse = Math.sqrt( (k * k) + (l * l)  - (2 * k * l * Math.cos(C)));
+            double lowerPartialAngle = Math.asin(l * Math.sin(C) / hypotenuse);
+            double lengthBottom = Math.sqrt(hypotenuse * hypotenuse - (h * h));
+            double upperPartialAngle = Math.asin(lengthBottom / hypotenuse);
+            double Ans = lowerPartialAngle + upperPartialAngle - (Math.PI / 2);
+            return Ans;
         } else {
             double d = (rotation.getCurrentPosition() * 0.5) / 480; //TODO add offset to this value so it actually works lol: starts at 0 rn
             double c = ((k * k) - (h * h) - (l * l) - (d * d)) / 2;
