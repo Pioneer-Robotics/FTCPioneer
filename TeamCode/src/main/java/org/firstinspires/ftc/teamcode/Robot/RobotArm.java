@@ -29,14 +29,14 @@ public class RobotArm extends Thread {
     public Servo grip;
 
     public double targetLength;
-    private  double targetLengthSpeed;
-    private  double xExtConst;
-    private  double yExtConst;
-    private  double pot;
+    private double targetLengthSpeed;
+    private double xExtConst;
+    private double yExtConst;
+    private double pot;
 
-    private  boolean protectSpool = true;
+    private boolean protectSpool = true;
 
-    private  boolean usePot = true;
+    private boolean usePot = true;
 
     public enum GripState {
         OPEN,
@@ -109,6 +109,7 @@ public class RobotArm extends Thread {
     put that angle between 0 and PI/2 (in radians)
     not exact, we try to get it within a certain threshold but the arm jerks
      */
+
     @Deprecated
     private  void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
     {
@@ -145,15 +146,12 @@ public class RobotArm extends Thread {
 
 
     public void setArmStateWait(double targetAngle, double _targetLength, double angleSpeed) {
-        // angleSpeed really means the angle you want the arm to be
         targetLengthSpeed = 1;
-        targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
+        targetLength = (RobotConfiguration.arm_lengthMax * _targetLength);
         rotation.setPower(angleSpeed);
+        int targetPosition = (int) (RobotConfiguration.arm_rotationMax * targetAngle);
 
-        rotation.setTargetPosition((int) (RobotConfiguration.arm_rotationMax * targetAngle));
-
-
-        rotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         double runtime = 0;
@@ -167,7 +165,9 @@ public class RobotArm extends Thread {
 
         while (op.opModeIsActive() /*&& (Math.abs(rotation.getCurrentPosition() - rotation.getTargetPosition()) > 5 || Math.abs(length.getCurrentPosition() - targetLength) > 5)*/) {
 
-            rotation.setPower(angleSpeed);
+            rotation.setPower(((rotation.getCurrentPosition() - targetPosition) / (RobotConfiguration.arm_rotationMax * 0.5)) * angleSpeed);
+
+
             length.setPower(angleSpeed);
             op.telemetry.addData("Rotation Power", rotation.getPower());
             op.telemetry.addData("Rotation Position", rotation.getCurrentPosition());
@@ -202,13 +202,75 @@ public class RobotArm extends Thread {
 
         }
 
-//        if (Math.abs(rotation.getCurrentPosition()) < 5) {
-//            rotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        }
-
 
         rotation.setPower(0);
     }
+
+//    public void setArmStateWait(double targetAngle, double _targetLength, double angleSpeed) {
+//        // angleSpeed really means the angle you want the arm to be
+//        targetLengthSpeed = 1;
+//        targetLength = (RobotConfiguration.arm_lengthMax * _targetLength);
+//        rotation.setPower(angleSpeed);
+//
+//        rotation.setTargetPosition((int) (RobotConfiguration.arm_rotationMax * targetAngle));
+//
+//
+//        rotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//
+//        double runtime = 0;
+//        double rotationDelta = 0;
+//        double lastrotationDelta = 1000000;
+//        double lengthDelta = 0;
+//        double lastlengthDelta = 100000;
+//        ElapsedTime dt = new ElapsedTime();
+//
+//        dt.reset();
+//
+//        while (op.opModeIsActive() /*&& (Math.abs(rotation.getCurrentPosition() - rotation.getTargetPosition()) > 5 || Math.abs(length.getCurrentPosition() - targetLength) > 5)*/) {
+//
+//            rotation.setPower(angleSpeed);
+//            length.setPower(angleSpeed);
+//            op.telemetry.addData("Rotation Power", rotation.getPower());
+//            op.telemetry.addData("Rotation Position", rotation.getCurrentPosition());
+//            op.telemetry.addData("Length Position", length.getCurrentPosition());
+//            op.telemetry.addData("Rotation Goal", rotation.getTargetPosition());
+//            op.telemetry.addData("Rotation Delta", rotationDelta);
+//            op.telemetry.addData("Length Delta", lengthDelta);
+//
+//
+//            op.telemetry.addData("Length DT", deltaTime.seconds());
+//
+//            op.telemetry.update();
+//
+//
+//            if (runtime > 0.25) {
+//
+//                op.telemetry.addData("Arm Telem", rotationDelta);
+//
+//                rotationDelta = Math.abs((int) lastrotationDelta - rotation.getCurrentPosition());
+//                lastrotationDelta = rotation.getCurrentPosition();
+//
+//                lengthDelta = Math.abs((int) lastlengthDelta - length.getCurrentPosition());
+//                lastlengthDelta = length.getCurrentPosition();
+//
+//                if (rotationDelta <= 3 && lengthDelta <= 3) {
+//                    break;
+//                }
+//            }
+//
+//            runtime += dt.seconds();
+//            dt.reset();
+//
+//        }
+//
+////        if (Math.abs(rotation.getCurrentPosition()) < 5) {
+////            rotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+////        }
+//
+//
+//        rotation.setPower(0);
+//    }
 
     /*
     This method moves the arm to an extension represented in % fully extended from 0 to 1
@@ -218,6 +280,7 @@ public class RobotArm extends Thread {
         // angleSpeed really means the angle you want the arm to be
         targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
+        
         if (targetLength < 0 && protectSpool)
             targetLength = 0; //don't extend the spool past it's starting point
 
@@ -236,6 +299,7 @@ public class RobotArm extends Thread {
     public void SetArmStatePower(double _targetLength, double angleSpeed) {
 
         targetLengthSpeed = 1;
+
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
         if (targetLength < 0 && protectSpool)
             targetLength = 0; //don't extend the spool past it's starting point

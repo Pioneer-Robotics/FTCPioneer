@@ -43,6 +43,7 @@ public class RobotConfiguration {
     //The encoder ticks required to extend the arm completely
     public static final double arm_ticksMax = 2613; //TODO determine this value
 
+
     //The minimum length of the arm (measured from the tip of the extrusion)
     public static final double arm_lengthMin = 38.1; //Verified Jan 28 2020
 
@@ -62,7 +63,7 @@ public class RobotConfiguration {
     public static final String arm_gripRotationServo = "Grip Rotation";
 
     //The Lunch.
-    public static final String lunchboxGrip = "Lunchbox";
+    public static final String capstoneServo = "Lunchbox";
 
     //The servos responsible for moving the foundation
     //Grip 0 position 1 is top
