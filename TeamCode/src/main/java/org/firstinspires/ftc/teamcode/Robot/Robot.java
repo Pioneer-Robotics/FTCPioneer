@@ -37,7 +37,7 @@ public class Robot extends Thread {
     //The wall tracker, lets you track along a wall using a sensor group and other data
     public RobotWallTrack wallTrack = new RobotWallTrack();
 
-    public Potentiometer armPotentiometer = new Potentiometer();
+    public Potentiometer armPotentiometer = null;
 
     public Servo capstoneServo;
     public Servo foundationServo0;

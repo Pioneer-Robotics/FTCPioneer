@@ -12,15 +12,16 @@ public class Potentiometer {
 
     //DISABLED
     public Potentiometer(OpMode opMode, String inputName) {
-//        analogInput = opMode.hardwareMap.get(AnalogInput.class, inputName);
+        analogInput = opMode.hardwareMap.get(AnalogInput.class, inputName);
     }
 
-    public Potentiometer() {
-        analogInput = null;
-    }
 
     public double getAngle() {
-//        return -analogInput.getVoltage() / 0.0122222222;
-        return 1;
+        return analogInput.getVoltage()*133 - 4.62;
+
+    }
+    public double getVoltage() {
+        return analogInput.getVoltage();
+
     }
 }

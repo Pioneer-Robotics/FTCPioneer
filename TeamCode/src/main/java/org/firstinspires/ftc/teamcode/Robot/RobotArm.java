@@ -81,14 +81,18 @@ public class RobotArm extends Thread {
     //I think "usePot" math is off by 90 radians, am subtracting 90 radians
 
     public double thetaAngle() {
-        double k = 177;
+        double k = 134.0;
         double h = 76.9;
-        double l = 135;
-        double C = bMath.toRadians(robot.armPotentiometer.getAngle() + RobotConfiguration.pot_interiorOffset);
+        double l = 177.0;
+        double C = bMath.toRadians(robot.armPotentiometer.getAngle());
 
         if (usePot) {
-            double c = Math.sqrt((k * k) + (l * l) - 2 * k * l * Math.cos(C));
-            return Math.asin((k * Math.sin(C)) / c) - Math.asin(h / c);
+            double hypotenuse = Math.sqrt( (k * k) + (l * l)  - (2 * k * l * Math.cos(C)));
+            double lowerPartialAngle = Math.asin(l * Math.sin(C) / hypotenuse);
+            double lengthBottom = Math.sqrt(hypotenuse * hypotenuse - (h * h));
+            double upperPartialAngle = Math.asin(lengthBottom / hypotenuse);
+            return lowerPartialAngle + upperPartialAngle - (Math.PI / 2);
+
         } else {
             double d = (rotation.getCurrentPosition() * 0.5) / 480; //TODO add offset to this value so it actually works lol: starts at 0 rn
             double c = ((k * k) - (h * h) - (l * l) - (d * d)) / 2;
@@ -105,7 +109,9 @@ public class RobotArm extends Thread {
     put that angle between 0 and PI/2 (in radians)
     not exact, we try to get it within a certain threshold but the arm jerks
      */
-    private void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
+
+    @Deprecated
+    private  void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
     {
         double thetaThreshold = Math.PI * (5.0 / 180.0);
         double thetaPower = 0.25;
@@ -121,6 +127,7 @@ public class RobotArm extends Thread {
             make sure the current angle doesn't exceed max/min
              */
     }
+
 
     /*
     This method will move the arm to match a desired length and angle.
@@ -272,8 +279,9 @@ public class RobotArm extends Thread {
     public void SetArmState(double targetAngle, double _targetLength, double angleSpeed) {
         // angleSpeed really means the angle you want the arm to be
         targetLengthSpeed = 1;
-        targetLength = (RobotConfiguration.arm_lengthMax * _targetLength);
-        if (targetLength > 0 && protectSpool)
+        targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
+        
+        if (targetLength < 0 && protectSpool)
             targetLength = 0; //don't extend the spool past it's starting point
 
         rotation.setPower(angleSpeed);
@@ -291,8 +299,9 @@ public class RobotArm extends Thread {
     public void SetArmStatePower(double _targetLength, double angleSpeed) {
 
         targetLengthSpeed = 1;
-        targetLength = (RobotConfiguration.arm_lengthMax * _targetLength);
-        if (targetLength > 0 && protectSpool)
+
+        targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
+        if (targetLength < 0 && protectSpool)
             targetLength = 0; //don't extend the spool past it's starting point
 
         rotation.setPower(angleSpeed);
@@ -330,11 +339,11 @@ public class RobotArm extends Thread {
     */
 
     public double ticksToCm(int ticks) {
-        return (double) -ticks * (17.8 / 480) + RobotConfiguration.arm_lengthMin;
+        return (double) ticks * (15.7 / 960) + RobotConfiguration.arm_lengthMin;
     }
 
     public int cmToTicks(double cm) {
-        return -(int) ((cm - RobotConfiguration.arm_lengthMin) * (480 / 17.8));
+        return (int) ((cm - RobotConfiguration.arm_lengthMin) * (960 / 15.7));
     }
 
 /* Principle for rectangular control
