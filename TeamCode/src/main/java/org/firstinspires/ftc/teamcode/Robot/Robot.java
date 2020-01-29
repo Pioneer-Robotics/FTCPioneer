@@ -59,6 +59,7 @@ public class Robot extends Thread {
     //The data manager serves to store data locally on the phone, used in calibration and PID tuning.
     private bDataManager dataManger = new bDataManager();
 
+    double desiredArmRotationPower;
 
     public LinearOpMode Op;
 //    public OpMode LinearOpMode;
@@ -257,6 +258,7 @@ public class Robot extends Thread {
 
     }
 
+
     //Threaded run method, right now this is just for IMU stuff, at some point we might put some avoidance stuff in here (background wall tracking?)
     public void run() {
         threadRunning.set(true);
@@ -277,6 +279,11 @@ public class Robot extends Thread {
 
             arm.length.setPower(1);
             arm.length.setTargetPosition((int) arm.targetLength);
+
+            if (arm.rotationMode == RobotArm.ArmRotationMode.Threaded) {
+                desiredArmRotationPower = ((arm.rotation.getCurrentPosition() - arm.targetRotation) / (RobotConfiguration.arm_rotationMax * 0.5)) * 1;
+                arm.rotation.setPower(bMath.Clamp(desiredArmRotationPower, Math.copySign(0.1, desiredArmRotationPower), Math.copySign(1, desiredArmRotationPower)));
+            }
         }
 
 

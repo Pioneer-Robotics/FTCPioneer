@@ -103,7 +103,7 @@ public class SkystoneSelectionSabotageFull extends Auto {
         //Deploy gripper
         robot.arm.SetGripState(RobotArm.GripState.CLOSED, 1);
 
-        robot.arm.setArmStateWait(0, 0.5, 1);
+        robot.arm.setArmStateWait(0, 0.5);
 
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
 
@@ -111,7 +111,8 @@ public class SkystoneSelectionSabotageFull extends Auto {
     }
 
     private void extendArmToOptimalPosition() {
-        robot.arm.setArmStateWait(0, 0.3, 1);
+
+        robot.arm.setArmStateWait(0, 0.3);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -140,7 +141,7 @@ public class SkystoneSelectionSabotageFull extends Auto {
     }
 
     private void dropOffStone(long servoDelayMS) {
-        robot.arm.setArmStateWait(0.2, 0.8, 1);
+        robot.arm.setArmStateWait(0.2, 0.8);
 
         //Drop stone
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
