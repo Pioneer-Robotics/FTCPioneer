@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 
-@Autonomous(name = "TestingOpMode4", group = "Sensor")
+@Autonomous(name = "TestingOpMode4", group = "Trouble Shooting")
 public class TestingOpMode4 extends LinearOpMode {
 
     private Robot robot = new Robot();
@@ -22,7 +22,7 @@ public class TestingOpMode4 extends LinearOpMode {
 
 
     @Override
-    public void runOpMode()   {
+    public void runOpMode() {
         robot.init(this, true);
 
         waitForStart();

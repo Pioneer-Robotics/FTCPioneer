@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 
-@Autonomous(name = "Skystone Low Key Sabotage", group = "ftcPio")
-public class SkystoneSelectionSabotage extends Auto {
+@Autonomous(name = "Skystone Low Key Sabotage Full", group = "ftcPio")
+public class SkystoneSelectionSabotageFull extends Auto {
 
     private double startRotation;
 
@@ -36,19 +34,16 @@ public class SkystoneSelectionSabotage extends Auto {
         sleep(250);
 
         robot.arm.setArmStateWait(0, 0.3, 1);
-        RunDeliveryCycle(93, 1000, 35, 24, 160, true);
+        RunDeliveryCycle(93, 1000, 35, 24, 145);
 ///
-        RunDeliveryCycle(45, 1000, 35, 1 * 24 + 24, 145 + 48, true);
-
-        RunDeliveryCycle(45, 1000, 35, 2 * 24 + 24, 145 + (3 * 24), false);
-
-//        robot.driveByDistance(180, 0.5, 15);
-
+        for (int i = 0; i < 2; i++) {
+            RunDeliveryCycle(0, 1000, 35, i * 24 + 24, 145);
+        }
         StopMovement();
         StopRobot();
     }
 
-    private void RunDeliveryCycle(double fwdDistance, long servoDelayMS, double distanceFromStone, double endingOffset, double bridgeDistance, boolean moveBackToBridge) {
+    private void RunDeliveryCycle(double fwdDistance, long servoDelayMS, double distanceFromStone, double endingOffset, double bridgeDistance) {
 
 
         robot.driveByDistance(0, 0.35, fwdDistance);
@@ -63,32 +58,29 @@ public class SkystoneSelectionSabotage extends Auto {
 
 //        robot.rotatePIDRelative(-90, 1, 3);
         //Rotates to face foundation
-        robot.rotatePID(90, 1, 4);
+        robot.rotatePID(90, 1, 2);
 
         //Drives to foundation
         robot.driveByDistance(0, 1, bridgeDistance);
 
-//        robot.arm.setArmStateWait(0.2, 0.8, 1);
-        robot.rotatePID(90, 1, 4);
+        robot.arm.setArmStateWait(0.2, 0.8, 1);
 
         //Drop stone
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
 
-        if (moveBackToBridge) {
         sleep(servoDelayMS);
 
+        robot.driveByDistance(180, 1, bridgeDistance);
 
-            robot.driveByDistance(180, 1, bridgeDistance);
+        robot.rotatePID(90, 1, 2);
 
-            robot.rotatePID(90, 1, 4);
+        robot.driveByDistance(180, 0.35, endingOffset);
 
-            robot.driveByDistance(180, 0.35, endingOffset);
+        robot.rotatePID(0, 1, 3);
 
-            robot.rotatePID(0, 1, 3);
-        }
-//        robot.driveByDistance(180, 1, 90);
+        robot.driveByDistance(180, 1, 90);
 
-//        robot.rotatePID(0, 1, 2);
+        robot.rotatePID(0, 1, 2);
     }
 
 }

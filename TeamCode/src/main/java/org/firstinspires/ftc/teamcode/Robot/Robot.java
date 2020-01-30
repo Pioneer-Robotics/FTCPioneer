@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -38,7 +39,7 @@ public class Robot extends Thread {
 
     public Potentiometer armPotentiometer = null;
 
-    public Servo lunchBox;
+    public Servo capstoneServo;
     public Servo foundationServo0;
     public Servo foundationServo1;
 
@@ -87,7 +88,7 @@ public class Robot extends Thread {
 
         getHardware(opmode, useWalltrack);
 
-        lunchBox.setPosition(0.733);
+        capstoneServo.setPosition(0.733);
 
         //Starts the 'run' thread
         start();
@@ -123,7 +124,7 @@ public class Robot extends Thread {
 //            experimentalInput.AddSensor(sensor);
 //        }
 
-        arm.SetGripState(RobotArm.GripState.IDLE, 1);
+        arm.SetGripState(RobotArm.GripState.IDLE, 0.8);
         setFoundationGripperState(0);
 
         bTelemetry.print("Wheel boot successful. Ready to operate!");
@@ -149,7 +150,7 @@ public class Robot extends Thread {
         armPotentiometer = new Potentiometer(opmode, RobotConfiguration.armPotentiometer);
         arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
 
-        lunchBox = opmode.hardwareMap.get(Servo.class, RobotConfiguration.lunchboxGrip);
+        capstoneServo = opmode.hardwareMap.get(Servo.class, RobotConfiguration.capstoneServo);
 
         bTelemetry.print("Configuring IMU...");
         imu.Start(opmode);
@@ -158,7 +159,7 @@ public class Robot extends Thread {
             bTelemetry.print("Configuring wall tracking...");
             wallTrack.Start(opmode);
         }
-        foundationServo0 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip0);
+        foundationServo0 = opmode.hardwareMap.get(ServoImplEx.class, RobotConfiguration.foundationGrip0);
         foundationServo1 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip1);
 
         setFoundationGripperState(1);
@@ -686,8 +687,8 @@ public class Robot extends Thread {
         setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
         setPowerDouble4(1, 1, 1, 1, speed);
 
-        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
-        setPowerDouble4(a.x, a.y, a.z, a.w, speed);
+//        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
+//        setPowerDouble4(a.x, a.y, a.z, a.w, speed);
 
 
         setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -834,4 +835,13 @@ public class Robot extends Thread {
         foundationServo1.setPosition(value);
     }
 
+    //grips the foundation, meant to be human readable (by judges)
+    public void gripFoundation() {
+        setFoundationGripperState(0);
+    }
+
+    //lets go of the foundation, meant to be human readable (by judges)
+    public void releaseFoundation() {
+        setFoundationGripperState(0.9);
+    }
 }
