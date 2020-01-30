@@ -86,15 +86,13 @@ public class Teleop extends TeleOpMode {
         gripAngle = 30;
         while (opModeIsActive()) {
             telemetry.addLine("------ Control  ------");
-            telemetry.addData("spool position", robot.arm.length.getCurrentPosition());
-            telemetry.addData("spool position as percent", robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_lengthMax);
-            telemetry.addData("arm rotation as percent", robot.arm.rotation.getCurrentPosition() / RobotConfiguration.arm_rotationMax);
 
 
             ///DRIVER CONTROLS
             setupDriverController();
 
-            getRightDiagPower(true, gamepad1.left_stick_x, gamepad1.left_stick_y, 90, 90);
+            leftDiagPower = getLeftDiagPower(true, gamepad1.left_stick_x, gamepad1.left_stick_y, 90, 90);
+            rightDiagPower = getRightDiagPower(true, gamepad1.left_stick_x, gamepad1.left_stick_y, 90, 90);
 
             leftRotatePower = gamepad1.right_stick_x;
             rightRotatePower = -gamepad1.right_stick_x;
@@ -125,15 +123,15 @@ public class Teleop extends TeleOpMode {
                 telemetry.addLine("Arm Control: Rect");
                 //set power and distance to the Arm.
                 robot.arm.SetArmStatePowerCm(robot.arm.RectExtension(rectControls_goingUp),
-                        rectControls_goingUp ? gamepad2.right_stick_y : -gamepad2.right_stick_x);
-                extension = robot.arm.cmToTicks(robot.arm.RectExtension(rectControls_goingUp)) / RobotConfiguration.arm_lengthMax;
+                        rectControls_goingUp ? -gamepad2.right_stick_y : gamepad2.right_stick_x);
+                extension = robot.arm.cmToTicks(robot.arm.RectExtension(rectControls_goingUp)) / RobotConfiguration.arm_ticksMax;
             } else {
                 telemetry.addLine("Arm Control: Radial");
 
-                extension += gamepad2.right_trigger * deltaTime.seconds() * 1;    //extend arm when right trigger held
-                extension -= gamepad2.left_trigger * deltaTime.seconds() * 1;     //retra ct arm when left trigger held
+                extension += gamepad2.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held
+                extension -= gamepad2.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held
 
-                raiseSpeed = bMath.Clamp(gamepad2.left_stick_y, -1, 1);
+                raiseSpeed = bMath.Clamp(-gamepad2.left_stick_y, -1, 1);
                 extension = bMath.Clamp(extension, 0, 1);
                 robot.arm.SetArmStatePower(extension, raiseSpeed);
             }
@@ -214,10 +212,11 @@ public class Teleop extends TeleOpMode {
             telemetry.addLine("-------- Arm  --------");
             telemetry.addData("Current Arm Angle", bMath.toDegrees(robot.arm.thetaAngle()));
             telemetry.addData("Current Potentiometer angle", robot.armPotentiometer.getAngle());
-            telemetry.addData("Current Potentiometer voltage", robot.armPotentiometer.getVoltage());
             telemetry.addData("RectWanted?:", rectControls);
-            telemetry.addData("ExtensionCurrent", robot.arm.rotation.getCurrentPosition());
-            telemetry.addData("ExtensionWanted", extension);
+            telemetry.addData("target spool position", extension*RobotConfiguration.arm_ticksMax);
+            telemetry.addData("spool position", robot.arm.length.getCurrentPosition());
+            telemetry.addData("spool position as percent", robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_ticksMax);
+            telemetry.addData("arm rotation as percent", robot.arm.rotation.getCurrentPosition() / RobotConfiguration.arm_rotationMax);
             telemetry.addLine("------ Lunchbox ------");
             telemetry.addData("Current Lunchbox", lunchboxRot);
             telemetry.update();
@@ -291,7 +290,7 @@ public class Teleop extends TeleOpMode {
 
     private void setupDriverController() {
 
-        updateBoostorSlowMotion(gamepad1);
+        updateBoostOrSlowMotion(gamepad1);
 
         // reset the "front" of the robot to be the real front
         if (gamepad1.a) {
@@ -312,7 +311,7 @@ public class Teleop extends TeleOpMode {
 
     }
 
-    private void updateBoostorSlowMotion(Gamepad gamePad) {
+    private void updateBoostOrSlowMotion(Gamepad gamePad) {
         //let left bumper toggle boost vs slow mode on the right trigger for fine control of the robot
         if (!gamePad.left_bumper) {
             //trigger makes robot slower
