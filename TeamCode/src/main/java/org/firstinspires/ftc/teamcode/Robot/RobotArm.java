@@ -84,14 +84,17 @@ public class RobotArm extends Thread {
         double k = 134.0;
         double h = 76.9;
         double l = 177.0;
-        double C = bMath.toRadians(robot.armPotentiometer.getAngle());
+        double rightAngle = Math.PI / 2;
+        double potentiometerMeasurement = bMath.toRadians(robot.armPotentiometer.getAngle());
 
         if (usePot) {
-            double hypotenuse = Math.sqrt( (k * k) + (l * l)  - (2 * k * l * Math.cos(C)));
-            double lowerPartialAngle = Math.asin(l * Math.sin(C) / hypotenuse);
-            double lengthBottom = Math.sqrt(hypotenuse * hypotenuse - (h * h));
-            double upperPartialAngle = Math.asin(lengthBottom / hypotenuse);
-            return lowerPartialAngle + upperPartialAngle - (Math.PI / 2);
+            double C0 = bMath.squared(l) + bMath.squared(k) - (2 * k * l * Math.cos(potentiometerMeasurement));
+            double C = Math.sqrt(C0);
+            double Numerator1 = bMath.squared(l) + bMath.squared(C) - bMath.squared(k);
+            double thetaPart1 = Math.acos( Numerator1 / 2 / C / l );
+            double thetaPart2 = Math.acos( h / C);
+            double Ans = thetaPart1 + thetaPart2 - rightAngle;
+            return Ans;
 
         } else {
             double d = (rotation.getCurrentPosition() * 0.5) / 480; //TODO add offset to this value so it actually works lol: starts at 0 rn

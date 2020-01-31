@@ -122,7 +122,8 @@ public class Teleop extends TeleOpMode {
             if (rectControls) {
                 telemetry.addLine("Arm Control: Rect");
                 //set power and distance to the Arm.
-                robot.arm.SetArmStatePowerCm(robot.arm.RectExtension(rectControls_goingUp),
+                robot.arm.SetArmStatePowerCm
+                        (robot.arm.RectExtension(rectControls_goingUp),
                         rectControls_goingUp ? -gamepad2.right_stick_y : gamepad2.right_stick_x);
                 extension = robot.arm.cmToTicks(robot.arm.RectExtension(rectControls_goingUp)) / RobotConfiguration.arm_ticksMax;
             } else {
