@@ -174,7 +174,7 @@ public class RobotArm extends Thread {
 
         rotation.setPower(0);
     }
-
+    @Deprecated
     public void setArmStateWaitCm(double targetAngle, double _targetLength) {
         targetLengthSpeed = 1;
         targetLength = cmToTicks(_targetLength);
@@ -202,7 +202,7 @@ public class RobotArm extends Thread {
         rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
-
+    @Deprecated
     public void setArmStateAsyncCm(double targetAngle, double _targetLength) {
         targetLengthSpeed = 1;
         targetLength = cmToTicks(_targetLength);
@@ -229,6 +229,7 @@ public class RobotArm extends Thread {
     This method moves the arm to an extension represented in % fully extended from 0 to 1
     and moves the shuttle on the lead screw to a position represented in % fully up from 0 to 1
      */
+
     public void SetArmState(double targetAngle, double _targetLength, double angleSpeed) {
         // angleSpeed really means the angle you want the arm to be
         targetLengthSpeed = 1;
