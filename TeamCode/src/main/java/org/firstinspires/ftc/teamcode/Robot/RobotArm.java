@@ -175,9 +175,37 @@ public class RobotArm extends Thread {
         rotation.setPower(0);
     }
 
+    public void setArmStateWaitCm(double targetAngle, double _targetLength) {
+        targetLengthSpeed = 1;
+        targetLength = cmToTicks(_targetLength);
+        targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
+
+        rotation.setTargetPosition((int) (RobotConfiguration.arm_rotationMax * targetAngle));
+
+
+        rotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        while (op.opModeIsActive() && (!armRotationTargetReached() || !armLengthTargetReached())) {
+
+        }
+
+        rotation.setPower(0);
+    }
+
     public void setArmStateAsync(double targetAngle, double _targetLength) {
         targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
+        targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
+
+        rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    public void setArmStateAsyncCm(double targetAngle, double _targetLength) {
+        targetLengthSpeed = 1;
+        targetLength = cmToTicks(_targetLength);
         targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
 
         rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
