@@ -44,6 +44,7 @@ public class Teleop extends TeleOpMode {
     private double raiseSpeed = 0;
     private double extension = 0;
     private double gripAngle = 0;
+    private double lengthSpeed = 0;
 
     //Rectangular Control Variables New
     private boolean rectControls = false;
@@ -129,19 +130,24 @@ public class Teleop extends TeleOpMode {
             if (rectControls) {
                 telemetry.addLine("Arm Control: Rect");
                 //set power and distance to the Arm.
-                robot.arm.SetArmStatePowerCm
-                        (robot.arm.RectExtension(rectControls_goingUp),
-                        rectControls_goingUp ? -gamepad2.right_stick_y : gamepad2.right_stick_x);
+//                robot.arm.SetArmStatePowerCm
+//                        (robot.arm.RectExtension(rectControls_goingUp),
+//                        rectControls_goingUp ? -gamepad2.right_stick_y : gamepad2.right_stick_x);
                 extension = robot.arm.cmToTicks(robot.arm.RectExtension(rectControls_goingUp)) / RobotConfiguration.arm_ticksMax;
+                extension = bMath.Clamp(extension, 0, 1);
+                robot.arm.SetArmStatePower
+                        (extension,
+                        rectControls_goingUp ? -0.5*gamepad2.right_stick_y : -0.5*gamepad2.right_stick_x);
             } else {
                 telemetry.addLine("Arm Control: Radial");
 
-                extension += gamepad2.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held
-                extension -= gamepad2.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held
+//                extension += gamepad2.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held
+//                extension -= gamepad2.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held
 
                 raiseSpeed = bMath.Clamp(-gamepad2.left_stick_y, -1, 1);
-                extension = bMath.Clamp(extension, 0, 1);
-                robot.arm.SetArmStatePower(extension, raiseSpeed);
+                lengthSpeed = bMath.Clamp(gamepad2.right_trigger-gamepad2.left_trigger);
+                //extension = bMath.Clamp(, 0, 1);
+                robot.arm.SetArmStateExtensionPower(lengthSpeed, raiseSpeed);
             }
 
             //this is doing rectControls using simple conversions from rectangular coordinates to polar coordinates

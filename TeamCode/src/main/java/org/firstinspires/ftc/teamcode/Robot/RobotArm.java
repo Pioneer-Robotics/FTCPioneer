@@ -250,6 +250,19 @@ public class RobotArm extends Thread {
 
     }
 
+    public void SetArmStateExtensionPower(double lengthSpeed, double angleSpeed) {
+
+        if (targetLength < 0 && protectSpool)
+            targetLength = 0; //don't extend the spool past it's starting point
+
+        rotation.setPower(angleSpeed);
+        rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        rotation.setPower(lengthSpeed);
+        length.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+    }
+
     /*
     This method will rotate the arm at a specified speed and extend
     to match a certain distance in cm >0
@@ -265,7 +278,7 @@ public class RobotArm extends Thread {
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         length.setPower(1);
-        length.setTargetPosition(-(int) targetLength);
+        length.setTargetPosition((int) targetLength);
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
@@ -302,15 +315,16 @@ public class RobotArm extends Thread {
         xExtConst = ticksToCm(length.getCurrentPosition()) * Math.cos(thetaAngle());
 
         yExtConst = ticksToCm(length.getCurrentPosition()) * Math.sin(thetaAngle());
+
     }
 
 
     //returns the amount the arm should be extended when moving (in cm)
     public double RectExtension(boolean goingUp) {
         if (goingUp)
-            return xExtConst / Math.cos(thetaAngle());
+            return xExtConst / bMath.Clamp(Math.cos(thetaAngle()),0.0001, 1);
         else
-            return yExtConst / Math.sin(thetaAngle());
+            return yExtConst / bMath.Clamp(Math.sin(thetaAngle()), 0.0001, 1);
     }
 
 

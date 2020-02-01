@@ -157,6 +157,19 @@ public class bMath {
         return v;
     }
 
+    public static double Clamp(double value) {
+        double v = value;
+
+        if (value >= 1) {
+            v = 1;
+        }
+        if (value <= 0) {
+            v = 0;
+        }
+
+        return v;
+    }
+
     public static long Clamp(long value, long min, long max) {
         long v = value;
 
