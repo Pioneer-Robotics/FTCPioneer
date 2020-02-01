@@ -10,6 +10,18 @@ import org.firstinspires.ftc.teamcode.Helpers.bMath;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 import org.firstinspires.ftc.teamcode.Robot.RobotConfiguration;
+import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.DriverTeleopData;
+import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.RectangularControlData;
+import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.RotationData;
+import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.TeleopDriverControls;
+
+/// Advice-
+/// Consolidate State variable into a similar concept object. (see RectangularControlData for example etc...)
+/// Move helper functions into Classes that relate (see Robot updateRobotDrive() for example, getMovementVector() still needs to be moved to a Math class)
+/// Create layers of abstration to the code that makes it easier to read and understand (see TeleopDriverControls for example)
+/// In general, attempt to create sub-layers of abstractions that have code that will almost never change so that if can be added to the code base and then confidently ignored as working flawlessly. (Adding self testing code with a testing framework would also be very helpful)
+/// Adding layers of abstrations allow the coder to only focus on the level of code that needs to be updated (or read and understood) without unnecessary added complexity.
+
 
 @TeleOp(name = "TeleOp", group = "Sensor")
 public class Teleop extends TeleOpMode {
@@ -29,8 +41,6 @@ public class Teleop extends TeleOpMode {
 
     private double leftDiagPower = 0;
     private double rightDiagPower = 0;
-    private double ogLeftDiagPower = 0;
-    private double ogRightDiagPower = 0;
     private final double sq2 = Math.pow(2, 1 / 2);
     private double leftRotatePower = 0;
     private double rightRotatePower = 0;
@@ -46,10 +56,8 @@ public class Teleop extends TeleOpMode {
     private double gripAngle = 180;
 
     //Rectangular Control Variables New
-    private boolean rectControls = false;
-    private boolean rectControlsCheck = false;
-    private boolean rectControls_goingUp = false;
-    private boolean rectControls_goingUpCheck = false;
+    /// Code clean up advice --- State variable that have a similar concept should be grouped into a single object
+    private RectangularControlData rectControlData = new RectangularControlData();
 
     //Gripper Control
     private boolean grab = true; //whether the gripper is not gripping
@@ -67,12 +75,9 @@ public class Teleop extends TeleOpMode {
     private boolean bButton1Check = false;
     //Mode Switch Variables
 
-
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(this, false);
-
-
 
         initControllers();
         waitForStart();
@@ -83,46 +88,38 @@ public class Teleop extends TeleOpMode {
         while (opModeIsActive()) {
             telemetry.addLine("------ Control  ------");
 
-
-            ///DRIVER CONTROLS
-            setupDriverController();
-
-            leftDiagPower = getLeftDiagPower(coordinateSystemLock, gamepad1.left_stick_x, gamepad1.left_stick_y, 90, 90);
-            rightDiagPower = getRightDiagPower(coordinateSystemLock, gamepad1.left_stick_x, gamepad1.left_stick_y, 90, 90);
-
-            leftRotatePower = gamepad1.right_stick_x;
-            rightRotatePower = -gamepad1.right_stick_x;
-
-            double frontLeftWheelPower = moveSpeed * (leftDiagPower + leftRotatePower);
-            double frontRightWheelPower = moveSpeed * (rightDiagPower + rightRotatePower);
-            double backLeftWheelPower = moveSpeed * (rightDiagPower + leftRotatePower);
-            double backRightWheelPower = moveSpeed * (leftDiagPower + rightRotatePower);
-            updateRobotDrive(frontLeftWheelPower, frontRightWheelPower, backLeftWheelPower, backRightWheelPower);
-
+            updateDriverControls();
 
             //ARM CONTROLS//
 
+            // TODO - Create `updateArmControls()` method
+            // `updateArmControls()` should have leveled abstrations that make reading and understanding the code simpler.
+            // Lower levels of the abstrations should be stashed in other classes.
+            // The lower level abstrations should not store state if possible. They should be passed in values and then return values so that state can be easily be tracked.
+
+
+
             // Activates rectControls when right stick is being moved
-            rectControls = ((Math.abs(gamepad2.right_stick_y) > 0.1) || (Math.abs(gamepad2.right_stick_x) > 0.1));
+            rectControlData.rectControls = ((Math.abs(gamepad2.right_stick_y) > 0.1) || (Math.abs(gamepad2.right_stick_x) > 0.1));
             //sets direction of rectControls to whichever axis is greater
-            rectControls_goingUp = Math.abs(gamepad2.right_stick_y) > Math.abs(gamepad2.right_stick_x);
+            rectControlData.rectControls_goingUp = Math.abs(gamepad2.right_stick_y) > Math.abs(gamepad2.right_stick_x);
 
             //get new extension constants if rectControls changes or if direction changes
-            if ((rectControls != rectControlsCheck) || (rectControls_goingUp != rectControls_goingUpCheck))
+            if ((rectControlData.rectControls != rectControlData.rectControlsCheck) || (rectControlData.rectControls_goingUp != rectControlData.rectControls_goingUpCheck))
                 robot.arm.ExtConstCalc();
-            rectControlsCheck = rectControls;
-            rectControls_goingUpCheck = rectControls_goingUp;
+            rectControlData.rectControlsCheck = rectControlData.rectControls;
+            rectControlData.rectControls_goingUpCheck = rectControlData.rectControls_goingUp;
 
 
             //Allows the Gripper to be moved straight up and down with the right joystick
-            if (rectControls) {
+            if (rectControlData.rectControls) {
                 telemetry.addLine("Arm Control: Rect");
                 //set power and distance to the Arm.
-                extension = robot.arm.cmToTicks(robot.arm.RectExtension(rectControls_goingUp)) / RobotConfiguration.arm_ticksMax;
+                extension = robot.arm.cmToTicks(robot.arm.RectExtension(rectControlData.rectControls_goingUp)) / RobotConfiguration.arm_ticksMax;
                 extension = bMath.Clamp(extension, 0, 1);
                 robot.arm.SetArmStatePower
                         (extension,
-                        rectControls_goingUp ? -0.5*gamepad2.right_stick_y : -0.5*gamepad2.right_stick_x);
+                                rectControlData.rectControls_goingUp ? -0.5*gamepad2.right_stick_y : -0.5*gamepad2.right_stick_x);
             } else {
                 telemetry.addLine("Arm Control: Radial");
 
@@ -195,7 +192,7 @@ public class Teleop extends TeleOpMode {
 
             gripAngle = bMath.Clamp(gripAngle, 0, 180);
 
-
+            // Print Updated Values to telemetry
             telemetry.addLine("------ Movement ------");
             telemetry.addData("Rotation Locked ", coordinateSystemLock);
             telemetry.addData("Current Rotation ", robot.getRotation());
@@ -203,7 +200,7 @@ public class Teleop extends TeleOpMode {
             telemetry.addLine("-------- Arm  --------");
             telemetry.addData("Current Arm Angle", bMath.toDegrees(robot.arm.thetaAngle()));
             telemetry.addData("Current Potentiometer angle", robot.armPotentiometer.getAngle());
-            telemetry.addData("RectWanted?:", rectControls);
+            telemetry.addData("RectWanted?:", rectControlData.rectControls);
             telemetry.addData("target spool position", extension*RobotConfiguration.arm_ticksMax);
             telemetry.addData("spool position", robot.arm.length.getCurrentPosition());
             telemetry.addData("spool position as percent", robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_ticksMax);
@@ -212,20 +209,47 @@ public class Teleop extends TeleOpMode {
             telemetry.addData("Current Lunchbox", lunchboxRot);
             telemetry.update();
 
+            // Update deltaTime
             deltaTime.reset();
         }
         robot.shutdown();
     }
 
-    private double fullRotation = 360;
+    private void updateDriverControls() {
+        ///DRIVER CONTROLS
 
-    private void updateRobotDrive(double frontLeft, double frontRight, double backLeft, double backRight) {
-        robot.driveManager.frontLeft.setPower(frontLeft);
-        robot.driveManager.frontRight.setPower(frontRight);
-        robot.driveManager.backLeft.setPower(backLeft);
-        robot.driveManager.backRight.setPower(backRight);
+        // Create driverTeleopData to get values to update robot state
+        RotationData rotationData = new RotationData(rotationLockAngle, leftRotateCoordCheck, rightRotateCoordCheck);
+        DriverTeleopData driverTeleopData = TeleopDriverControls.setupDriverController(gamepad1,
+                robot,
+                rotationData,
+                movementModeToggleCheck,
+                coordinateSystemLock);
+
+        // Handle returned data values here
+        moveSpeed = driverTeleopData.moveSpeed;
+        movementModeToggleCheck = driverTeleopData.movementModeToggleCheck;
+        coordinateSystemLock = driverTeleopData.coordinateSystemLock;
+        rotationLockAngle = driverTeleopData.rotationData.rotationLockAngle;
+        leftRotateCoordCheck = driverTeleopData.rotationData.leftRotateCoordCheck;
+        rightRotateCoordCheck = driverTeleopData.rotationData.rightRotateCoordCheck;
+
+        // Update Diag Power
+        leftDiagPower = getLeftDiagPower(coordinateSystemLock, gamepad1.left_stick_x, gamepad1.left_stick_y, 90, 90);
+        rightDiagPower = getRightDiagPower(coordinateSystemLock, gamepad1.left_stick_x, gamepad1.left_stick_y, 90, 90);
+
+        leftRotatePower = gamepad1.right_stick_x;
+        rightRotatePower = -gamepad1.right_stick_x;
+
+        // Update Robot Drive
+        double frontLeftWheelPower = moveSpeed * (leftDiagPower + leftRotatePower);
+        double frontRightWheelPower = moveSpeed * (rightDiagPower + rightRotatePower);
+        double backLeftWheelPower = moveSpeed * (rightDiagPower + leftRotatePower);
+        double backRightWheelPower = moveSpeed * (leftDiagPower + rightRotatePower);
+        robot.updateRobotDrive(frontLeftWheelPower, frontRightWheelPower, backLeftWheelPower, backRightWheelPower);
     }
 
+    // TODO: - Move to ??? Class
     private double getLeftDiagPower(boolean useLockedRotation,
                                     double movementInput_x,
                                     double movementInput_y,
@@ -263,7 +287,7 @@ public class Teleop extends TeleOpMode {
         }
     }
 
-
+    // TODO: - Move to a Math Class
     private Vector2 getMovementVector(double movementInput_x, double movementInput_y) {
         double angle = Math.toRadians(robot.getRotation() - rotationLockAngle);
 
@@ -278,56 +302,5 @@ public class Teleop extends TeleOpMode {
 
         return new Vector2(newGamepadX, newGamepadY);
     }
-
-    private void setupDriverController() {
-
-        updateBoostOrSlowMotion(gamepad1);
-
-        // reset the "front" of the robot to be the real front
-        if (gamepad1.a) {
-            rotationLockAngle = robot.getRotation();
-        }
-        // up/down of right stick can incrementally change which way is the "front" of the robot in coordinate lock mode
-        rotationLockAngle = ((rotationLockAngle + 3.0 * gamepad1.right_stick_y + fullRotation) % fullRotation) - fullRotation;
-
-
-        updateDPad();
-
-        // y button toggles coordinate system lock
-        if (gamepad1.y && !movementModeToggleCheck) {
-            rotationLockAngle = robot.getRotation();
-            coordinateSystemLock = !coordinateSystemLock;
-        }
-        movementModeToggleCheck = gamepad1.y;
-
-    }
-
-    private void updateBoostOrSlowMotion(Gamepad gamePad) {
-        //let left bumper toggle boost vs slow mode on the right trigger for fine control of the robot
-        if (!gamePad.left_bumper) {
-            //trigger makes robot slower
-            moveSpeed = bMath.Clamp(0.25 * (0.5 * (1 - gamepad1.right_trigger) + (1 - gamepad1.left_trigger) + 0.5), 0, 1);
-        } else {
-            //trigger makes robot faster
-            moveSpeed = bMath.Clamp(0.5 + gamepad1.right_trigger / 2, 0, 1);
-        }
-
-    }
-
-    private void updateDPad() {
-        //left and right dpad can shift "front" of robot by 90 degrees in coordinate lock mode
-        if (gamepad1.dpad_left && !leftRotateCoordCheck) {
-            rotationLockAngle = ((rotationLockAngle + 450) % fullRotation) - fullRotation;
-        }
-        leftRotateCoordCheck = gamepad1.dpad_left;
-
-
-        if (gamepad1.dpad_right && !rightRotateCoordCheck) {
-            rotationLockAngle = ((rotationLockAngle + 270) % fullRotation) - fullRotation;
-        }
-        rightRotateCoordCheck = gamepad1.dpad_right;
-
-    }
-
 
 }

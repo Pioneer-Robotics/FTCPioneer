@@ -898,5 +898,12 @@ public class Robot extends Thread {
         setFoundationGripperState(0.9);
     }
 
+    // Drive Helper Method
+    public void updateRobotDrive(double frontLeft, double frontRight, double backLeft, double backRight) {
+        driveManager.frontLeft.setPower(frontLeft);
+        driveManager.frontRight.setPower(frontRight);
+        driveManager.backLeft.setPower(backLeft);
+        driveManager.backRight.setPower(backRight);
+    }
 
 }
