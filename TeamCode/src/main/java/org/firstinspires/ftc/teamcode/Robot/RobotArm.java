@@ -326,7 +326,7 @@ public class RobotArm extends Thread {
 
 
     public void SetGripState(GripState gripState, double rotationPosition) {
-        grip.setPosition(gripState == GripState.CLOSED ? 0 : (gripState == GripState.IDLE ? 0.23 : 0.64));
+        grip.setPosition(gripState == GripState.CLOSED ? 0 : (gripState == GripState.IDLE ? 0.4 : 0.64));
         gripRotation.setPosition(rotationPosition);
     }
 

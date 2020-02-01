@@ -43,20 +43,13 @@ public class Teleop extends TeleOpMode {
     //Arm Control Variables
     private double raiseSpeed = 0;
     private double extension = 0;
-    private double gripAngle = 0;
+    private double gripAngle = 180;
 
     //Rectangular Control Variables New
     private boolean rectControls = false;
     private boolean rectControlsCheck = false;
     private boolean rectControls_goingUp = false;
     private boolean rectControls_goingUpCheck = false;
-
-    //Other way of doing Rect Controls
-    private boolean goodRect = false;
-    private double xWanted = 0;
-    private double xActual = 0;
-    private double yWanted = 0;
-    private double yActual = 0;
 
     //Gripper Control
     private boolean grab = true; //whether the gripper is not gripping
@@ -68,11 +61,6 @@ public class Teleop extends TeleOpMode {
     private boolean dropLunchBox = false;
     private boolean yButton2Check = false;
 
-    private boolean pointDown = false;
-    private boolean aButton2Check = false;
-
-    private boolean fineServoControl = true;
-
     private double lunchboxRot = 0.5;
 
     private boolean gripFoundation = false;
@@ -83,7 +71,6 @@ public class Teleop extends TeleOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(this, false);
-        fineServoControl = true;
 
         initControllers();
         waitForStart();
@@ -148,10 +135,6 @@ public class Teleop extends TeleOpMode {
                 robot.arm.SetArmStatePower(extension, raiseSpeed);
             }
 
-            //this is doing rectControls using simple conversions from rectangular coordinates to polar coordinates
-            if (goodRect){
-
-            }
 
             //Gripper Controls//
 
@@ -182,26 +165,19 @@ public class Teleop extends TeleOpMode {
             }
 
 
-            //press a button to make the gripper point down
-            if (gamepad2.a && !aButton2Check) {
-                pointDown = true;
-            }
-            aButton2Check = gamepad2.a;
-
-            if (pointDown) {
+            //hold A button to make the gripper point down
+            if (gamepad2.a) {
                 gripAngle = 90 - robot.arm.thetaAngle();
             }
 
             //rotate gripper down with the left dpad
             if (gamepad2.left_bumper) {
                 gripAngle += deltaTime.seconds() * 135 * 1.5;
-                pointDown = false;
             }
 
             //rotate gripper up with the right dpad
             if (gamepad2.right_bumper) {
                 gripAngle -= deltaTime.seconds() * 135 * 1.5;
-                pointDown = false;
             }
 
             //move foundation grippers with b button
