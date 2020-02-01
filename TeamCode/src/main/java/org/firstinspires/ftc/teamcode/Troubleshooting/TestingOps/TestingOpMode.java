@@ -17,6 +17,8 @@ public class TestingOpMode extends Auto {
 
         waitForStart();
 
+        robot.rotateSimple(90, 1, 2, 0.5);
+
 //        GrabArm(0.3);
 
 //        while (opModeIsActive()) {

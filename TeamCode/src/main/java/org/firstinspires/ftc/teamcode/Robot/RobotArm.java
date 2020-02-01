@@ -43,9 +43,9 @@ public class RobotArm extends Thread {
     private double yExtConst;
     private double pot;
 
-    private  boolean protectSpool = true;
+    private boolean protectSpool = true;
 
-    private  boolean usePot = true;
+    private boolean usePot = true;
 
     public enum GripState {
         OPEN,
@@ -100,8 +100,8 @@ public class RobotArm extends Thread {
             double C0 = bMath.squared(l) + bMath.squared(k) - (2 * k * l * Math.cos(potentiometerMeasurement));
             double C = Math.sqrt(C0);
             double Numerator1 = bMath.squared(l) + bMath.squared(C) - bMath.squared(k);
-            double thetaPart1 = Math.acos( Numerator1 / 2 / C / l );
-            double thetaPart2 = Math.acos( h / C);
+            double thetaPart1 = Math.acos(Numerator1 / 2 / C / l);
+            double thetaPart2 = Math.acos(h / C);
             double AnsRad = thetaPart1 + thetaPart2 - (Math.PI / 2);
             return AnsRad;
 
@@ -174,6 +174,7 @@ public class RobotArm extends Thread {
 
         rotation.setPower(0);
     }
+
     @Deprecated
     public void setArmStateWaitCm(double targetAngle, double _targetLength) {
         targetLengthSpeed = 1;
@@ -195,13 +196,13 @@ public class RobotArm extends Thread {
     }
 
     public void setArmStateAsync(double targetAngle, double _targetLength) {
-        targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
         targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
 
         rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
+
     @Deprecated
     public void setArmStateAsyncCm(double targetAngle, double _targetLength) {
         targetLengthSpeed = 1;
@@ -333,14 +334,14 @@ public class RobotArm extends Thread {
     //returns the amount the arm should be extended when moving (in cm)
     public double RectExtension(boolean goingUp) {
         if (goingUp)
-            return xExtConst / bMath.Clamp(Math.cos(thetaAngle()),0.0001, 1);
+            return xExtConst / bMath.Clamp(Math.cos(thetaAngle()), 0.0001, 1);
         else
             return yExtConst / bMath.Clamp(Math.sin(thetaAngle()), 0.0001, 1);
     }
 
 
     public void SetGripState(GripState gripState, double rotationPosition) {
-        grip.setPosition(gripState == GripState.CLOSED ? 0 : (gripState == GripState.IDLE ? 0.4 : 0.64));
+        grip.setPosition(gripState == GripState.CLOSED ? 0 : (gripState == GripState.IDLE ? 0.2 : 0.74));
         gripRotation.setPosition(rotationPosition);
     }
 
