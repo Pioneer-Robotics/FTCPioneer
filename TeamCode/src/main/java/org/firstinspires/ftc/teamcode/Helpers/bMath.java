@@ -207,6 +207,6 @@ public class bMath {
         return value * 57.2957;
     }
 
-    public static double squared (double val) { return val * val; }
+    public static double squared (double val) { return (val * val); }
 
 }

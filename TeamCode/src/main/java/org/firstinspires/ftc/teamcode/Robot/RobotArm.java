@@ -81,20 +81,20 @@ public class RobotArm extends Thread {
     //I think "usePot" math is off by 90 radians, am subtracting 90 radians
 
     public double thetaAngle() {
-        double k = 134.0;
-        double h = 76.9;
-        double l = 177.0;
-        double rightAngle = Math.PI / 2;
+        double k = 177.0;
+        double h = 32.2;
+        double l = 134.0;
         double potentiometerMeasurement = bMath.toRadians(robot.armPotentiometer.getAngle());
 
         if (usePot) {
+            potentiometerMeasurement = bMath.Clamp(potentiometerMeasurement, 0, 3.141);
             double C0 = bMath.squared(l) + bMath.squared(k) - (2 * k * l * Math.cos(potentiometerMeasurement));
             double C = Math.sqrt(C0);
             double Numerator1 = bMath.squared(l) + bMath.squared(C) - bMath.squared(k);
             double thetaPart1 = Math.acos( Numerator1 / 2 / C / l );
             double thetaPart2 = Math.acos( h / C);
-            double Ans = thetaPart1 + thetaPart2 - rightAngle;
-            return Ans;
+            double AnsRad = thetaPart1 + thetaPart2 - (Math.PI / 2);
+            return AnsRad;
 
         } else {
             double d = (rotation.getCurrentPosition() * 0.5) / 480; //TODO add offset to this value so it actually works lol: starts at 0 rn
@@ -115,7 +115,7 @@ public class RobotArm extends Thread {
     @Deprecated
     private  void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
     {
-        double thetaThreshold = Math.PI * (5.0 / 180.0);
+        double thetaThreshold = Math.PI * (2.0 / 180.0);
         double thetaPower = 0.25;
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //depending on if the angle needs to be increased or decreased, turn on the motors
@@ -265,7 +265,7 @@ public class RobotArm extends Thread {
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         length.setPower(1);
-        length.setTargetPosition((int) targetLength);
+        length.setTargetPosition(-(int) targetLength);
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
