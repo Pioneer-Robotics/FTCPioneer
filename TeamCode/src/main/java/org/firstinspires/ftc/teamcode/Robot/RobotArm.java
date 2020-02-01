@@ -81,17 +81,20 @@ public class RobotArm extends Thread {
     //I think "usePot" math is off by 90 radians, am subtracting 90 radians
 
     public double thetaAngle() {
-        double k = 134.0;
-        double h = 76.9;
-        double l = 177.0;
-        double C = bMath.toRadians(robot.armPotentiometer.getAngle());
+        double k = 177.0;
+        double h = 32.2;
+        double l = 134.0;
+        double potentiometerMeasurement = bMath.toRadians(robot.armPotentiometer.getAngle());
 
         if (usePot) {
-            double hypotenuse = Math.sqrt( (k * k) + (l * l)  - (2 * k * l * Math.cos(C)));
-            double lowerPartialAngle = Math.asin(l * Math.sin(C) / hypotenuse);
-            double lengthBottom = Math.sqrt(hypotenuse * hypotenuse - (h * h));
-            double upperPartialAngle = Math.asin(lengthBottom / hypotenuse);
-            return lowerPartialAngle + upperPartialAngle - (Math.PI / 2);
+            potentiometerMeasurement = bMath.Clamp(potentiometerMeasurement, 0, 3.141);
+            double C0 = bMath.squared(l) + bMath.squared(k) - (2 * k * l * Math.cos(potentiometerMeasurement));
+            double C = Math.sqrt(C0);
+            double Numerator1 = bMath.squared(l) + bMath.squared(C) - bMath.squared(k);
+            double thetaPart1 = Math.acos( Numerator1 / 2 / C / l );
+            double thetaPart2 = Math.acos( h / C);
+            double AnsRad = thetaPart1 + thetaPart2 - (Math.PI / 2);
+            return AnsRad;
 
         } else {
             double d = (rotation.getCurrentPosition() * 0.5) / 480; //TODO add offset to this value so it actually works lol: starts at 0 rn
@@ -112,7 +115,7 @@ public class RobotArm extends Thread {
     @Deprecated
     private  void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
     {
-        double thetaThreshold = Math.PI * (5.0 / 180.0);
+        double thetaThreshold = Math.PI * (2.0 / 180.0);
         double thetaPower = 0.25;
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //depending on if the angle needs to be increased or decreased, turn on the motors
@@ -247,6 +250,16 @@ public class RobotArm extends Thread {
 
     }
 
+    public void SetArmStateExtensionPower(double lengthSpeed, double angleSpeed) {
+
+        rotation.setPower(angleSpeed);
+        rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        rotation.setPower(lengthSpeed);
+        length.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+    }
+
     /*
     This method will rotate the arm at a specified speed and extend
     to match a certain distance in cm >0
@@ -299,15 +312,16 @@ public class RobotArm extends Thread {
         xExtConst = ticksToCm(length.getCurrentPosition()) * Math.cos(thetaAngle());
 
         yExtConst = ticksToCm(length.getCurrentPosition()) * Math.sin(thetaAngle());
+
     }
 
 
     //returns the amount the arm should be extended when moving (in cm)
     public double RectExtension(boolean goingUp) {
         if (goingUp)
-            return xExtConst / Math.cos(thetaAngle());
+            return xExtConst / bMath.Clamp(Math.cos(thetaAngle()),0.0001, 1);
         else
-            return yExtConst / Math.sin(thetaAngle());
+            return yExtConst / bMath.Clamp(Math.sin(thetaAngle()), 0.0001, 1);
     }
 
 

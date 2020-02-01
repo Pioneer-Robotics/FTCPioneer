@@ -43,7 +43,7 @@ public class Teleop extends TeleOpMode {
     //Arm Control Variables
     private double raiseSpeed = 0;
     private double extension = 0;
-    private double gripAngle = 180;
+    private double gripAngle = 0;
 
     //Rectangular Control Variables New
     private boolean rectControls = false;
@@ -51,8 +51,15 @@ public class Teleop extends TeleOpMode {
     private boolean rectControls_goingUp = false;
     private boolean rectControls_goingUpCheck = false;
 
+    //Other way of doing Rect Controls
+    private boolean goodRect = false;
+    private double xWanted = 0;
+    private double xActual = 0;
+    private double yWanted = 0;
+    private double yActual = 0;
+
     //Gripper Control
-    private boolean grab = false; //whether the gripper is gripping
+    private boolean grab = true; //whether the gripper is not gripping
     private boolean bButton2Check = false; //prevState of grab
 
     private boolean idle = false; //whether the gripper is in rest position
@@ -83,7 +90,7 @@ public class Teleop extends TeleOpMode {
 
         lunchboxRot = 1;
         robot.arm.SetGripState(RobotArm.GripState.IDLE, 60);
-        gripAngle = 30;
+        gripAngle = 180;
         while (opModeIsActive()) {
             telemetry.addLine("------ Control  ------");
 
@@ -122,9 +129,14 @@ public class Teleop extends TeleOpMode {
             if (rectControls) {
                 telemetry.addLine("Arm Control: Rect");
                 //set power and distance to the Arm.
-                robot.arm.SetArmStatePowerCm(robot.arm.RectExtension(rectControls_goingUp),
-                        rectControls_goingUp ? -gamepad2.right_stick_y : gamepad2.right_stick_x);
+//                robot.arm.SetArmStatePowerCm
+//                        (robot.arm.RectExtension(rectControls_goingUp),
+//                        rectControls_goingUp ? -gamepad2.right_stick_y : gamepad2.right_stick_x);
                 extension = robot.arm.cmToTicks(robot.arm.RectExtension(rectControls_goingUp)) / RobotConfiguration.arm_ticksMax;
+                extension = bMath.Clamp(extension, 0, 1);
+                robot.arm.SetArmStatePower
+                        (extension,
+                        rectControls_goingUp ? -0.5*gamepad2.right_stick_y : -0.5*gamepad2.right_stick_x);
             } else {
                 telemetry.addLine("Arm Control: Radial");
 
@@ -134,6 +146,11 @@ public class Teleop extends TeleOpMode {
                 raiseSpeed = bMath.Clamp(-gamepad2.left_stick_y, -1, 1);
                 extension = bMath.Clamp(extension, 0, 1);
                 robot.arm.SetArmStatePower(extension, raiseSpeed);
+            }
+
+            //this is doing rectControls using simple conversions from rectangular coordinates to polar coordinates
+            if (goodRect){
+
             }
 
             //Gripper Controls//
