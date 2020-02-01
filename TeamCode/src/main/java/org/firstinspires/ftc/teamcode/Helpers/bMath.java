@@ -157,6 +157,19 @@ public class bMath {
         return v;
     }
 
+    public static double Clamp(double value) { //TODO fix
+        double v = value;
+
+        if (value >= 1) {
+            v = 1;
+        }
+        if (value <= 0) {
+            v = 0;
+        }
+
+        return v;
+    }
+
     public static long Clamp(long value, long min, long max) {
         long v = value;
 
@@ -207,6 +220,6 @@ public class bMath {
         return value * 57.2957;
     }
 
-    public static double squared (double val) { return val * val; }
+    public static double squared (double val) { return (val * val); }
 
 }

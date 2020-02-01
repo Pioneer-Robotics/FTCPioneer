@@ -17,7 +17,7 @@ public class SkystoneSideFast extends Auto {
 
         waitForStart();
 
-        DeployGripper();
+        DeployGripper(true);
 
 
         int cycles = 3;
@@ -40,7 +40,8 @@ public class SkystoneSideFast extends Auto {
         StopRobot();
     }
 
-    private void DeployGripper() {
+    //Deploys the gripper, enabling async will have the arm movement happen in the background without pausing the main thread.
+    private void DeployGripper(boolean async) {
 
         //Sets the gripper to an idle state
         robot.arm.SetGripState(RobotArm.GripState.CLOSED, 1);
@@ -51,16 +52,16 @@ public class SkystoneSideFast extends Auto {
         //Deploys the gripper
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
 
-        //Moves the arm back into a more rotation friendly distance
-        robot.arm.setArmStateWait(0, 0.3);
+        if (async) {
+            robot.arm.setArmStateAsync(0, 0.3);
+        } else {
+            robot.arm.setArmStateWait(0, 0.3);
+        }
     }
 
     private void RunDeliveryCycle(double fwdDistance, long servoDelayMS, double distanceFromStone, double endingOffset, double bridgeDistance, boolean moveBackToBridge) {
 
-
-        robot.driveByDistance(0, 0.35, fwdDistance);
-
-        sleep(500);
+        driveToSkystone(fwdDistance);
 
         robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
 
@@ -76,6 +77,8 @@ public class SkystoneSideFast extends Auto {
 
         //Drop stone
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
+
+        sleep(servoDelayMS);
 
         //Resets rotation after speedyness
         RotateFast(90);
@@ -98,7 +101,16 @@ public class SkystoneSideFast extends Auto {
         }
     }
 
+    public void driveToSkystone(double distanceFoward) {
+        robot.driveByDistance(0, 0.35, distanceFoward);
+    }
+
     public void RotateFast(double angle) {
+        robot.rotateSimple(angle, speed_high, 2, 0.5);
+    }
+
+
+    public void RotationPrecise(double angle) {
         robot.rotateSimple(angle, speed_high, 2, 0.5);
     }
 }
