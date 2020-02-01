@@ -41,11 +41,10 @@ public class RobotConfiguration {
     public static final String arm_lengthMotor = "Arm Spool";
 
     //The encoder ticks required to extend the arm completely
-    public static final double arm_ticksMax = 2613; //TODO determine this value
-
+    public static final double arm_ticksMax = 5080; //TODO determine this value
 
     //The minimum length of the arm (measured from the tip of the extrusion)
-    public static final double arm_lengthMin = 38.1; //Verified Jan 28 2020
+    public static final double arm_lengthMin = 38.1; //Verified Jan 28 2020 -Gian
 
     //The motor that is responsible
     public static final String arm_rotationMotor = "Arm Rotation";
