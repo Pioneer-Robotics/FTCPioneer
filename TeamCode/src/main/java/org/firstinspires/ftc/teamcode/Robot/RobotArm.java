@@ -252,14 +252,11 @@ public class RobotArm extends Thread {
 
     public void SetArmStateExtensionPower(double lengthSpeed, double angleSpeed) {
 
-        if (targetLength < 0 && protectSpool)
-            targetLength = 0; //don't extend the spool past it's starting point
-
         rotation.setPower(angleSpeed);
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         rotation.setPower(lengthSpeed);
-        length.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        length.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     }
 

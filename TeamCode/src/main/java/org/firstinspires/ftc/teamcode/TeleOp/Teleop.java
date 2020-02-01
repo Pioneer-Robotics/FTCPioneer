@@ -44,7 +44,6 @@ public class Teleop extends TeleOpMode {
     private double raiseSpeed = 0;
     private double extension = 0;
     private double gripAngle = 0;
-    private double lengthSpeed = 0;
 
     //Rectangular Control Variables New
     private boolean rectControls = false;
@@ -141,13 +140,12 @@ public class Teleop extends TeleOpMode {
             } else {
                 telemetry.addLine("Arm Control: Radial");
 
-//                extension += gamepad2.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held
-//                extension -= gamepad2.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held
+                extension += gamepad2.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held
+                extension -= gamepad2.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held
 
                 raiseSpeed = bMath.Clamp(-gamepad2.left_stick_y, -1, 1);
-                lengthSpeed = bMath.Clamp(gamepad2.right_trigger-gamepad2.left_trigger);
-                //extension = bMath.Clamp(, 0, 1);
-                robot.arm.SetArmStateExtensionPower(lengthSpeed, raiseSpeed);
+                extension = bMath.Clamp(extension, 0, 1);
+                robot.arm.SetArmStatePower(extension, raiseSpeed);
             }
 
             //this is doing rectControls using simple conversions from rectangular coordinates to polar coordinates
