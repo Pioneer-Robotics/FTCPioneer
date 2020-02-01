@@ -91,8 +91,8 @@ public class Teleop extends TeleOpMode {
             ///DRIVER CONTROLS
             setupDriverController();
 
-            leftDiagPower = getLeftDiagPower(true, gamepad1.left_stick_x, gamepad1.left_stick_y, 90, 90);
-            rightDiagPower = getRightDiagPower(true, gamepad1.left_stick_x, gamepad1.left_stick_y, 90, 90);
+            leftDiagPower = getLeftDiagPower(coordinateSystemLock, gamepad1.left_stick_x, gamepad1.left_stick_y, 90, 90);
+            rightDiagPower = getRightDiagPower(coordinateSystemLock, gamepad1.left_stick_x, gamepad1.left_stick_y, 90, 90);
 
             leftRotatePower = gamepad1.right_stick_x;
             rightRotatePower = -gamepad1.right_stick_x;
