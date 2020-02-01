@@ -10,6 +10,7 @@ public class SkystoneSideFast extends Auto {
     @Override
     public void runOpMode() {
         startRobot();
+        robot.arm.rotationMode = RobotArm.ArmRotationMode.Threaded;
 
         speed_high = 0.5;
         speed_med = 0.30;
@@ -20,11 +21,18 @@ public class SkystoneSideFast extends Auto {
         DeployGripper(true);
 
 
-        int cycles = 3;
+//        int cycles = 2;
+//
+////        for (int stone = 1; stone <= cycles; stone++) {
+////            RunDeliveryCycle(stone == 1 ? 93 : 30, 1000, 35, stone * 24, 130 + (stone * 30), stone != cycles);
+////        }
 
-        for (int stone = 1; stone < cycles; stone++) {
-            RunDeliveryCycle(stone == 1 ? 93 : 45, 1000, 35, stone * 24, 130 + (stone * 30), stone != cycles);
-        }
+        RunDeliveryCycle(93, 1000, 50, 24, 130 + (24), true);
+        RunDeliveryCycle(45, 1000, 35, 24, 130 + (48), false);
+
+
+        robot.driveByDistance(180, 0.75, 22.86);
+        robot.driveByDistance(90, 0.8, 50);
 
 //        160
 //        193
@@ -47,15 +55,19 @@ public class SkystoneSideFast extends Auto {
         robot.arm.SetGripState(RobotArm.GripState.CLOSED, 1);
 
         //Extends the arm
-        robot.arm.setArmStateWait(0, 0.5);
+        robot.arm.setArmStateWait(0, 0.65);
+
+        sleep(500);
 
         //Deploys the gripper
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
 
+        sleep(800);
+
         if (async) {
-            robot.arm.setArmStateAsync(0, 0.3);
+            robot.arm.setArmStateAsync(0.03, 0.3);
         } else {
-            robot.arm.setArmStateWait(0, 0.3);
+            robot.arm.setArmStateWait(0.03, 0.3);
         }
     }
 
@@ -67,13 +79,13 @@ public class SkystoneSideFast extends Auto {
 
         sleep(servoDelayMS);
 
-        robot.driveByDistance(180, 0.5, distanceFromStone);
+        robot.driveByDistance(180, 0.5, distanceFromStone, 2);
 
         //Rotates to face foundation
-        RotateFast(90);
+        RotateAccurate(90);
 
         //Drives to foundation
-        robot.driveByDistance(0, 1, bridgeDistance);
+        robot.driveByDistance(0, 1, bridgeDistance, 2.1);
 
         //Drop stone
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
@@ -89,7 +101,7 @@ public class SkystoneSideFast extends Auto {
             sleep(servoDelayMS / 2);
 
             //Rolls back to the skystone side
-            robot.driveByDistance(180, 1, bridgeDistance);
+            robot.driveByDistance(180, 1, bridgeDistance, 2.4);
 
             //Rerests rotation
             RotateFast(90);
@@ -102,15 +114,18 @@ public class SkystoneSideFast extends Auto {
     }
 
     public void driveToSkystone(double distanceFoward) {
-        robot.driveByDistance(0, 0.35, distanceFoward);
+        robot.driveByDistance(0, 0.35, distanceFoward, 2.6);
     }
 
     public void RotateFast(double angle) {
-        robot.rotateSimple(angle, speed_high, 2, 0.5);
+        robot.rotatePID(angle, 2, 2);
+//        robot.rotateSimple(angle, 2, 2, 0.5);
     }
 
 
-    public void RotationPrecise(double angle) {
-        robot.rotateSimple(angle, speed_high, 2, 0.5);
+    public void RotateAccurate(double angle) {
+        robot.rotatePID(angle, 2, 2);
+
+        //        robot.rotateSimple(angle, 1, 0.5, 0.25);
     }
 }

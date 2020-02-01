@@ -90,6 +90,7 @@ public class Auto extends LinearOpMode {
 //        robot.arm.setArmStateWait(0, 1, 1);
 //        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
 //        robot.arm.setArmStateWait(0, 0, 1);
+        robot.arm.SetGripState(RobotArm.GripState.CLOSED, 1);
 
         print("Status: Awaiting start. Running on side " + (side == FieldSide.SIDE_BLUE ? "BLU" : "RED"));
     }
