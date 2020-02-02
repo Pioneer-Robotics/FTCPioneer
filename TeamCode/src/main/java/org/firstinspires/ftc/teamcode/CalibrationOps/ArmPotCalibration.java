@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Autonomous.Auto;
 
 
-
 @Autonomous(name = "Arm Pot Calibration", group = "Calibration")
 public class ArmPotCalibration extends Auto {
 
@@ -20,16 +19,17 @@ public class ArmPotCalibration extends Auto {
         startRobot();
         waitForStart();
         robot.armPotentiometer.clearData();
-        for (int i=0; i<datapoints; i++){
+        for (int i = 0; i < datapoints; i++) {
 
-            robot.arm.setArmStateWait( ((double)i) / ((double) datapoints),0);
+            robot.arm.setArmStateWait(((double) i) / ((double) datapoints), 0);
             deltaTime.reset();
-            while (deltaTime.seconds()<1){}
+            while (deltaTime.seconds() < 1) {
+            }
             robot.armPotentiometer.addData(robot.arm.derivedPotentiometerAngle(robot.arm.currentArmQuadBaseDistance()));
 
         }
         robot.armPotentiometer.calcRegression();
-
+        robot.armPotentiometer.saveCalibrationData(robot.dataManger);
         StopMovement();
         StopRobot();
     }
