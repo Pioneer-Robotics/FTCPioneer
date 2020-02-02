@@ -24,8 +24,8 @@ public class RobotArm extends Thread {
 
     //useful for knowing the position of the arm
     double k = 177.0;
-    double h = 32.2;
-    double l = 134.0;
+    double h = 32.2; //Vertical Distance from bottom joint of arm to the axis made by the center of the lead screw
+    double l = 134.0; //Distance from bottom joint of arm to middle joint on Xrail
 
     //Controls arm length (spool)
     public DcMotor length;
@@ -104,8 +104,8 @@ public class RobotArm extends Thread {
             double Numerator1 = bMath.squared(l) + bMath.squared(C) - bMath.squared(k);
             double thetaPart1 = Math.acos( Numerator1 / 2 / C / l );
             double thetaPart2 = Math.acos( h / C);
-            double AnsRad = thetaPart1 + thetaPart2 - (Math.PI / 2);
-            return AnsRad;
+            return thetaPart1 + thetaPart2 - (Math.PI / 2);
+
 
         } else {
             double d = (rotation.getCurrentPosition() * 0.5) / 480; //TODO add offset to this value so it actually works lol: starts at 0 rn
@@ -118,15 +118,22 @@ public class RobotArm extends Thread {
     }
 
     /*
-    "realPotentiometerAngle" takes as an input, the length of d measured in cm
+    "realPotentiometerAngle" takes as an input the length of d measured in cm
     it outputs the angle the potentiometer should be measuring in radians
     this function can be useful for checking the accuracy of the potentiometer
      */
-    public double realPotentiometerAngle(double dLengthIn_cm){
+    public double derivedPotentiometerAngle (double dLengthIn_cm){
         double d = dLengthIn_cm;
         double intermedieteVal1 = (l * l) + (k * k) - (d * d) - (h * h);
         double intermedVal2 = intermedieteVal1 / 2 / k / l;
         return Math.acos(intermedVal2);
+    }
+/*
+This function returns the horizotntal distance between the shuttle joint and the arm joint.
+can be plugged into realPotentiometerAngle to determine what the pot should be reading.
+ */
+    public double currentArmQuadBaseDistance(){
+        return RobotConfiguration.armQuadBaseMaxCm - ((double) rotation.getCurrentPosition()*(1.0/1440.0)*(120.0/48.0)*(0.2/1.0));
     }
 
 
