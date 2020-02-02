@@ -22,6 +22,11 @@ public class RobotArm extends Thread {
     //Arm height motor
     public DcMotor rotation;
 
+    //useful for knowing the position of the arm
+    double k = 177.0;
+    double h = 32.2;
+    double l = 134.0;
+
     //Controls arm length (spool)
     public DcMotor length;
 
@@ -81,9 +86,6 @@ public class RobotArm extends Thread {
     //I think "usePot" math is off by 90 radians, am subtracting 90 radians
 
     public double thetaAngle() {
-        double k = 177.0;
-        double h = 32.2;
-        double l = 134.0;
         double potentiometerMeasurement = bMath.toRadians(robot.armPotentiometer.getAngle());
 
         if (usePot) {
@@ -104,6 +106,18 @@ public class RobotArm extends Thread {
             return Math.atan((Math.sqrt((k * k) - (x * x)) - h) / (d - x));
         }
 
+    }
+
+    /*
+    "realPOTangle" takes as an input, the length of d measured in cm
+    it outputs the angle the potentiometer should be measuring in radians
+    this function can be useful for checking the accuracy of the potentiometer
+     */
+    public double realPOTangle(double dLenghtIn_cm){
+        double d = dLenghtIn_cm;
+        double intermedieteVal1 = (l * l) + (k * k) - (d * d) - (h * h);
+        double intermedVal2 = intermedieteVal1 / 2 / k / l;
+        return Math.acos(intermedVal2);
     }
 
 
