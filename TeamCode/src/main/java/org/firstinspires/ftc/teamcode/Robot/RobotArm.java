@@ -109,12 +109,12 @@ public class RobotArm extends Thread {
     }
 
     /*
-    "realPOTangle" takes as an input, the length of d measured in cm
+    "realPotentiometerAngle" takes as an input, the length of d measured in cm
     it outputs the angle the potentiometer should be measuring in radians
     this function can be useful for checking the accuracy of the potentiometer
      */
-    public double realPOTangle(double dLenghtIn_cm){
-        double d = dLenghtIn_cm;
+    public double realPotentiometerAngle(double dLengthIn_cm){
+        double d = dLengthIn_cm;
         double intermedieteVal1 = (l * l) + (k * k) - (d * d) - (h * h);
         double intermedVal2 = intermedieteVal1 / 2 / k / l;
         return Math.acos(intermedVal2);
