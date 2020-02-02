@@ -26,7 +26,7 @@ public class TestingOpMode extends Auto {
 //            telemetry.update();
 //        }
 
-//        robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
+//        robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
 
 //        sleep(1000);
 

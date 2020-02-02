@@ -28,7 +28,7 @@ public class bMath {
         rightRotatePower = -rotationSpeed;
 
         delta.x = (leftMovementPower + leftRotatePower);
-        delta.y = (rightMovementPower +  rightRotatePower);
+        delta.y = (rightMovementPower + rightRotatePower);
         delta.z = (rightMovementPower + leftRotatePower);
         delta.w = (leftMovementPower + rightRotatePower);
 
@@ -200,6 +200,11 @@ public class bMath {
 
     }
 
+    //Outputs between -180 and 180, signed
+    public static double DeltaDegree(double current, double target) {
+        return (target - current + 540) % 360 - 180;
+    }
+
     public static double MoveTowards(double current, double target, double maxDelta) {
         if (Math.abs(target - current) <= maxDelta) {
             return target;
@@ -220,6 +225,8 @@ public class bMath {
         return value * 57.2957;
     }
 
-    public static double squared (double val) { return (val * val); }
+    public static double squared(double val) {
+        return (val * val);
+    }
 
 }

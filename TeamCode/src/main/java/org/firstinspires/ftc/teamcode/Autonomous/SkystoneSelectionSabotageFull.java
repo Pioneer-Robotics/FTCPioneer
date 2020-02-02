@@ -22,14 +22,14 @@ public class SkystoneSelectionSabotageFull extends Auto {
         waitForStart();
 
         //Deploy gripper
-        robot.arm.SetGripState(RobotArm.GripState.CLOSED, 1);
+        robot.arm.setGripState(RobotArm.GripState.CLOSED, 1);
 
         //MIN IS .17
 //        robot.arm.setArmStateWait(0, 0, 1);
 
         robot.arm.setArmStateWait(0, 0.5);
 
-        robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
+        robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
 
         sleep(250);
 
@@ -50,7 +50,7 @@ public class SkystoneSelectionSabotageFull extends Auto {
 
         sleep(500);
 
-        robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
+        robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
 
         sleep(servoDelayMS);
 
@@ -66,7 +66,7 @@ public class SkystoneSelectionSabotageFull extends Auto {
         robot.arm.setArmStateWait(0.2, 0.8);
 
         //Drop stone
-        robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
+        robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
 
         sleep(servoDelayMS);
 

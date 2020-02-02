@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import android.renderscript.Double2;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Helpers.PID;
@@ -52,7 +51,7 @@ public class Auto extends LinearOpMode {
 //        } else {
 //            side = FieldSide.SIDE_RED;
 //        }
-//        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
+//        robot.arm.setGripState(RobotArm.GripState.IDLE, 1);
 
 //        print("Status: Waiting for play side input. Please press the button thats color corresponds to the side your robot is on (see bridge). Press A to continue");
 
@@ -88,9 +87,9 @@ public class Auto extends LinearOpMode {
 
 
 //        robot.arm.setArmStateWait(0, 1, 1);
-//        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
+//        robot.arm.setGripState(RobotArm.GripState.IDLE, 1);
 //        robot.arm.setArmStateWait(0, 0, 1);
-        robot.arm.SetGripState(RobotArm.GripState.CLOSED, 1);
+        robot.arm.setGripState(RobotArm.GripState.CLOSED, 1);
 
         print("Status: Awaiting start. Running on side " + (side == FieldSide.SIDE_BLUE ? "BLU" : "RED"));
     }
@@ -200,7 +199,7 @@ public class Auto extends LinearOpMode {
         //Open the gripper, raise the arm, and extend out
         robot.arm.setArmStateWait(liftFactor, extensionLength);
 
-        robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
+        robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
 
         sleep(500);
 
@@ -208,7 +207,7 @@ public class Auto extends LinearOpMode {
         robot.arm.setArmStateWait(0, extensionLength);
 
         //Close the gripper
-        robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
+        robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
 
         sleep(500);
 
@@ -220,7 +219,7 @@ public class Auto extends LinearOpMode {
     public void DepositeArm(double lastLength, double extensionLength) {
 
         //Open the gripper, raise the arm, and extend out
-        robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
+        robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
 
         robot.arm.setArmStateWait(0, lastLength);
 
@@ -229,7 +228,7 @@ public class Auto extends LinearOpMode {
         sleep(1000);
 
         //Close the gripper
-        robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
+        robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
 
         //Retract the arm again
         robot.arm.setArmStateWait(0, lastLength);

@@ -78,7 +78,7 @@ public class Teleop extends TeleOpMode {
         waitForStart();
 
         lunchboxRot = 1;
-        robot.arm.SetGripState(RobotArm.GripState.IDLE, 60);
+        robot.arm.setGripState(RobotArm.GripState.IDLE, 60);
         gripAngle = 180;
         while (opModeIsActive()) {
             telemetry.addLine("------ Control  ------");
@@ -156,11 +156,11 @@ public class Teleop extends TeleOpMode {
 
 
             if (idle) {
-                robot.arm.SetGripState(RobotArm.GripState.IDLE, gripAngle / 180);
+                robot.arm.setGripState(RobotArm.GripState.IDLE, gripAngle / 180);
             } else if (grab) {
-                robot.arm.SetGripState(RobotArm.GripState.CLOSED, gripAngle / 180);
+                robot.arm.setGripState(RobotArm.GripState.CLOSED, gripAngle / 180);
             } else {
-                robot.arm.SetGripState(RobotArm.GripState.OPEN, gripAngle / 180);
+                robot.arm.setGripState(RobotArm.GripState.OPEN, gripAngle / 180);
             }
 
 
