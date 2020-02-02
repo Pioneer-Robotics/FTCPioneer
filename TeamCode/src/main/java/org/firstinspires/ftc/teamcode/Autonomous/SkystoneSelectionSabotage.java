@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 
 @Autonomous(name = "Skystone Low Key Sabotage", group = "ftcPio")
@@ -24,14 +22,14 @@ public class SkystoneSelectionSabotage extends Auto {
         waitForStart();
 
         //Deploy gripper
-        robot.arm.SetGripState(RobotArm.GripState.CLOSED, 1);
+        robot.arm.setGripState(RobotArm.GripState.CLOSED, 1);
 
         //MIN IS .17
 //        robot.arm.setArmStateWait(0, 0, 1);
 
         robot.arm.setArmStateWait(0, 0.5);
 
-        robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
+        robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
 
         sleep(250);
 
@@ -55,7 +53,7 @@ public class SkystoneSelectionSabotage extends Auto {
 
         sleep(500);
 
-        robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
+        robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
 
         sleep(servoDelayMS);
 
@@ -72,7 +70,7 @@ public class SkystoneSelectionSabotage extends Auto {
         robot.rotatePID(90, 1, 4);
 
         //Drop stone
-        robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
+        robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
 
         if (moveBackToBridge) {
         sleep(servoDelayMS);

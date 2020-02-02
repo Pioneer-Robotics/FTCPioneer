@@ -101,11 +101,11 @@ public class SkystoneSelectionSabotageFull extends Auto {
 
     private void deployGripperToGrabBlocksPosition() {
         //Deploy gripper
-        robot.arm.SetGripState(RobotArm.GripState.CLOSED, 1);
+        robot.arm.setGripState(RobotArm.GripState.CLOSED, 1);
 
         robot.arm.setArmStateWait(0, 0.5);
 
-        robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
+        robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
 
         sleep(250); /// Does the code need to sleep here?
     }
@@ -144,7 +144,7 @@ public class SkystoneSelectionSabotageFull extends Auto {
         robot.arm.setArmStateWait(0.2, 0.8);
 
         //Drop stone
-        robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
+        robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
 
         sleep(servoDelayMS);
     }

@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
 
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Thread.sleep;
@@ -189,10 +191,14 @@ public class RobotArm extends Thread {
         rotation.setPower(0);
     }
 
+
     @Deprecated
     public void setArmStateWaitCm(double targetAngle, double _targetLength) {
         targetLengthSpeed = 1;
         targetLength = cmToTicks(_targetLength);
+
+
+
         targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
 
         rotation.setTargetPosition((int) (RobotConfiguration.arm_rotationMax * targetAngle));
@@ -217,9 +223,7 @@ public class RobotArm extends Thread {
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
-    @Deprecated
     public void setArmStateAsyncCm(double targetAngle, double _targetLength) {
-        targetLengthSpeed = 1;
         targetLength = cmToTicks(_targetLength);
         targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
 
@@ -354,7 +358,7 @@ public class RobotArm extends Thread {
     }
 
 
-    public void SetGripState(GripState gripState, double rotationPosition) {
+    public void setGripState(GripState gripState, double rotationPosition) {
         grip.setPosition(gripState == GripState.CLOSED ? 0 : (gripState == GripState.IDLE ? 0.2 : 0.74));
         gripRotation.setPosition(rotationPosition);
     }

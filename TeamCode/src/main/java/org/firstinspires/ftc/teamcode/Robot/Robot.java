@@ -125,7 +125,7 @@ public class Robot extends Thread {
 //            experimentalInput.AddSensor(sensor);
 //        }
 
-        arm.SetGripState(RobotArm.GripState.IDLE, 0.8);
+        arm.setGripState(RobotArm.GripState.IDLE, 0.8);
         setFoundationGripperState(0);
 
         bTelemetry.print("Wheel boot successful. Ready to operate!");
@@ -164,7 +164,7 @@ public class Robot extends Thread {
         foundationServo1 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip1);
 
         setFoundationGripperState(1);
-        arm.SetGripState(RobotArm.GripState.IDLE, 1);
+        arm.setGripState(RobotArm.GripState.IDLE, 1);
 
 
         while (imu.initStatus.get() < 2) {
@@ -386,189 +386,77 @@ public class Robot extends Thread {
 //        rotationPID.start(1, 0.25, 0.035);
 //        rotationPID.start(0.025, 0.005, 0);
 
-        double ticker = 0;
-        double startAngle = rotation;
-        int directionChanges = 0;
-        boolean lastPositiveState = true;
-        double rotationPower = 0;
-        ElapsedTime dt = new ElapsedTime();
+        double rotationPower;
+        double timer = 0;
 
-        double correctTime = 0;
+        ElapsedTime deltaTime = new ElapsedTime();
 
-        while (ticker < maxTime && Op.opModeIsActive()) {
-            rotationPower = rotationPID.loop(targetAngle, rotation);
-            rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - targetAngle));
+        while (Op.opModeIsActive()) {
+            rotationPower = rotationPID.loop(bMath.DeltaDegree(rotation, targetAngle), 0);
+            rotationPower = (rotationPower / (360)) * rotationSpeed;
             rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
+
             Op.telemetry.addData("Error ", rotationPID.error);
             Op.telemetry.addData("Last Error  ", rotationPID.lastError);
             Op.telemetry.addData("Derivative ", rotationPID.derivative);
             Op.telemetry.addData("Integral ", rotationPID.integral);
-
             Op.telemetry.addData("TD ", rotationPID.deltaTime.seconds());
-
             Op.telemetry.addData("Rotation ", rotation);
             Op.telemetry.addData("rotationPower ", rotationPower);
             Op.telemetry.addData("rotationSpeed ", rotationSpeed);
-            Op.telemetry.addData("yeets", directionChanges);
-            Op.telemetry.addData("ticker", ticker);
+            Op.telemetry.addData("time ", timer);
             Op.telemetry.update();
-            rotateSimple(rotationPower * rotationSpeed);
 
-            if (lastPositiveState != rotationPower > 0) {
-                directionChanges++;
-                lastPositiveState = rotationPower > 0;
+            rotateSimple(rotationPower);
+
+            //Exit the PID loop if the bots not rotating or is withing 1.25 degrees of the target angle or if we hit the maxtime
+            if (Math.abs(rotationPower) < 0.1 || bMath.DeltaDegree(rotation, targetAngle) < 1.25 || timer >= maxTime) {
+                break;
             }
 
-            if (Math.abs(rotationPower * rotationSpeed) < 0.1 || Math.abs(rotation - targetAngle) < 1.25) {
-//                ticker += dt.seconds();
-//                if (ticker > 0.3) {
-//                break;
-//                }
-                ticker += 1000;
-            }
-//            if (directionChanges > 3) {
-//                break;
-//            }
+            timer += deltaTime.seconds();
 
-//            if (rotationPID.error < 2) {
-//                correctTime += dt.seconds();
-//            }
-//
-//            if (correctTime > 0.25) {
-//                break;
-//            }
-//
-//            if (directionChanges > 3) {
-//                ticker += cycles * 2;
-//                op.telemetry.addData("Rotation ended", directionChanges);
-//                op.telemetry.update();
-//            }
-            dt.reset();
+            deltaTime.reset();
         }
 
         setPowerDouble4(0, 0, 0, 0, 0);
     }
 
-    public void rotatePIDRelative(double relativeTargetAngle, double rotationSpeed, double maxTime) {
+    public void rotatePID(double targetAngle, double rotationSpeed, double maxTime, double p, double i, double d) {
 
-        //P of 3 and 0 for other gains seems to work really well
-//        rotationPID.start(3, 0, 0.1);
-
-        rotationPID.start(4.02, 0.0032, 0.0876);
-//        rotationPID.start(4.01, 0.003, 0.0876);
-
-//        rotationPID.start(1, 0.075, 0.022);
-
-//        rotationPID.start(3, 0.21, 0.69);
-//        rotationPID.start(0.5, 0.075, 0.015);
-//        rotationPID.start(1, 0.25, 0.035);
-//        rotationPID.start(0.025, 0.005, 0);
-
-        double ticker = 0;
-        double startAngle = getRotation();
-        double targetAngle = ((startAngle + relativeTargetAngle + 360) % 360) - 360;
-
-        targetAngle = bMath.Loop(targetAngle, 180);
-
-        int directionChanges = 0;
-        boolean lastPositiveState = true;
-        double rotationPower = 0;
-        ElapsedTime dt = new ElapsedTime();
-
-
-        while (ticker < maxTime && Op.opModeIsActive()) {
-            rotationPower = rotationPID.loop(targetAngle, rotation);
-            rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - relativeTargetAngle));
-            rotationPower += (Math.copySign(0.1, rotationPower));
-            Op.telemetry.addData("Error ", rotationPID.error);
-            Op.telemetry.addData("Last Error  ", rotationPID.lastError);
-            Op.telemetry.addData("Derivative ", rotationPID.derivative);
-            Op.telemetry.addData("Integral ", rotationPID.integral);
-
-            Op.telemetry.addData("TD ", rotationPID.deltaTime.seconds());
-
-            Op.telemetry.addData("Rotation ", rotation);
-            Op.telemetry.addData("rotationPower ", rotationPower);
-            Op.telemetry.addData("rotationSpeed ", rotationSpeed);
-            Op.telemetry.addData("yeets", directionChanges);
-            Op.telemetry.update();
-            rotateSimple(rotationPower * rotationSpeed);
-
-            if (lastPositiveState != rotationPower > 0) {
-                directionChanges++;
-                lastPositiveState = rotationPower > 0;
-            }
-
-            if (Math.abs(getRotation() - targetAngle) < 0.15 * rotationPower) {
-                break;
-            }
-
-            if (directionChanges > 3) {
-                break;
-            }
-
-            ticker += dt.seconds();
-            dt.reset();
-        }
-
-        setPowerDouble4(0, 0, 0, 0, 0);
-    }
-
-    public void rotatePID(double targetAngle, double rotationSpeed, int cycles, double p, double i, double d) {
-
-//        rotationPID.start(3, 0.21, 0.69);
         rotationPID.start(p, i, d);
-//        rotationPID.start(0.025, 0.005, 0);
 
-        int ticker = 0;
-        double startAngle = rotation;
-        int directionChanges = 0;
-        boolean lastPositiveState = true;
+        double rotationPower;
+        double timer = 0;
 
-        ElapsedTime dt = new ElapsedTime();
+        ElapsedTime deltaTime = new ElapsedTime();
 
-        dt.reset();
+        while (Op.opModeIsActive()) {
+            rotationPower = rotationPID.loop(bMath.DeltaDegree(rotation, targetAngle), 0);
+            rotationPower = (rotationPower / (360)) * rotationSpeed;
+            rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
 
-        while (ticker < 0.25 && Op.opModeIsActive()) {
-            double rotationPower = rotationPID.loop(targetAngle, rotation);
-            rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - targetAngle));
-            rotationPower += (0.01 * (rotationPower > 0 ? 1 : -1));
             Op.telemetry.addData("Error ", rotationPID.error);
             Op.telemetry.addData("Last Error  ", rotationPID.lastError);
             Op.telemetry.addData("Derivative ", rotationPID.derivative);
             Op.telemetry.addData("Integral ", rotationPID.integral);
-
             Op.telemetry.addData("TD ", rotationPID.deltaTime.seconds());
-
             Op.telemetry.addData("Rotation ", rotation);
             Op.telemetry.addData("rotationPower ", rotationPower);
             Op.telemetry.addData("rotationSpeed ", rotationSpeed);
-            Op.telemetry.addData("ticker ", ticker);
-            Op.telemetry.addData("yeets", directionChanges);
+            Op.telemetry.addData("time ", timer);
             Op.telemetry.update();
-            rotateSimple(rotationPower * rotationSpeed);
 
-//            if (lastPositiveState != rotationPower > 0) {
-//                directionChanges++;
-//                lastPositiveState = rotationPower > 0;
-//            }
-//
-//            if (directionChanges > 5) {
-//                break;
-//            }
+            rotateSimple(rotationPower);
 
-
-            if (Math.abs(rotationPower * rotationSpeed) < 0.1 /*|| Math.abs(rotation - targetAngle) < 1.250*/) {
-                ticker += dt.seconds();
-//                if (ticker > 0.3) {
-//                break;
-//                }
-
-            }
-            if (ticker > 0.2) {
+            //Exit the PID loop if the bots not rotating or is withing 1.25 degrees of the target angle or if we hit the maxtime
+            if (Math.abs(rotationPower) < 0.1 || bMath.DeltaDegree(rotation, targetAngle) < 1.25 || timer >= maxTime) {
                 break;
             }
-            dt.reset();
+
+            timer += deltaTime.seconds();
+
+            deltaTime.reset();
         }
 
         setPowerDouble4(0, 0, 0, 0, 0);
