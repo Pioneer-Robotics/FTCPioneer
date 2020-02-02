@@ -29,7 +29,7 @@ public class Potentiometer {
 
 
     public double getAngle() {
-        return analogInput.getVoltage() * regSlope - regIntercept;
+        return analogInput.getVoltage() * regSlope + regIntercept;
 
     }
 
