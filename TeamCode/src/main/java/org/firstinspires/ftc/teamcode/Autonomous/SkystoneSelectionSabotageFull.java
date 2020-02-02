@@ -125,7 +125,7 @@ public class SkystoneSelectionSabotageFull extends Auto {
     }
 
     private void grabBlock(long servoDelayMS, double distanceFromStone) {
-        robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
+        robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
 
         sleep(servoDelayMS);
 
