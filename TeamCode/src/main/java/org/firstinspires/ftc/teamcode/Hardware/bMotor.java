@@ -15,7 +15,7 @@ public class bMotor {
     //The ratio between how fast we are moving the motor and how much power we are using
     public double powerEncoderRatio = 1;
 
-    //This is set by the DriveManager and is responsible for ensuring that all power values don't exceed a motors capacity
+    //This is set by the DriveManager and is responsible for ensuring that power values never exceed a motors capacity
     public double powerCoefficent = 1;
 
     public DcMotor motor;
