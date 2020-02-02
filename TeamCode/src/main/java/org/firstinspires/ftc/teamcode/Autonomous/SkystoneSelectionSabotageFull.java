@@ -27,13 +27,13 @@ public class SkystoneSelectionSabotageFull extends Auto {
         //MIN IS .17
 //        robot.arm.setArmStateWait(0, 0, 1);
 
-        robot.arm.setArmStateWait(0, 0.5, 1);
+        robot.arm.setArmStateWait(0, 0.5);
 
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
 
         sleep(250);
 
-        robot.arm.setArmStateWait(0, 0.3, 1);
+        robot.arm.setArmStateWait(0, 0.3);
         RunDeliveryCycle(93, 1000, 35, 24, 145);
 ///
         for (int i = 0; i < 2; i++) {
@@ -63,7 +63,7 @@ public class SkystoneSelectionSabotageFull extends Auto {
         //Drives to foundation
         robot.driveByDistance(0, 1, bridgeDistance);
 
-        robot.arm.setArmStateWait(0.2, 0.8, 1);
+        robot.arm.setArmStateWait(0.2, 0.8);
 
         //Drop stone
         robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);

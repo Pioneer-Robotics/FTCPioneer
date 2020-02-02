@@ -59,6 +59,7 @@ public class Robot extends Thread {
     //The data manager serves to store data locally on the phone, used in calibration and PID tuning.
     private bDataManager dataManger = new bDataManager();
 
+    double desiredArmRotationPower;
 
     public LinearOpMode Op;
 //    public OpMode LinearOpMode;
@@ -257,6 +258,7 @@ public class Robot extends Thread {
 
     }
 
+
     //Threaded run method, right now this is just for IMU stuff, at some point we might put some avoidance stuff in here (background wall tracking?)
     public void run() {
         threadRunning.set(true);
@@ -277,6 +279,11 @@ public class Robot extends Thread {
 
             arm.length.setPower(1);
             arm.length.setTargetPosition((int) arm.targetLength);
+
+            if (arm.rotationMode == RobotArm.ArmRotationMode.Threaded) {
+                desiredArmRotationPower = ((arm.rotation.getCurrentPosition() - arm.targetRotation) / (RobotConfiguration.arm_rotationMax * 0.5)) * 1;
+                arm.rotation.setPower(bMath.Clamp(desiredArmRotationPower, Math.copySign(0.1, desiredArmRotationPower), Math.copySign(1, desiredArmRotationPower)));
+            }
         }
 
 
@@ -718,6 +725,52 @@ public class Robot extends Thread {
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    public void driveByDistanceArmAsync(double angle, double speed, double distance, double targetArmDelay, double targetArmLength, double targetArmRotation) {
+
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
+        Double4 a = bMath.getMecMovement(angle, 0, 0);
+
+        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
+        setPowerDouble4(1, 1, 1, 1, speed);
+
+//        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
+//        setPowerDouble4(a.x, a.y, a.z, a.w, speed);
+
+
+        setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        double runTime = 0;
+        ElapsedTime deltaTime = new ElapsedTime();
+
+        while (Op.opModeIsActive() && wheelsBusy() && !arm.armAsyncTargetReached()) {
+            deltaTime.reset();
+
+            if (runTime > targetArmDelay) {
+                arm.setArmStateAsync(targetArmRotation, targetArmLength);
+            }
+
+            runTime += deltaTime.seconds();
+
+            if (!Op.opModeIsActive()) {
+                break;
+            }
+            //Wait until we are at our target distance
+        }
+
+        Op.telemetry.addData("Target Reached", "");
+        Op.telemetry.update();
+
+        //shutdown motors
+        setPowerDouble4(0, 0, 0, 0, 0);
+
+        //Set up for normal driving
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    @Deprecated
     public enum simpleDirection {
         FORWARD,
         BACKWARD,
@@ -844,4 +897,6 @@ public class Robot extends Thread {
     public void releaseFoundation() {
         setFoundationGripperState(0.9);
     }
+
+
 }

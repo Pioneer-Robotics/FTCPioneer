@@ -33,11 +33,20 @@ public class RobotArm extends Thread {
     public Servo gripRotation;
     public Servo grip;
 
+    public ArmRotationMode rotationMode;
+
+    //Arm rotation mode, setting to 'threaded' will arm rotation handled by a thread while 'disabled' will not effect arm rotation
+    public enum ArmRotationMode {
+        Threaded,
+        Disabled
+    }
+
     public double targetLength;
-    private  double targetLengthSpeed;
-    private  double xExtConst;
-    private  double yExtConst;
-    private  double pot;
+    public double targetRotation;
+    private double targetLengthSpeed;
+    private double xExtConst;
+    private double yExtConst;
+    private double pot;
 
     private  boolean protectSpool = true;
 
@@ -127,7 +136,7 @@ public class RobotArm extends Thread {
     not exact, we try to get it within a certain threshold but the arm jerks
      */
     @Deprecated
-    private  void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
+    private void runToTheta(double thetaWanted) //FYI the way this is written, trying to change thetaAngle smoothly will cause it to jump in steps
     {
         double thetaThreshold = Math.PI * (2.0 / 180.0);
         double thetaPower = 0.25;
@@ -161,11 +170,10 @@ public class RobotArm extends Thread {
     }
 
 
-    public void setArmStateWait(double targetAngle, double _targetLength, double angleSpeed) {
-        // angleSpeed really means the angle you want the arm to be
+    public void setArmStateWait(double targetAngle, double _targetLength) {
         targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
-        rotation.setPower(angleSpeed);
+        targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
 
         rotation.setTargetPosition((int) (RobotConfiguration.arm_rotationMax * targetAngle));
 
@@ -173,68 +181,74 @@ public class RobotArm extends Thread {
         rotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        double runtime = 0;
-        double rotationDelta = 0;
-        double lastrotationDelta = 1000000;
-        double lengthDelta = 0;
-        double lastlengthDelta = 100000;
-        ElapsedTime dt = new ElapsedTime();
 
-        dt.reset();
-
-        while (op.opModeIsActive() /*&& (Math.abs(rotation.getCurrentPosition() - rotation.getTargetPosition()) > 5 || Math.abs(length.getCurrentPosition() - targetLength) > 5)*/) {
-
-            rotation.setPower(angleSpeed);
-            length.setPower(angleSpeed);
-            op.telemetry.addData("Rotation Power", rotation.getPower());
-            op.telemetry.addData("Rotation Position", rotation.getCurrentPosition());
-            op.telemetry.addData("Length Position", length.getCurrentPosition());
-            op.telemetry.addData("Rotation Goal", rotation.getTargetPosition());
-            op.telemetry.addData("Rotation Delta", rotationDelta);
-            op.telemetry.addData("Length Delta", lengthDelta);
-
-
-            op.telemetry.addData("Length DT", deltaTime.seconds());
-
-            op.telemetry.update();
-
-
-            if (runtime > 0.25) {
-
-                op.telemetry.addData("Arm Telem", rotationDelta);
-
-                rotationDelta = Math.abs((int) lastrotationDelta - rotation.getCurrentPosition());
-                lastrotationDelta = rotation.getCurrentPosition();
-
-                lengthDelta = Math.abs((int) lastlengthDelta - length.getCurrentPosition());
-                lastlengthDelta = length.getCurrentPosition();
-
-                if (rotationDelta <= 3 && lengthDelta <= 3) {
-                    break;
-                }
-            }
-
-            runtime += dt.seconds();
-            dt.reset();
+        while (op.opModeIsActive() && (!armRotationTargetReached() || !armLengthTargetReached())) {
 
         }
 
-//        if (Math.abs(rotation.getCurrentPosition()) < 5) {
-//            rotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        }
+        rotation.setPower(0);
+    }
+    @Deprecated
+    public void setArmStateWaitCm(double targetAngle, double _targetLength) {
+        targetLengthSpeed = 1;
+        targetLength = cmToTicks(_targetLength);
+        targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
 
+        rotation.setTargetPosition((int) (RobotConfiguration.arm_rotationMax * targetAngle));
+
+
+        rotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        while (op.opModeIsActive() && (!armRotationTargetReached() || !armLengthTargetReached())) {
+
+        }
 
         rotation.setPower(0);
+    }
+
+    public void setArmStateAsync(double targetAngle, double _targetLength) {
+        targetLengthSpeed = 1;
+        targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
+        targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
+
+        rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    @Deprecated
+    public void setArmStateAsyncCm(double targetAngle, double _targetLength) {
+        targetLengthSpeed = 1;
+        targetLength = cmToTicks(_targetLength);
+        targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
+
+        rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    public boolean armRotationTargetReached() {
+        return Math.abs(rotation.getCurrentPosition() - targetRotation) < 10;
+    }
+
+
+    public boolean armLengthTargetReached() {
+        return Math.abs(length.getCurrentPosition() - length.getTargetPosition()) < 10;
+    }
+
+    public boolean armAsyncTargetReached() {
+        return armRotationTargetReached() && armLengthTargetReached();
     }
 
     /*
     This method moves the arm to an extension represented in % fully extended from 0 to 1
     and moves the shuttle on the lead screw to a position represented in % fully up from 0 to 1
      */
+
     public void SetArmState(double targetAngle, double _targetLength, double angleSpeed) {
         // angleSpeed really means the angle you want the arm to be
         targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
+
         if (targetLength < 0 && protectSpool)
             targetLength = 0; //don't extend the spool past it's starting point
 

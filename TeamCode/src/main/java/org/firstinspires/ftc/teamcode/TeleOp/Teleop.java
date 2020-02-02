@@ -72,6 +72,8 @@ public class Teleop extends TeleOpMode {
     public void runOpMode() throws InterruptedException {
         robot.init(this, false);
 
+
+
         initControllers();
         waitForStart();
 
@@ -116,9 +118,6 @@ public class Teleop extends TeleOpMode {
             if (rectControls) {
                 telemetry.addLine("Arm Control: Rect");
                 //set power and distance to the Arm.
-//                robot.arm.SetArmStatePowerCm
-//                        (robot.arm.RectExtension(rectControls_goingUp),
-//                        rectControls_goingUp ? -gamepad2.right_stick_y : gamepad2.right_stick_x);
                 extension = robot.arm.cmToTicks(robot.arm.RectExtension(rectControls_goingUp)) / RobotConfiguration.arm_ticksMax;
                 extension = bMath.Clamp(extension, 0, 1);
                 robot.arm.SetArmStatePower
@@ -195,7 +194,6 @@ public class Teleop extends TeleOpMode {
             robot.foundationServo1.setPosition(gripFoundation ? 0.95 : 0);
 
             gripAngle = bMath.Clamp(gripAngle, 0, 180);
-
 
 
             telemetry.addLine("------ Movement ------");
