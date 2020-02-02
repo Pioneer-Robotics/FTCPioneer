@@ -52,6 +52,9 @@ public class RobotConfiguration {
     //The encoder tick required to elevate the arm completely
     public static final double arm_rotationMax = 5678 * 3;
 
+    //The encoder tick required to elevate the arm completely
+    public static final double armQuadBaseMaxCm = 40;
+
     //The offset to determine the interior angle between member k and L
     public static final double pot_interiorOffset = 149.8; //
 

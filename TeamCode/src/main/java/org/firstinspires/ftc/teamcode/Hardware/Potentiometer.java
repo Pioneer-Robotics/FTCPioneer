@@ -5,8 +5,10 @@ import android.graphics.Path;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DcMotor;
-@Deprecated
+
 public class Potentiometer {
+    private double regSlope = 133;
+    private double regIntercept = -4.62;
 
     public AnalogInput analogInput;
 
@@ -17,11 +19,20 @@ public class Potentiometer {
 
 
     public double getAngle() {
-        return analogInput.getVoltage()*133 - 4.62;
+        return analogInput.getVoltage()*regSlope - regIntercept;
 
     }
     public double getVoltage() {
         return analogInput.getVoltage();
 
     }
+
+    public void addData(double angle) {
+
+    }
+
+    public void clearData() {
+
+    }
+
 }
