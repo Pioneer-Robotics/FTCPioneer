@@ -43,7 +43,7 @@ public class Auto extends LinearOpMode {
         robot.init(this, true);
 
         print("Status: Initiating all jobs.");
-
+//        Test Comment
 //        print("Status: Determining current play side");
 
         //If we are closest to the 90 degree side we know were playing on the BLUE side
