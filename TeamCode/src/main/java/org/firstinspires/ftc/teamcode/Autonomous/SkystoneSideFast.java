@@ -73,23 +73,9 @@ public class SkystoneSideFast extends Auto {
 
     private void runDeliveryCycle(double fwdDistance, long servoDelayMS, double distanceFromStone, double endingOffset, double bridgeDistance, boolean moveBackToBridge) {
 
-        //Drives forward so the arm is making contact with the stone
-        driveToSkystone(fwdDistance);
+        collectStoneFoward(fwdDistance, servoDelayMS, distanceFromStone);
 
-        //Closes the gripper on the stone
-        robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
-
-        //Wait to ensure the gripper is closed
-        sleep(servoDelayMS);
-
-        //Drive backwards, breaking sticktion and allowing the gripper to close completely
-        robot.driveByDistance(180, 0.5, distanceFromStone, 2);
-
-        //Rotates to face the foundation
-        rotateAccurate(90);
-
-        //Drives to foundation at a high speed
-        robot.driveByDistance(0, 1, bridgeDistance, 2.1);
+        driveToFoundationSide();
 
         //Releases the stone
         robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
@@ -116,6 +102,29 @@ public class SkystoneSideFast extends Auto {
             //Rotates to face the next stone
             rotateFast(0);
         }
+    }
+
+    //Collects the stone 'distanceToStone' away and then rolls back 'backwardDistance'
+    private void collectStoneFoward(double distanceToStone, long servoDelayMS, double backwardsDistance) {
+        //Drives forward so the arm is making contact with the stone
+        driveToSkystone(distanceToStone);
+
+        //Closes the gripper on the stone
+        robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
+
+        //Wait to ensure the gripper is closed
+        sleep(servoDelayMS);
+
+        //Drive backwards, breaking sticktion and allowing the gripper to close completely
+        robot.driveByDistance(180, 0.5, backwardsDistance, 2);
+    }
+
+    private void driveToFoundationSide() {
+        //Rotates to face the foundation
+        rotateAccurate(90);
+
+        //Drives to foundation at a high speed
+        robot.driveByDistance(0, 1, bridgeDistance, 2.1);
     }
 
     public void driveToSkystone(double distanceFoward) {
