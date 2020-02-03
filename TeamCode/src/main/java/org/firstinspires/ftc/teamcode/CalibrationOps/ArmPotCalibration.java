@@ -11,10 +11,17 @@ import org.firstinspires.ftc.teamcode.Autonomous.Auto;
 public class ArmPotCalibration extends Auto {
 
     private final int datapoints = 10;
-    private ElapsedTime deltaTime = new ElapsedTime();
+    private ElapsedTime timer = new ElapsedTime();
 
     @Override
     public void runOpMode() {
+
+        telemetry.addData("D value:",robot.arm.currentArmQuadBaseDistance());
+        telemetry.addData("Derived angle:",robot.arm.derivedPotentiometerAngle(robot.arm.currentArmQuadBaseDistance()));
+        telemetry.addData("Voltage:",robot.armPotentiometer.getVoltage());
+        telemetry.addData("Measured Angle:", robot.armPotentiometer.getAngle());
+        telemetry.addData("Regression Slope:",robot.armPotentiometer.regSlope);
+        telemetry.addData("Regression Intercept:",robot.armPotentiometer.regIntercept);
 
         startRobot();
         waitForStart();
@@ -22,11 +29,16 @@ public class ArmPotCalibration extends Auto {
         for (int i = 0; i < datapoints; i++) {
 
             robot.arm.setArmStateWait(((double) i) / ((double) datapoints), 0);
-            deltaTime.reset();
-            while (deltaTime.seconds() < 1) {
+            timer.reset();
+            while (timer.seconds() < 0.5) {
             }
             robot.armPotentiometer.addData(robot.arm.derivedPotentiometerAngle(robot.arm.currentArmQuadBaseDistance()));
-
+            timer.reset();
+            while (timer.seconds() < 0.5) {
+            }
+            if (i>2){
+                robot.armPotentiometer.calcRegression();
+            }
         }
         robot.armPotentiometer.calcRegression();
         robot.armPotentiometer.saveCalibrationData(robot.dataManger);
