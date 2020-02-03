@@ -57,7 +57,7 @@ public class Robot extends Thread {
 
 
     //The data manager serves to store data locally on the phone, used in calibration and PID tuning.
-    private bDataManager dataManger = new bDataManager();
+    public bDataManager dataManger = new bDataManager();
 
     double desiredArmRotationPower;
 
@@ -113,6 +113,12 @@ public class Robot extends Thread {
         driveManager.backRight.powerCoefficent = dataManger.readData("wheel_back_right_powerCo", -1);
         bTelemetry.print("      Back Right  : " + driveManager.backRight.powerCoefficent);
 
+        armPotentiometer.regSlope = dataManger.readData("pot_reg_slope", bMath.toRadians(133));
+        armPotentiometer.regIntercept = dataManger.readData("pot_reg_intercept", bMath.toRadians(-4.62));
+
+
+        bTelemetry.print("      Arm Regression Slope    : " + armPotentiometer.regSlope);
+        bTelemetry.print("      Arm Regression Int      : " + armPotentiometer.regIntercept);
 
         //Adds the motors and distance sensors to the expInput manager to allow for faster reads
         //DISABLED BUT WORKS
