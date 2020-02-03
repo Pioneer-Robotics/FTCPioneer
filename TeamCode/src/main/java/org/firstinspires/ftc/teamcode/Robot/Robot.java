@@ -266,7 +266,7 @@ public class Robot extends Thread {
     }
 
 
-    //Threaded run method, right now this is just for IMU stuff, at some point we might put some avoidance stuff in here (background wall tracking?)
+    //Enabled run method, right now this is just for IMU stuff, at some point we might put some avoidance stuff in here (background wall tracking?)
     public void run() {
         threadRunning.set(true);
 
@@ -284,10 +284,11 @@ public class Robot extends Thread {
                 threadRunning.set(false);
             }
 
-            arm.length.setPower(1);
-            arm.length.setTargetPosition((int) arm.targetLength);
+                arm.length.setPower(arm.targetLengthSpeed);
+                arm.length.setTargetPosition((int) arm.targetLength);
 
-            if (arm.rotationMode == RobotArm.ArmRotationMode.Threaded) {
+
+            if (arm.rotationMode == RobotArm.ArmThreadMode.Enabled) {
                 desiredArmRotationPower = ((arm.rotation.getCurrentPosition() - arm.targetRotation) / (RobotConfiguration.arm_rotationMax * 0.5)) * 1;
 
                 if (Math.abs(desiredArmRotationPower) > 0.1) {

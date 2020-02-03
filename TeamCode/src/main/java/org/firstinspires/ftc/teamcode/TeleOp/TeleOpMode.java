@@ -25,4 +25,9 @@ public abstract class TeleOpMode extends LinearOpMode {
         engineeringController = new bGamepad(gamepad2);
     }
 
+    public void updateControllers() {
+        driverController.Update();
+        engineeringController.Update();
+    }
+
 }
