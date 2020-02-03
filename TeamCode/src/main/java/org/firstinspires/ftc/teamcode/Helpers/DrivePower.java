@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Helpers;
 
 
+import android.renderscript.Double4;
 
 public class DrivePower {
 
@@ -30,11 +31,23 @@ public class DrivePower {
         backRight = backRightPower;
     }
 
-    public void multiply(double scale) {
-        frontLeft *= scale;
-        frontRight *= scale;
-        backLeft *= scale;
-        backRight *= scale;
+    public void multiply(double scalar) {
+        frontLeft *= scalar;
+        frontRight *= scalar;
+        backLeft *= scalar;
+        backRight *= scalar;
+    }
+
+    public void from(Double4 double4) {
+        frontLeft = double4.x;
+        frontRight = double4.y;
+        backLeft = double4.z;
+        backRight = double4.w;
+    }
+
+    @Deprecated
+    public DrivePower normilize() {
+        return null;
     }
 }
 
