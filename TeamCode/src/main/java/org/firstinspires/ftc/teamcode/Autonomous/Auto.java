@@ -94,6 +94,7 @@ public class Auto extends LinearOpMode {
         print("Status: Awaiting start. Running on side " + (side == FieldSide.SIDE_BLUE ? "BLU" : "RED"));
     }
 
+    //Stops the robot by setting power of all motors to 0
     public void StopRobot() {
         robot.setPowerDouble4(0, 0, 0, 0, 0);
         robot.shutdown();
@@ -106,7 +107,7 @@ public class Auto extends LinearOpMode {
      * @param lockTime              How long we must be within lockThreshold, should be less than one second
      * @param lockThreshold         How close the skystone needs to be to the center of the camera in order for us to stop (0.1 - 0.3)
      */
-    //This loop uses the rear sensors to line up with a skystone
+    //This loop uses the rear sensors to line up with a SkyStone
     public void SkystoneAlign(double moveSpeed, double wallDistance, double correctionCoefficient, double lockTime, double lockThreshold, double startRotation) {
         ResetWallPID();
         ElapsedTime deltaTime = new ElapsedTime();
@@ -177,7 +178,7 @@ public class Auto extends LinearOpMode {
         StopMovement();
     }
 
-    //Freezes the robots movement but continues to seek its correct rotation
+    //Freezes the robot's movement but continues to seek its correct rotation
     public void StopAndMaintainRotation(double rotation) {
         robot.moveComplex(new Double2(0, 0), 1, robot.getRotation() - rotation, 0);
     }
@@ -187,6 +188,7 @@ public class Auto extends LinearOpMode {
         robot.setPowerDouble4(0, 0, 0, 0, 0);
     }
 
+    //Reset Proportion-Integral-Derivative for Wall Tracking using pre-measured numbers
     public void ResetWallPID() {
 //        walltrackingController.start(15, 0.0, 0);
         walltrackingController.start(4.95, 0.0, 0.1);
@@ -215,7 +217,7 @@ public class Auto extends LinearOpMode {
         robot.arm.setArmStateWait(liftFactor, extensionLength);
 
     }
-
+    //Same as GrabArm, except this one operates based on the last length declared
     public void DepositeArm(double lastLength, double extensionLength) {
 
         //Open the gripper, raise the arm, and extend out
