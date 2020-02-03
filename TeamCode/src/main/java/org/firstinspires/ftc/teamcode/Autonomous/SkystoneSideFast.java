@@ -75,7 +75,7 @@ public class SkystoneSideFast extends Auto {
 
         collectStoneFoward(fwdDistance, servoDelayMS, distanceFromStone);
 
-        driveToFoundationSide();
+        driveToFoundationSide(bridgeDistance);
 
         //Releases the stone
         robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
@@ -119,7 +119,7 @@ public class SkystoneSideFast extends Auto {
         robot.driveByDistance(180, 0.5, backwardsDistance, 2);
     }
 
-    private void driveToFoundationSide() {
+    private void driveToFoundationSide(double bridgeDistance) {
         //Rotates to face the foundation
         rotateAccurate(90);
 
