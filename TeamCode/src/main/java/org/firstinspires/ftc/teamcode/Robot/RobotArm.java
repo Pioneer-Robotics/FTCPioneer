@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
+import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.RectangularControlData;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -45,14 +46,9 @@ public class RobotArm extends Thread {
 
     public double targetLength;
     public double targetRotation;
-    private double targetLengthSpeed;
-    private double xExtConst;
-    private double yExtConst;
-    private double pot;
 
     private boolean protectSpool = true;
 
-    private boolean usePot = true;
 
     public enum GripState {
         OPEN,
@@ -99,7 +95,6 @@ public class RobotArm extends Thread {
     public double thetaAngle() {
         double potentiometerMeasurement = bMath.toRadians(robot.armPotentiometer.getAngle());
 
-        if (usePot) {
             potentiometerMeasurement = bMath.Clamp(potentiometerMeasurement, 0, 3.141);
             double C0 = bMath.squared(l) + bMath.squared(k) - (2 * k * l * Math.cos(potentiometerMeasurement));
             double C = Math.sqrt(C0);
@@ -108,12 +103,6 @@ public class RobotArm extends Thread {
             double thetaPart2 = Math.acos( h / C);
             return thetaPart1 + thetaPart2 - (Math.PI / 2);
 
-        } else {
-            double d = (rotation.getCurrentPosition() * 0.5) / 480; //TODO add offset to this value so it actually works lol: starts at 0 rn
-            double c = ((k * k) - (h * h) - (l * l) - (d * d)) / 2;
-            double x = (((d * c) - (h * Math.sqrt((((l * l) * (d * d)) + ((l * l) * (h * h))) - (c * c)))) / ((d * d) + (h * h))) + d;
-
-            return Math.atan((Math.sqrt((k * k) - (x * x)) - h) / (d - x));
         }
 
     }
@@ -347,16 +336,17 @@ can be plugged into realPotentiometerAngle to determine what the pot should be r
 
 
     //returns and sets the above x and y values (in cm)
-    public void ExtConstCalc() {
-        xExtConst = ticksToCm(length.getCurrentPosition()) * Math.cos(thetaAngle());
+    public double xExtConst() {
+        return ticksToCm(length.getCurrentPosition()) * Math.cos(thetaAngle());
+    }
 
-        yExtConst = ticksToCm(length.getCurrentPosition()) * Math.sin(thetaAngle());
-
+    public double yExtConst() {
+        return ticksToCm(length.getCurrentPosition()) * Math.sin(thetaAngle());
     }
 
 
     //returns the amount the arm should be extended when moving (in cm)
-    public double RectExtension(boolean goingUp) {
+    public double RectExtension(boolean goingUp, double xExtConst, double yExtConst) {
         if (goingUp)
             return xExtConst / bMath.Clamp(Math.cos(thetaAngle()), 0.0001, 1);
         else

@@ -98,38 +98,8 @@ public class Teleop extends TeleOpMode {
             // The lower level abstrations should not store state if possible. They should be passed in values and then return values so that state can be easily be tracked.
 
 
+        updateArmControls();
 
-            // Activates rectControls when right stick is being moved
-            rectControlData.rectControls = ((Math.abs(gamepad2.right_stick_y) > 0.1) || (Math.abs(gamepad2.right_stick_x) > 0.1));
-            //sets direction of rectControls to whichever axis is greater
-            rectControlData.rectControls_goingUp = Math.abs(gamepad2.right_stick_y) > Math.abs(gamepad2.right_stick_x);
-
-            //get new extension constants if rectControls changes or if direction changes
-            if ((rectControlData.rectControls != rectControlData.rectControlsCheck) || (rectControlData.rectControls_goingUp != rectControlData.rectControls_goingUpCheck))
-                robot.arm.ExtConstCalc();
-            rectControlData.rectControlsCheck = rectControlData.rectControls;
-            rectControlData.rectControls_goingUpCheck = rectControlData.rectControls_goingUp;
-
-
-            //Allows the Gripper to be moved straight up and down with the right joystick
-            if (rectControlData.rectControls) {
-                telemetry.addLine("Arm Control: Rect");
-                //set power and distance to the Arm.
-                extension = robot.arm.cmToTicks(robot.arm.RectExtension(rectControlData.rectControls_goingUp)) / RobotConfiguration.arm_ticksMax;
-                extension = bMath.Clamp(extension, 0, 1);
-                robot.arm.SetArmStatePower
-                        (extension,
-                                rectControlData.rectControls_goingUp ? -0.5*gamepad2.right_stick_y : -0.5*gamepad2.right_stick_x);
-            } else {
-                telemetry.addLine("Arm Control: Radial");
-
-                extension += gamepad2.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held
-                extension -= gamepad2.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held
-
-                raiseSpeed = bMath.Clamp(-gamepad2.left_stick_y, -1, 1);
-                extension = bMath.Clamp(extension, 0, 1);
-                robot.arm.SetArmStatePower(extension, raiseSpeed);
-            }
 
 
             //Gripper Controls//
@@ -302,6 +272,53 @@ public class Teleop extends TeleOpMode {
 
         return new Vector2(newGamepadX, newGamepadY);
     }
+
+    private void updateArmControls(){
+
+        updateRectControls();
+
+        //Allows the Gripper to be moved straight up and down with the right joystick
+        if (rectControlData.rectControls) {
+            telemetry.addLine("Arm Control: Rect");
+            //set power and distance to the Arm.
+            extension = bMath.Clamp(robot.arm.cmToTicks(
+                            robot.arm.RectExtension(rectControlData.rectControls_goingUp,rectControlData.xExtConst,rectControlData.yExtConst))
+                    / RobotConfiguration.arm_ticksMax);
+            robot.arm.SetArmStatePower
+                    (extension,
+                            rectControlData.rectControls_goingUp ? -0.5*gamepad2.right_stick_y : -0.5*gamepad2.right_stick_x);
+        } else {
+            telemetry.addLine("Arm Control: Radial");
+
+            extension += gamepad2.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held
+            extension -= gamepad2.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held
+
+            raiseSpeed = bMath.Clamp(-gamepad2.left_stick_y, -1, 1);
+            extension = bMath.Clamp(extension, 0, 1);
+            robot.arm.SetArmStatePower(extension, raiseSpeed);
+        }
+    }
+
+    private void updateRectControls(){
+        // Activates rectControls when right stick is being moved
+        rectControlData.rectControls = ((Math.abs(gamepad2.right_stick_y) > 0.1) || (Math.abs(gamepad2.right_stick_x) > 0.1));
+        //sets direction of rectControls to whichever axis is greater
+        rectControlData.rectControls_goingUp = Math.abs(gamepad2.right_stick_y) > Math.abs(gamepad2.right_stick_x);
+
+        //get new extension constants if rectControls changes or if direction changes
+        if ((rectControlData.rectControls != rectControlData.rectControlsCheck) || (rectControlData.rectControls_goingUp != rectControlData.rectControls_goingUpCheck))
+            rectControlData.xExtConst =  robot.arm.xExtConst();
+        rectControlData.yExtConst = robot.arm.yExtConst();
+
+        rectControlData.rectControlsCheck = rectControlData.rectControls;
+        rectControlData.rectControls_goingUpCheck = rectControlData.rectControls_goingUp;
+    }
+
+
+
+
+
+
 
 }
 

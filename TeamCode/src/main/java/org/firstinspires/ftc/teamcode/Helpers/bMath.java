@@ -157,7 +157,7 @@ public class bMath {
         return v;
     }
 
-    public static double Clamp(double value) { //TODO fix
+    public static double Clamp(double value) { //Clamps between 1 and 0
         double v = value;
 
         if (value >= 1) {
