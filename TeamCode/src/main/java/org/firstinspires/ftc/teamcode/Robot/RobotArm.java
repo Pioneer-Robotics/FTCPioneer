@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
 
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Thread.sleep;
@@ -21,6 +23,11 @@ public class RobotArm extends Thread {
     public Robot robot;
     //Arm height motor
     public DcMotor rotation;
+
+    //useful for knowing the position of the arm
+    double k = 177.0;
+    double h = 32.2; //Vertical Distance from bottom joint of arm to the axis made by the center of the lead screw
+    double l = 134.0; //Distance from bottom joint of arm to middle joint on Xrail
 
     //Controls arm length (spool)
     public DcMotor length;
@@ -43,9 +50,9 @@ public class RobotArm extends Thread {
     private double yExtConst;
     private double pot;
 
-    private  boolean protectSpool = true;
+    private boolean protectSpool = true;
 
-    private  boolean usePot = true;
+    private boolean usePot = true;
 
     public enum GripState {
         OPEN,
@@ -90,9 +97,6 @@ public class RobotArm extends Thread {
     //I think "usePot" math is off by 90 radians, am subtracting 90 radians
 
     public double thetaAngle() {
-        double k = 177.0;
-        double h = 32.2;
-        double l = 134.0;
         double potentiometerMeasurement = bMath.toRadians(robot.armPotentiometer.getAngle());
 
         if (usePot) {
@@ -102,8 +106,7 @@ public class RobotArm extends Thread {
             double Numerator1 = bMath.squared(l) + bMath.squared(C) - bMath.squared(k);
             double thetaPart1 = Math.acos( Numerator1 / 2 / C / l );
             double thetaPart2 = Math.acos( h / C);
-            double AnsRad = thetaPart1 + thetaPart2 - (Math.PI / 2);
-            return AnsRad;
+            return thetaPart1 + thetaPart2 - (Math.PI / 2);
 
         } else {
             double d = (rotation.getCurrentPosition() * 0.5) / 480; //TODO add offset to this value so it actually works lol: starts at 0 rn
@@ -113,6 +116,25 @@ public class RobotArm extends Thread {
             return Math.atan((Math.sqrt((k * k) - (x * x)) - h) / (d - x));
         }
 
+    }
+
+    /*
+    "realPotentiometerAngle" takes as an input the length of d measured in cm
+    it outputs the angle the potentiometer should be measuring in radians
+    this function can be useful for checking the accuracy of the potentiometer
+     */
+    public double derivedPotentiometerAngle (double dLengthIn_cm){
+        double d = dLengthIn_cm;
+        double intermedieteVal1 = (l * l) + (k * k) - (d * d) - (h * h);
+        double intermedVal2 = intermedieteVal1 / 2 / k / l;
+        return Math.acos(intermedVal2);
+    }
+/*
+This function returns the horizotntal distance between the shuttle joint and the arm joint.
+can be plugged into realPotentiometerAngle to determine what the pot should be reading.
+ */
+    public double currentArmQuadBaseDistance(){
+        return RobotConfiguration.armQuadBaseMaxCm - ((double) rotation.getCurrentPosition()*(1.0/1440.0)*(120.0/48.0)*(0.2/1.0));
     }
 
 
@@ -174,10 +196,15 @@ public class RobotArm extends Thread {
 
         rotation.setPower(0);
     }
+
+
     @Deprecated
     public void setArmStateWaitCm(double targetAngle, double _targetLength) {
         targetLengthSpeed = 1;
         targetLength = cmToTicks(_targetLength);
+
+
+
         targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
 
         rotation.setTargetPosition((int) (RobotConfiguration.arm_rotationMax * targetAngle));
@@ -195,16 +222,14 @@ public class RobotArm extends Thread {
     }
 
     public void setArmStateAsync(double targetAngle, double _targetLength) {
-        targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
         targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
 
         rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
-    @Deprecated
+
     public void setArmStateAsyncCm(double targetAngle, double _targetLength) {
-        targetLengthSpeed = 1;
         targetLength = cmToTicks(_targetLength);
         targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
 
@@ -333,14 +358,14 @@ public class RobotArm extends Thread {
     //returns the amount the arm should be extended when moving (in cm)
     public double RectExtension(boolean goingUp) {
         if (goingUp)
-            return xExtConst / bMath.Clamp(Math.cos(thetaAngle()),0.0001, 1);
+            return xExtConst / bMath.Clamp(Math.cos(thetaAngle()), 0.0001, 1);
         else
             return yExtConst / bMath.Clamp(Math.sin(thetaAngle()), 0.0001, 1);
     }
 
 
-    public void SetGripState(GripState gripState, double rotationPosition) {
-        grip.setPosition(gripState == GripState.CLOSED ? 0 : (gripState == GripState.IDLE ? 0.4 : 0.64));
+    public void setGripState(GripState gripState, double rotationPosition) {
+        grip.setPosition(gripState == GripState.CLOSED ? 0 : (gripState == GripState.IDLE ? 0.2 : 0.74));
         gripRotation.setPosition(rotationPosition);
     }
 

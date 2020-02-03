@@ -17,6 +17,8 @@ public class TestingOpMode extends Auto {
 
         waitForStart();
 
+        robot.rotateSimple(90, 1, 2, 0.5);
+
 //        GrabArm(0.3);
 
 //        while (opModeIsActive()) {
@@ -24,7 +26,7 @@ public class TestingOpMode extends Auto {
 //            telemetry.update();
 //        }
 
-//        robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
+//        robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
 
 //        sleep(1000);
 

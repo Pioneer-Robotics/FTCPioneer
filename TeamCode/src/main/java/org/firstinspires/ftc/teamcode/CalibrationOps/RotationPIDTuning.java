@@ -59,14 +59,27 @@ RotationPIDTuning extends LinearOpMode {
                 if (mode == TuningMode.P) {
                     telemetry.addData("ADJUSTING P ", PID.x);
                     PID.x += gamepad1.right_stick_y * -1 * deltaTime.seconds();
+
+                    if (gamepad1.right_bumper) {
+                        PID.x = 0;
+                    }
+
                 }
                 if (mode == TuningMode.I) {
                     telemetry.addData("ADJUSTING I ", PID.y);
                     PID.y += gamepad1.right_stick_y * -1 * deltaTime.seconds();
+
+                    if (gamepad1.right_bumper) {
+                        PID.y = 0;
+                    }
                 }
                 if (mode == TuningMode.D) {
                     telemetry.addData("ADJUSTING D ", PID.z);
                     PID.z += gamepad1.right_stick_y * -1 * deltaTime.seconds();
+
+                    if (gamepad1.right_bumper) {
+                        PID.z = 0;
+                    }
                 }
                 telemetry.addData("HOW TO : USE  Y TO TUNE P. USE A TO TUNE I. USE B TO TUNE D. HOLD X TO TEST A 90 TURN", "");
 
@@ -85,7 +98,7 @@ RotationPIDTuning extends LinearOpMode {
             dataManger.writeData("PID_Testing_D", PID.z);
 
             double targetRotation = 90 + robot.getRotation();
-            robot.rotatePID(targetRotation, 1, 10000, PID.x, PID.y, PID.z);
+            robot.rotatePID(targetRotation, 1, 1000, PID.x, PID.y, PID.z);
             robot.setPowerDouble4(0, 0, 0, 0, 0);
         }
 
