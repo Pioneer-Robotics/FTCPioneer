@@ -9,10 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
-import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.RectangularControlData;
 
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Thread.sleep;
@@ -30,22 +27,26 @@ public class RobotArm extends Thread {
     double h = 32.2; //Vertical Distance from bottom joint of arm to the axis made by the center of the lead screw
     double l = 134.0; //Distance from bottom joint of arm to middle joint on Xrail
 
+    double pot;
+
     //Controls arm length (spool)
     public DcMotor length;
 
     public Servo gripRotation;
     public Servo grip;
 
-    public ArmRotationMode rotationMode;
+    public ArmThreadMode rotationMode;
 
     //Arm rotation mode, setting to 'threaded' will arm rotation handled by a thread while 'disabled' will not effect arm rotation
-    public enum ArmRotationMode {
-        Threaded,
+    public enum ArmThreadMode {
+        Enabled,
         Disabled
     }
 
+
     public double targetLength;
     public double targetRotation;
+    public double targetLengthSpeed;
 
     private boolean protectSpool = true;
 
@@ -95,15 +96,13 @@ public class RobotArm extends Thread {
     public double thetaAngle() {
         double potentiometerMeasurement = bMath.toRadians(robot.armPotentiometer.getAngle());
 
-            potentiometerMeasurement = bMath.Clamp(potentiometerMeasurement, 0, 3.141);
-            double C0 = bMath.squared(l) + bMath.squared(k) - (2 * k * l * Math.cos(potentiometerMeasurement));
-            double C = Math.sqrt(C0);
-            double Numerator1 = bMath.squared(l) + bMath.squared(C) - bMath.squared(k);
-            double thetaPart1 = Math.acos( Numerator1 / 2 / C / l );
-            double thetaPart2 = Math.acos( h / C);
-            return thetaPart1 + thetaPart2 - (Math.PI / 2);
-
-        }
+        potentiometerMeasurement = bMath.Clamp(potentiometerMeasurement, 0, 3.141);
+        double C0 = bMath.squared(l) + bMath.squared(k) - (2 * k * l * Math.cos(potentiometerMeasurement));
+        double C = Math.sqrt(C0);
+        double Numerator1 = bMath.squared(l) + bMath.squared(C) - bMath.squared(k);
+        double thetaPart1 = Math.acos( Numerator1 / 2 / C / l );
+        double thetaPart2 = Math.acos( h / C);
+        return thetaPart1 + thetaPart2 - (Math.PI / 2);
 
     }
 
@@ -156,6 +155,7 @@ can be plugged into realPotentiometerAngle to determine what the pot should be r
     angle should be between 0 and PI/2 (measured in radians)
     length should be specified in cm. Should be between 0 and 100.
      */
+    @Deprecated
     public void SetArmLengthAndAngle(double angleNeeded, double lengthNeeded) {
         //cmToRange is what you use to convert from cm to the 0-1 scale we use to actually set the arm length
             /*
@@ -211,6 +211,7 @@ can be plugged into realPotentiometerAngle to determine what the pot should be r
     }
 
     public void setArmStateAsync(double targetAngle, double _targetLength) {
+        targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
         targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
 
@@ -219,6 +220,7 @@ can be plugged into realPotentiometerAngle to determine what the pot should be r
     }
 
     public void setArmStateAsyncCm(double targetAngle, double _targetLength) {
+        targetLengthSpeed = 1;
         targetLength = cmToTicks(_targetLength);
         targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
 
@@ -255,6 +257,7 @@ can be plugged into realPotentiometerAngle to determine what the pot should be r
         rotation.setPower(angleSpeed);
         rotation.setTargetPosition((int) ((double) RobotConfiguration.arm_rotationMax * targetAngle));
         rotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        length.setTargetPosition((int)targetLength);
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
     }
@@ -265,7 +268,6 @@ can be plugged into realPotentiometerAngle to determine what the pot should be r
     to match a certain percentage of extension between 0 and 1
      */
     public void SetArmStatePower(double _targetLength, double angleSpeed) {
-
         targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
         if (targetLength < 0 && protectSpool)
@@ -283,7 +285,7 @@ can be plugged into realPotentiometerAngle to determine what the pot should be r
         rotation.setPower(angleSpeed);
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        rotation.setPower(lengthSpeed);
+        targetLengthSpeed = lengthSpeed;
         length.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     }

@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Helpers.Vector2;
@@ -11,12 +10,12 @@ import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 import org.firstinspires.ftc.teamcode.Robot.RobotConfiguration;
 import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.DriverTeleopData;
-import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.RectangularControlData;
+import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.EngineeringControlData;
 import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.RotationData;
 import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.TeleopDriverControls;
 
 /// Advice-
-/// Consolidate State variable into a similar concept object. (see RectangularControlData for example etc...)
+/// Consolidate State variable into a similar concept object. (see EngineeringControlData for example etc...)
 /// Move helper functions into Classes that relate (see Robot updateRobotDrive() for example, getMovementVector() still needs to be moved to a Math class)
 /// Create layers of abstration to the code that makes it easier to read and understand (see TeleopDriverControls for example)
 /// In general, attempt to create sub-layers of abstractions that have code that will almost never change so that if can be added to the code base and then confidently ignored as working flawlessly. (Adding self testing code with a testing framework would also be very helpful)
@@ -57,7 +56,7 @@ public class Teleop extends TeleOpMode {
 
     //Rectangular Control Variables New
     /// Code clean up advice --- State variable that have a similar concept should be grouped into a single object
-    private RectangularControlData rectControlData = new RectangularControlData();
+    private EngineeringControlData rectControlData = new EngineeringControlData();
 
     //Gripper Control
     private boolean grab = true; //whether the gripper is not gripping
@@ -78,8 +77,8 @@ public class Teleop extends TeleOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(this, false);
+        gamepad1.setJoystickDeadzone(0.05f);
 
-        initControllers();
         waitForStart();
 
         lunchboxRot = 1;
@@ -88,7 +87,9 @@ public class Teleop extends TeleOpMode {
         while (opModeIsActive()) {
             telemetry.addLine("------ Control  ------");
 
+
             updateDriverControls();
+            updateArmControls();
 
             //ARM CONTROLS//
 
@@ -98,7 +99,6 @@ public class Teleop extends TeleOpMode {
             // The lower level abstrations should not store state if possible. They should be passed in values and then return values so that state can be easily be tracked.
 
 
-        updateArmControls();
 
 
 
@@ -171,7 +171,7 @@ public class Teleop extends TeleOpMode {
             telemetry.addData("Current Arm Angle", bMath.toDegrees(robot.arm.thetaAngle()));
             telemetry.addData("Current Potentiometer angle", robot.armPotentiometer.getAngle());
             telemetry.addData("RectWanted?:", rectControlData.rectControls);
-            telemetry.addData("target spool position", extension*RobotConfiguration.arm_ticksMax);
+            telemetry.addData("target spool position", extension * RobotConfiguration.arm_ticksMax);
             telemetry.addData("spool position", robot.arm.length.getCurrentPosition());
             telemetry.addData("spool position as percent", robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_ticksMax);
             telemetry.addData("arm rotation as percent", robot.arm.rotation.getCurrentPosition() / RobotConfiguration.arm_rotationMax);
@@ -273,7 +273,7 @@ public class Teleop extends TeleOpMode {
         return new Vector2(newGamepadX, newGamepadY);
     }
 
-    private void updateArmControls(){
+    private void updateArmControls() {
 
         updateRectControls();
 
@@ -282,11 +282,11 @@ public class Teleop extends TeleOpMode {
             telemetry.addLine("Arm Control: Rect");
             //set power and distance to the Arm.
             extension = bMath.Clamp(robot.arm.cmToTicks(
-                            robot.arm.RectExtension(rectControlData.rectControls_goingUp,rectControlData.xExtConst,rectControlData.yExtConst))
+                    robot.arm.RectExtension(rectControlData.rectControls_goingUp, rectControlData.xExtConst, rectControlData.yExtConst))
                     / RobotConfiguration.arm_ticksMax);
             robot.arm.SetArmStatePower
                     (extension,
-                            rectControlData.rectControls_goingUp ? -0.5*gamepad2.right_stick_y : -0.5*gamepad2.right_stick_x);
+                            rectControlData.rectControls_goingUp ? -0.5 * gamepad2.right_stick_y : -0.5 * gamepad2.right_stick_x);
         } else {
             telemetry.addLine("Arm Control: Radial");
 
@@ -299,7 +299,7 @@ public class Teleop extends TeleOpMode {
         }
     }
 
-    private void updateRectControls(){
+    private void updateRectControls() {
         // Activates rectControls when right stick is being moved
         rectControlData.rectControls = ((Math.abs(gamepad2.right_stick_y) > 0.1) || (Math.abs(gamepad2.right_stick_x) > 0.1));
         //sets direction of rectControls to whichever axis is greater
@@ -307,17 +307,12 @@ public class Teleop extends TeleOpMode {
 
         //get new extension constants if rectControls changes or if direction changes
         if ((rectControlData.rectControls != rectControlData.rectControlsCheck) || (rectControlData.rectControls_goingUp != rectControlData.rectControls_goingUpCheck))
-            rectControlData.xExtConst =  robot.arm.xExtConst();
+            rectControlData.xExtConst = robot.arm.xExtConst();
         rectControlData.yExtConst = robot.arm.yExtConst();
 
         rectControlData.rectControlsCheck = rectControlData.rectControls;
         rectControlData.rectControls_goingUpCheck = rectControlData.rectControls_goingUp;
     }
-
-
-
-
-
 
 
 }

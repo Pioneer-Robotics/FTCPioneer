@@ -30,12 +30,11 @@ public class ArmPotCalibration extends Auto {
 
             robot.arm.setArmStateWait(((double) i) / ((double) datapoints), 0);
             timer.reset();
-            while (timer.seconds() < 0.5) {
-            }
+            while (timer.seconds() < 0.5) { }
             robot.armPotentiometer.addData(robot.arm.derivedPotentiometerAngle(robot.arm.currentArmQuadBaseDistance()));
             timer.reset();
-            while (timer.seconds() < 0.5) {
-            }
+            while (timer.seconds() < 0.5) { }
+
             if (i>2){
                 robot.armPotentiometer.calcRegression();
             }

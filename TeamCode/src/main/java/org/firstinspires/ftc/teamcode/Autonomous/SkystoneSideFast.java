@@ -10,7 +10,7 @@ public class SkystoneSideFast extends Auto {
     @Override
     public void runOpMode() {
         startRobot();
-        robot.arm.rotationMode = RobotArm.ArmRotationMode.Threaded;
+        robot.arm.rotationMode = RobotArm.ArmThreadMode.Enabled;
 
         speed_high = 0.5;
         speed_med = 0.30;
