@@ -50,13 +50,13 @@ public class Teleop extends TeleOpMode {
     private boolean coordinateSystemLock = false;
 
     //Arm Control Variables
-    private double raiseSpeed = 0;
-    private double extension = 0;
+//    private double raiseSpeed = 0;
+//    private double extension = 0;
     private double gripAngle = 180;
 
     //Rectangular Control Variables New
     /// Code clean up advice --- State variable that have a similar concept should be grouped into a single object
-    private EngineeringControlData rectControlData = new EngineeringControlData();
+    private EngineeringControlData engiData = new EngineeringControlData();
 
     //Gripper Control
     private boolean grab = true; //whether the gripper is not gripping
@@ -89,17 +89,14 @@ public class Teleop extends TeleOpMode {
 
 
             updateDriverControls();
-            updateArmControls();
+            updateArm();
 
             //ARM CONTROLS//
 
-            // TODO - Create `updateArmControls()` method
-            // `updateArmControls()` should have leveled abstrations that make reading and understanding the code simpler.
+            // TODO - Create `updateServos()` method
+            // `updateArm()` should have leveled abstrations that make reading and understanding the code simpler.
             // Lower levels of the abstrations should be stashed in other classes.
             // The lower level abstrations should not store state if possible. They should be passed in values and then return values so that state can be easily be tracked.
-
-
-
 
 
             //Gripper Controls//
@@ -170,8 +167,8 @@ public class Teleop extends TeleOpMode {
             telemetry.addLine("-------- Arm  --------");
             telemetry.addData("Current Arm Angle", bMath.toDegrees(robot.arm.thetaAngle()));
             telemetry.addData("Current Potentiometer angle", robot.armPotentiometer.getAngle());
-            telemetry.addData("RectWanted?:", rectControlData.rectControls);
-            telemetry.addData("target spool position", extension * RobotConfiguration.arm_ticksMax);
+            telemetry.addData("RectWanted?:", engiData.rectControls);
+            telemetry.addData("target spool position", engiData.extension * RobotConfiguration.arm_ticksMax);
             telemetry.addData("spool position", robot.arm.length.getCurrentPosition());
             telemetry.addData("spool position as percent", robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_ticksMax);
             telemetry.addData("arm rotation as percent", robot.arm.rotation.getCurrentPosition() / RobotConfiguration.arm_rotationMax);
@@ -273,47 +270,85 @@ public class Teleop extends TeleOpMode {
         return new Vector2(newGamepadX, newGamepadY);
     }
 
-    private void updateArmControls() {
+        /*
+        This method updates the arm and switches between it's control modes
+         */
+    private void updateArm() {
 
         updateRectControls();
 
         //Allows the Gripper to be moved straight up and down with the right joystick
-        if (rectControlData.rectControls) {
+        if (engiData.rectControls) {
             telemetry.addLine("Arm Control: Rect");
+            //Switch mode to position based extension
+            engiData.powerExtension = false;
             //set power and distance to the Arm.
-            extension = bMath.Clamp(robot.arm.cmToTicks(
-                    robot.arm.RectExtension(rectControlData.rectControls_goingUp, rectControlData.xExtConst, rectControlData.yExtConst))
-                    / RobotConfiguration.arm_ticksMax);
-            robot.arm.SetArmStatePower
-                    (extension,
-                            rectControlData.rectControls_goingUp ? -0.5 * gamepad2.right_stick_y : -0.5 * gamepad2.right_stick_x);
+            engiData.extension = robot.arm.RectExtension(engiData.rectControls_goingUp, engiData.xExtConst, engiData.yExtConst);
+            engiData.extension = bMath.Clamp(robot.arm.cmToTicks(engiData.extension)/ RobotConfiguration.arm_ticksMax);
+            engiData.raiseSpeed = engiData.rectControls_goingUp ? -0.5 * gamepad2.right_stick_y : -0.5 * gamepad2.right_stick_x;
+
         } else {
             telemetry.addLine("Arm Control: Radial");
 
-            extension += gamepad2.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held
-            extension -= gamepad2.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held
+            if (gamepad2.dpad_left || (gamepad2.right_trigger - gamepad2.right_trigger)<0.05) { //When override or triggers are not pressed, extend using getposition
+                engiData.powerExtension = false;
+                engiData.extension += gamepad2.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held and dpad left is pressed
+                engiData.extension -= gamepad2.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held and dpad left is pressed
+                engiData.extension = bMath.Clamp(engiData.extension, 0, 1);
+            } else {
+                engiData.powerExtension = true;
+                engiData.extendSpeed = gamepad2.right_trigger - gamepad2.right_trigger;
 
-            raiseSpeed = bMath.Clamp(-gamepad2.left_stick_y, -1, 1);
-            extension = bMath.Clamp(extension, 0, 1);
-            robot.arm.SetArmStatePower(extension, raiseSpeed);
+                engiData.extension = robot.arm.length.getCurrentPosition()/ RobotConfiguration.arm_ticksMax;
+            }
+            engiData.raiseSpeed = bMath.Clamp(-gamepad2.left_stick_y, -1, 1); //set raise
+
         }
+
+            moveArm();
+
     }
 
+    /*
+    This method calculates all rectangular control information and determines whether the arm should
+    be in a rectangular control state.
+     */
     private void updateRectControls() {
         // Activates rectControls when right stick is being moved
-        rectControlData.rectControls = ((Math.abs(gamepad2.right_stick_y) > 0.1) || (Math.abs(gamepad2.right_stick_x) > 0.1));
+        engiData.rectControls = ((Math.abs(gamepad2.right_stick_y) > 0.1) || (Math.abs(gamepad2.right_stick_x) > 0.1));
         //sets direction of rectControls to whichever axis is greater
-        rectControlData.rectControls_goingUp = Math.abs(gamepad2.right_stick_y) > Math.abs(gamepad2.right_stick_x);
+        engiData.rectControls_goingUp = Math.abs(gamepad2.right_stick_y) > Math.abs(gamepad2.right_stick_x);
 
         //get new extension constants if rectControls changes or if direction changes
-        if ((rectControlData.rectControls != rectControlData.rectControlsCheck) || (rectControlData.rectControls_goingUp != rectControlData.rectControls_goingUpCheck))
-            rectControlData.xExtConst = robot.arm.xExtConst();
-        rectControlData.yExtConst = robot.arm.yExtConst();
+        if ((engiData.rectControls != engiData.rectControlsCheck) || (engiData.rectControls_goingUp != engiData.rectControls_goingUpCheck))
+            engiData.xExtConst = robot.arm.xExtConst();
+        engiData.yExtConst = robot.arm.yExtConst();
 
-        rectControlData.rectControlsCheck = rectControlData.rectControls;
-        rectControlData.rectControls_goingUpCheck = rectControlData.rectControls_goingUp;
+        engiData.rectControlsCheck = engiData.rectControls;
+        engiData.rectControls_goingUpCheck = engiData.rectControls_goingUp;
     }
+
+    /*
+    Moves the arm to position specified by the engiData
+     */
+    private void moveArm(){
+        if(engiData.powerExtension)  robot.arm.SetArmStatePower(engiData.extendSpeed, engiData.raiseSpeed);
+        else robot.arm.SetArmStateExtensionPower(engiData.extension, engiData.raiseSpeed);
+    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 }
+
+
 

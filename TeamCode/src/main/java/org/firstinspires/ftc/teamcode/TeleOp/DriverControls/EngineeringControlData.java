@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.TeleOp.DriverControls;
 
 public class EngineeringControlData {
     //Arm movement data
+    public boolean powerExtension = true;
     public double extension = 0;
     public double extendSpeed = 0;
     public double raiseSpeed = 0;
