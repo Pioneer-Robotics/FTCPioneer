@@ -461,7 +461,7 @@ public class Robot extends Thread {
 //            Math.abs(rotationPower) < 0.1 ||
 
 //            if (bMath.DeltaDegree(rotation, targetAngle) < 1.25 || timer >= maxTime) {
-            if (timer >= maxTime) {
+            if (timer >= maxTime || Math.abs(rotationPID.error) < 0.75 ) {
                 break;
             }
 

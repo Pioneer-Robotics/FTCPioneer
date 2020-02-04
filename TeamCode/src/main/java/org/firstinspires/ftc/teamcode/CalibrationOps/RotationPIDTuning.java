@@ -25,6 +25,8 @@ RotationPIDTuning extends LinearOpMode {
 
     private TuningMode mode = TuningMode.P;
 
+    private double targetRotation = 90;
+
     enum TuningMode {
         P, I, D
     }
@@ -36,9 +38,9 @@ RotationPIDTuning extends LinearOpMode {
         deltaTime.reset();
 
 
-        PID.x = dataManger.readData("PID_Testing_P", 3);
-        PID.y = dataManger.readData("PID_Testing_I", 0.42);
-        PID.z = dataManger.readData("PID_Testing_D", 0.22);
+        PID.x = dataManger.readData("PID_Testing_P", 7.10647);
+        PID.y = dataManger.readData("PID_Testing_I", 0);
+        PID.z = dataManger.readData("PID_Testing_D", 0.754351); //TODO 0.850 is better, I don't know how to add it.
 
         waitForStart();
 
@@ -97,7 +99,7 @@ RotationPIDTuning extends LinearOpMode {
             dataManger.writeData("PID_Testing_I", PID.y);
             dataManger.writeData("PID_Testing_D", PID.z);
 
-            double targetRotation = 90 + robot.getRotation();
+            targetRotation += 90;
             robot.rotatePID(targetRotation, 1, 5, PID.x, PID.y, PID.z);
             robot.setPowerDouble4(0, 0, 0, 0, 0);
         }
