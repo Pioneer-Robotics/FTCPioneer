@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Autonomous.Auto;
 @Autonomous(name = "Arm Pot Calibration", group = "Calibration")
 public class ArmPotCalibration extends Auto {
 
-    private final int datapoints = 10;
+
     private ElapsedTime timer = new ElapsedTime();
 
     @Override
@@ -25,10 +25,10 @@ public class ArmPotCalibration extends Auto {
 
         startRobot();
         waitForStart();
-        robot.armPotentiometer.clearData();
-        for (int i = 0; i < datapoints; i++) {
 
-            robot.arm.setArmStateWait(((double) i) / ((double) datapoints), 0);
+        for (int i = 0; i < robot.armPotentiometer.datapoints; i++) {
+
+            robot.arm.setArmStateWait(((double) i) / ((double) robot.armPotentiometer.datapoints), 0);
             timer.reset();
             while (timer.seconds() < 0.5) { }
             robot.armPotentiometer.addData(robot.arm.derivedPotentiometerAngle(robot.arm.currentArmQuadBaseDistance()));
