@@ -11,6 +11,8 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Helpers.PID;
 import org.firstinspires.ftc.teamcode.Helpers.bDataManager;
@@ -383,7 +385,8 @@ public class Robot extends Thread {
         //P of 3 and 0 for other gains seems to work really well
 //        rotationPID.start(3, 0, 0.1);
 
-        rotationPID.start(3.02, 0, 0.085);
+        rotationPID.start(7.10647, 0, 0.754351);
+//        rotationPID.start(3.02, 0, 0.085);
 //        rotationPID.start(4.01, 0.003, 0.0876);
 
 //        rotationPID.start(1, 0.075, 0.022);
@@ -399,7 +402,7 @@ public class Robot extends Thread {
         ElapsedTime deltaTime = new ElapsedTime();
 
         while (Op.opModeIsActive()) {
-            rotationPower = rotationPID.loop(bMath.DeltaDegree(rotation, targetAngle), 0);
+            rotationPower = rotationPID.loop(bMath.DeltaDegree(imu.getSingleRotation(AngleUnit.DEGREES), targetAngle), 0);
             rotationPower = (rotationPower / (360)) * rotationSpeed;
             rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
 
@@ -439,7 +442,7 @@ public class Robot extends Thread {
         ElapsedTime deltaTime = new ElapsedTime();
 
         while (Op.opModeIsActive()) {
-            rotationPower = rotationPID.loop(bMath.DeltaDegree(rotation, targetAngle), 0);
+            rotationPower = rotationPID.loop(bMath.DeltaDegree(imu.imu_0.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle, targetAngle), 0);
             rotationPower = (rotationPower / (360)) * rotationSpeed;
             rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
 
@@ -457,7 +460,10 @@ public class Robot extends Thread {
             rotateSimple(rotationPower);
 
             //Exit the PID loop if the bots not rotating or is withing 1.25 degrees of the target angle or if we hit the maxtime
-            if (Math.abs(rotationPower) < 0.1 || bMath.DeltaDegree(rotation, targetAngle) < 1.25 || timer >= maxTime) {
+//            Math.abs(rotationPower) < 0.1 ||
+
+//            if (bMath.DeltaDegree(rotation, targetAngle) < 1.25 || timer >= maxTime) {
+            if (timer >= maxTime || Math.abs(rotationPID.error) < 0.75 ) {
                 break;
             }
 
