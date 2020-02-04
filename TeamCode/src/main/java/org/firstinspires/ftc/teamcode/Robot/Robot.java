@@ -384,7 +384,8 @@ public class Robot extends Thread {
         //P of 3 and 0 for other gains seems to work really well
 //        rotationPID.start(3, 0, 0.1);
 
-        rotationPID.start(3.02, 0, 0.085);
+        rotationPID.start(7.10647, 0, 0.754351);
+//        rotationPID.start(3.02, 0, 0.085);
 //        rotationPID.start(4.01, 0.003, 0.0876);
 
 //        rotationPID.start(1, 0.075, 0.022);
@@ -400,7 +401,7 @@ public class Robot extends Thread {
         ElapsedTime deltaTime = new ElapsedTime();
 
         while (Op.opModeIsActive()) {
-            rotationPower = rotationPID.loop(bMath.DeltaDegree(rotation, targetAngle), 0);
+            rotationPower = rotationPID.loop(bMath.DeltaDegree(imu.getSingleRotation(AngleUnit.DEGREES), targetAngle), 0);
             rotationPower = (rotationPower / (360)) * rotationSpeed;
             rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
 
