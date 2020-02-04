@@ -15,8 +15,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 //Used in place of BNO055IMU, it takes the average of both IMU's for readings
 public class bIMU extends Thread {
 
-    private BNO055IMU imu_0;
-    private BNO055IMU imu_1;
+    //Exposed for debugging
+    public BNO055IMU imu_0;
+    public BNO055IMU imu_1;
 
     private BNO055IMU.Parameters IParameters = new BNO055IMU.Parameters();
 

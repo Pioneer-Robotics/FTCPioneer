@@ -44,7 +44,7 @@ RotationPIDTuning extends LinearOpMode {
 
         while (opModeIsActive()) {
             //Use the controller to tune PID
-            while (!gamepad1.x) {
+            while (!gamepad1.x && opModeIsActive()) {
                 if (gamepad1.y) {
                     mode = TuningMode.P;
                 }
@@ -98,7 +98,7 @@ RotationPIDTuning extends LinearOpMode {
             dataManger.writeData("PID_Testing_D", PID.z);
 
             double targetRotation = 90 + robot.getRotation();
-            robot.rotatePID(targetRotation, 1, 1000, PID.x, PID.y, PID.z);
+            robot.rotatePID(targetRotation, 1, 5, PID.x, PID.y, PID.z);
             robot.setPowerDouble4(0, 0, 0, 0, 0);
         }
 
