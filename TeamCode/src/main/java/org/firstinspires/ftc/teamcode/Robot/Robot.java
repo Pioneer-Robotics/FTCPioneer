@@ -22,7 +22,9 @@ import org.firstinspires.ftc.teamcode.Hardware.bIMU;
 import org.firstinspires.ftc.teamcode.Hardware.Potentiometer;
 import org.firstinspires.ftc.teamcode.Robot.Input.RobotInputThread;
 
+import java.sql.Time;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 //TODO: clean up the canmove system
 public class Robot extends Thread {
@@ -68,6 +70,8 @@ public class Robot extends Thread {
 
     //If our thread is running, using atomics to avoid thread conflicts. Might not be completely necessary
     private AtomicBoolean threadRunning = new AtomicBoolean();
+
+    private AtomicLong threadLastRunTime = new AtomicLong(0);
 
     private PID rotationPID = new PID();
 
@@ -274,6 +278,8 @@ public class Robot extends Thread {
 
         while (threadRunning.get()) {
 
+            //Set the sync value
+            threadLastRunTime.set(:CURRENTTIME:);
             //Update our 'rotation' value
             updateBackgroundRotation();
 
@@ -284,7 +290,7 @@ public class Robot extends Thread {
             if (Op.isStopRequested()) {
                 setPowerDouble4(0, 0, 0, 0, 0);
                 threadRunning.set(false);
-            }
+                            }
 
             arm.length.setPower(1);
             arm.length.setTargetPosition((int) arm.targetLength);
@@ -401,6 +407,10 @@ public class Robot extends Thread {
         ElapsedTime deltaTime = new ElapsedTime();
 
         while (Op.opModeIsActive()) {
+            if(threadLastRunTime.get() - :TIMENOW: > 5ms){
+                :WAITUNTIL SYNCED:
+            }
+
             rotationPower = rotationPID.loop(bMath.DeltaDegree(imu.getSingleRotation(AngleUnit.DEGREES), targetAngle), 0);
             rotationPower = (rotationPower / (360)) * rotationSpeed;
             rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
@@ -462,7 +472,7 @@ public class Robot extends Thread {
 //            Math.abs(rotationPower) < 0.1 ||
 
 //            if (bMath.DeltaDegree(rotation, targetAngle) < 1.25 || timer >= maxTime) {
-            if (timer >= maxTime || Math.abs(rotationPID.error) < 0.75 ) {
+            if (timer >= maxTime || Math.abs(rotationPID.error) < 0.75) {
                 break;
             }
 
