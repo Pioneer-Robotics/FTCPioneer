@@ -7,6 +7,8 @@ import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 @Autonomous(name = "Skystone Stone Fast", group = "ftcPio")
 public class SkystoneSideFastBlue extends Auto {
 
+    public boolean endOnWall = false;
+
     @Override
     public void runOpMode() {
         startRobot();
@@ -15,6 +17,22 @@ public class SkystoneSideFastBlue extends Auto {
         speed_high = 0.5;
         speed_med = 0.30;
         speed_low = 0.1;
+
+        while (!opModeIsActive()) {
+
+            if (gamepad1.x) {
+                break;
+            }
+
+            if (gamepad1.a) {
+                endOnWall = !endOnWall;
+                sleep(500);
+            }
+
+            telemetry.addData("End state: ", endOnWall ? "Ending on WALL" : "Ending on BRIDGE");
+            telemetry.addData("Press X to continue... ", "Press A to toggle wall state");
+            telemetry.update();
+        }
 
         waitForStart();
 
@@ -33,8 +51,12 @@ public class SkystoneSideFastBlue extends Auto {
 
 
         robot.driveByDistance(180, 0.75, 22.86);
-        robot.driveByDistance(90, 0.8, 50);
 
+        if (endOnWall) {
+            robot.driveByDistance(-90, 0.8, 70);
+        } else {
+            robot.driveByDistance(90, 0.8, 50);
+        }
 //        160
 //        193
 //        217
@@ -130,7 +152,7 @@ public class SkystoneSideFastBlue extends Auto {
 
 
     public void rotateAccurate(double angle) {
-        robot.rotatePID(angle, 1, 6);
+        robot.rotatePID(angle, 1, 6, 0.6);
         //robot.rotateSimple(angle, 1, 0.5, 0.25); //This one is a fail safe that will mostly work.
     }
 }

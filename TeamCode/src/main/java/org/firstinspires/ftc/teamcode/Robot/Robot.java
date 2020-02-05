@@ -459,8 +459,7 @@ public class Robot extends Thread {
 
     }
 
-    public void rotatePID(double targetAngle, double rotationSpeed, double maxTime, double over) {
-
+    public void rotatePID(double targetAngle, double rotationSpeed, double maxTime, double overrideExitThreshold) {
         //P of 3 and 0 for other gains seems to work really well
 //        rotationPID.start(3, 0, 0.1);
 
@@ -503,7 +502,7 @@ public class Robot extends Thread {
 //            Math.abs(rotationPower) < 0.1 ||
 
 //            if (bMath.DeltaDegree(rotation, targetAngle) < 1.25 || timer >= maxTime) {
-            if (timer >= maxTime || Math.abs(rotationPID.error) < 0.75) {
+            if (timer >= maxTime || Math.abs(rotationPID.error) < overrideExitThreshold) {
                 break;
             }
 
