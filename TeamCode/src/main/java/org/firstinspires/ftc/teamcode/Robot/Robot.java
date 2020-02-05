@@ -272,10 +272,14 @@ public class Robot extends Thread {
     }
 
     ElapsedTime threadArmRotationTime = new ElapsedTime();
+    double threadArmTime = 0;
+
+    double lastTargetPosition;
 
     //Threaded run method, right now this is just for IMU stuff, at some point we might put some avoidance stuff in here (background wall tracking?)
     public void run() {
         threadRunning.set(true);
+        threadArmRotationTime.reset();
 
         while (threadRunning.get()) {
 
@@ -297,14 +301,24 @@ public class Robot extends Thread {
             arm.length.setTargetPosition((int) arm.targetLength);
 
             if (arm.rotationMode == RobotArm.ArmRotationMode.Threaded) {
-                threadArmRotationTime.seconds();
+                threadArmTime += threadArmRotationTime.seconds();
+
+                if (arm.targetRotation != lastTargetPosition) {
+                    lastTargetPosition = arm.targetRotation;
+                    threadArmTime = 0;
+                }
 
                 desiredArmRotationPower = ((arm.rotation.getCurrentPosition() - arm.targetRotation) / (RobotConfiguration.arm_rotationMax * 0.5)) * 1;
 
                 if (Math.abs(desiredArmRotationPower) > 0.02) {
-                    arm.rotation.setPower(bMath.Clamp(desiredArmRotationPower, Math.copySign(0.3, desiredArmRotationPower), Math.copySign(1, desiredArmRotationPower)));
+                    if (threadArmTime < 0.2) {
+                        arm.rotation.setPower(bMath.Clamp(desiredArmRotationPower, Math.copySign(1, desiredArmRotationPower), Math.copySign(1.5, desiredArmRotationPower)));
+                    } else {
+                        arm.rotation.setPower(bMath.Clamp(desiredArmRotationPower, Math.copySign(0.3, desiredArmRotationPower), Math.copySign(1, desiredArmRotationPower)));
+                    }
                 }
             }
+            threadArmRotationTime.reset();
         }
 
 
