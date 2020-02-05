@@ -339,6 +339,7 @@ public class Teleop extends TeleOpMode {
         telemetry.addLine("-------- Arm  --------");
         telemetry.addData("Current Arm Angle", bMath.toDegrees(robot.arm.thetaAngle()));
         telemetry.addData("Current Potentiometer angle", robot.armPotentiometer.getAngle());
+        telemetry.addData("Rotation Position", robot.arm.rotation.getCurrentPosition()/RobotConfiguration.arm_rotationMax);
         telemetry.addData("RectWanted?:", engiData.rectControls);
         telemetry.addData("target spool position", engiData.extension * RobotConfiguration.arm_ticksMax);
         telemetry.addData("spool position", robot.arm.length.getCurrentPosition());
