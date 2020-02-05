@@ -85,96 +85,16 @@ public class Teleop extends TeleOpMode {
         robot.arm.setGripState(RobotArm.GripState.IDLE, 60);
         gripAngle = 180;
         while (opModeIsActive()) {
-            telemetry.addLine("------ Control  ------");
-
 
             updateDriverControls();
+
             updateArm();
 
-            //ARM CONTROLS//
+            updateServoControls();
 
-            // TODO - Create `updateServos()` method
-            // `updateArm()` should have leveled abstrations that make reading and understanding the code simpler.
-            // Lower levels of the abstrations should be stashed in other classes.
-            // The lower level abstrations should not store state if possible. They should be passed in values and then return values so that state can be easily be tracked.
+            moveServos();
 
-
-            //Gripper Controls//
-
-            //press the X button to put the grabber in "idle" position
-            if (gamepad2.x && !xButton2Check) {
-                idle = true;
-            }
-            xButton2Check = gamepad2.x;
-
-            //press the B button to open or close grabber
-            if (gamepad2.b && !bButton2Check) {
-                if (idle) {
-                    grab = false; //if it's in idle, pressing "B" should open it
-                } else {
-                    grab = !grab;
-                }
-                idle = false;
-            }
-            bButton2Check = gamepad2.b;
-
-
-            if (idle) {
-                robot.arm.setGripState(RobotArm.GripState.IDLE, gripAngle / 180);
-            } else if (grab) {
-                robot.arm.setGripState(RobotArm.GripState.CLOSED, gripAngle / 180);
-            } else {
-                robot.arm.setGripState(RobotArm.GripState.OPEN, gripAngle / 180);
-            }
-
-
-            //hold A button to make the gripper point down
-            if (gamepad2.a) {
-                gripAngle = 90 - robot.arm.thetaAngle();
-            }
-
-            //rotate gripper down with the left dpad
-            if (gamepad2.left_bumper) {
-                gripAngle += deltaTime.seconds() * 135 * 1.5;
-            }
-
-            //rotate gripper up with the right dpad
-            if (gamepad2.right_bumper) {
-                gripAngle -= deltaTime.seconds() * 135 * 1.5;
-            }
-
-            //move foundation grippers with b button
-            if (gamepad1.b && !bButton1Check) gripFoundation = !gripFoundation;
-            bButton1Check = gamepad1.b;
-
-            if (gamepad2.y && !yButton2Check) dropLunchBox = !dropLunchBox;
-            yButton2Check = gamepad2.y;
-
-            if (dropLunchBox) lunchboxRot = 0;
-            else lunchboxRot = 0.738;
-            robot.capstoneServo.setPosition(lunchboxRot);
-
-            robot.foundationServo0.setPosition(gripFoundation ? 0.05 : 1);
-            robot.foundationServo1.setPosition(gripFoundation ? 0.95 : 0);
-
-            gripAngle = bMath.Clamp(gripAngle, 0, 180);
-
-            // Print Updated Values to telemetry
-            telemetry.addLine("------ Movement ------");
-            telemetry.addData("Rotation Locked ", coordinateSystemLock);
-            telemetry.addData("Current Rotation ", robot.getRotation());
-//            telemetry.addData("Offset Angle ", angle);
-            telemetry.addLine("-------- Arm  --------");
-            telemetry.addData("Current Arm Angle", bMath.toDegrees(robot.arm.thetaAngle()));
-            telemetry.addData("Current Potentiometer angle", robot.armPotentiometer.getAngle());
-            telemetry.addData("RectWanted?:", engiData.rectControls);
-            telemetry.addData("target spool position", engiData.extension * RobotConfiguration.arm_ticksMax);
-            telemetry.addData("spool position", robot.arm.length.getCurrentPosition());
-            telemetry.addData("spool position as percent", robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_ticksMax);
-            telemetry.addData("arm rotation as percent", robot.arm.rotation.getCurrentPosition() / RobotConfiguration.arm_rotationMax);
-            telemetry.addLine("------ Lunchbox ------");
-            telemetry.addData("Current Lunchbox", lunchboxRot);
-            telemetry.update();
+            doTelemetry();
 
             // Update deltaTime
             deltaTime.reset();
@@ -182,6 +102,10 @@ public class Teleop extends TeleOpMode {
         robot.shutdown();
     }
 
+
+    /*
+    This method updates and applies any changes to the driver controls and handles movement
+     */
     private void updateDriverControls() {
         ///DRIVER CONTROLS
 
@@ -217,6 +141,9 @@ public class Teleop extends TeleOpMode {
     }
 
     // TODO: - Move to ??? Class
+    /*
+    This method determines the power levels for the wheels
+     */
     private double getLeftDiagPower(boolean useLockedRotation,
                                     double movementInput_x,
                                     double movementInput_y,
@@ -253,6 +180,7 @@ public class Teleop extends TeleOpMode {
             return ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2);
         }
     }
+
 
     // TODO: - Move to a Math Class
     private Vector2 getMovementVector(double movementInput_x, double movementInput_y) {
@@ -332,15 +260,94 @@ public class Teleop extends TeleOpMode {
     Moves the arm to position specified by the engiData
      */
     private void moveArm(){
-        if(engiData.powerExtension)  robot.arm.SetArmStatePower(engiData.extendSpeed, engiData.raiseSpeed);
-        else robot.arm.SetArmStateExtensionPower(engiData.extension, engiData.raiseSpeed);
+        if(engiData.powerExtension)  robot.arm.SetArmStateExtensionPower(engiData.extendSpeed, engiData.raiseSpeed);
+        else robot.arm.SetArmStatePower(engiData.extension, engiData.raiseSpeed);
+    }
+
+    /*
+
+     */
+    private void updateServoControls(){
+
+        //press the X button to put the grabber in "idle" position
+        if (gamepad2.x && !xButton2Check) {
+            idle = true;
+        }
+        xButton2Check = gamepad2.x;
+
+        //press the B button to open or close grabber
+        if (gamepad2.b && !bButton2Check) {
+            if (idle) {
+                grab = false; //if it's in idle, pressing "B" should open it
+            } else {
+                grab = !grab;
+            }
+            idle = false;
+        }
+        bButton2Check = gamepad2.b;
+
+        //hold A button to make the gripper point down
+        if (gamepad2.a) {
+            gripAngle = 90 - robot.arm.thetaAngle();
+        }
+
+        //rotate gripper down with the left dpad
+        if (gamepad2.left_bumper) {
+            gripAngle += deltaTime.seconds() * 135 * 1.5;
+        }
+
+        //rotate gripper up with the right dpad
+        if (gamepad2.right_bumper) {
+            gripAngle -= deltaTime.seconds() * 135 * 1.5;
+        }
+
+        //move foundation grippers with b button
+        if (gamepad1.b && !bButton1Check) gripFoundation = !gripFoundation;
+        bButton1Check = gamepad1.b;
+
+        if (gamepad2.y && !yButton2Check) dropLunchBox = !dropLunchBox;
+        yButton2Check = gamepad2.y;
+
+        if (dropLunchBox) lunchboxRot = 0;
+        else lunchboxRot = 0.738;
+
     }
 
 
+    private void moveServos(){
+        robot.capstoneServo.setPosition(lunchboxRot);
 
+        robot.foundationServo0.setPosition(gripFoundation ? 0.05 : 1);
+        robot.foundationServo1.setPosition(gripFoundation ? 0.95 : 0);
 
+        gripAngle = bMath.Clamp(gripAngle, 0, 180);
+        if (idle) {
+            robot.arm.setGripState(RobotArm.GripState.IDLE, gripAngle / 180);
+        } else if (grab) {
+            robot.arm.setGripState(RobotArm.GripState.CLOSED, gripAngle / 180);
+        } else {
+            robot.arm.setGripState(RobotArm.GripState.OPEN, gripAngle / 180);
+        }
 
+    }
 
+    private void doTelemetry(){
+        telemetry.addLine("------ Movement ------");
+        telemetry.addData("Rotation Locked ", coordinateSystemLock);
+        telemetry.addData("Current Rotation ", robot.getRotation());
+//            telemetry.addData("Offset Angle ", angle);
+        telemetry.addLine("-------- Arm  --------");
+        telemetry.addData("Current Arm Angle", bMath.toDegrees(robot.arm.thetaAngle()));
+        telemetry.addData("Current Potentiometer angle", robot.armPotentiometer.getAngle());
+        telemetry.addData("RectWanted?:", engiData.rectControls);
+        telemetry.addData("target spool position", engiData.extension * RobotConfiguration.arm_ticksMax);
+        telemetry.addData("spool position", robot.arm.length.getCurrentPosition());
+        telemetry.addData("spool position as percent", robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_ticksMax);
+        telemetry.addData("arm rotation as percent", robot.arm.rotation.getCurrentPosition() / RobotConfiguration.arm_rotationMax);
+        telemetry.addLine("------ Lunchbox ------");
+        telemetry.addData("Current Lunchbox", lunchboxRot);
+        telemetry.update();
+    }
 
 
 
