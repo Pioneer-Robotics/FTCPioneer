@@ -8,45 +8,48 @@ public class DevFoundationRedSide extends Auto {
     @Override
     public void runOpMode() {
         boolean endOnWall = true;
-        boolean real = true; //DO NOT mess with
         startRobot();
         waitForStart();
-        if (real) {
-            //ready gripper to grab foundation
-            robot.releaseFoundation();
-            //go forward 70 cm
-            robot.driveByDistance(0, 0.5, 90);
-            //go right 75 cm
-            robot.driveByDistance(80, 0.5, 70);
-            //go forward 20 cm to correct
-            robot.driveByDistance(0, 0.5, 20);
-            //grip foundation
-            robot.gripFoundation();
-            //delay
-            sleep(2000);
-            //pull it backwards
-            robot.driveByDistance(180, 0.5, 120);
-            //go a tad forward to push gripper off foundation
-            robot.driveByDistance(0, 0.25, 5);
-            //release servos
-            robot.releaseFoundation();
+        sleep(1000);
+        //ready gripper to grab foundation (the grip/releaseFoundation functions are reversed)
+        robot.gripFoundation();
+        //go forward 70 cm
+        robot.driveByDistance(0, 0.5, 90);
+        //go right 75 cm
+        robot.driveByDistance(75, 0.5, 70);
+        //go forward 25 cm to correct
+        robot.driveByDistance(5, 0.5, 30);
+        //grip foundation
+        robot.releaseFoundation();
+        //delay
+        sleep(2000);
+        //pull it backwards
+        robot.driveByDistance(180, 0.5, 145);
+        //push it more into the wall to straighten it out
+        robot.driveByDistance(165, 0.25, 5);
+        //go a tad forward to push gripper off foundation
+        robot.driveByDistance(0, 0.25, 5);
+        //release servos
+        robot.gripFoundation();
+        if(endOnWall){
             //go under bridge
-            robot.driveByDistance(-90, 1, 225);
-            //pull into the wall, to make sure you're there. Or don't (if/else statement)
-            if (endOnWall) {
-                robot.driveByDistance(180, 1, 5);
-            } else {
-                robot.driveByDistance(0, 1, 50);
-            }
+            robot.driveByDistance(-100, 0.5, 225);
+            //pull into the wall, to make sure you're there
+            robot.driveByDistance(180, 0.5, 25);
+            //go right a little more, to center robot
+            robot.driveByDistance(-100, 0.5, 20);
         }
-
-        //else is for testing specific things
-        //doesn't always work
-        else {
-            robot.releaseFoundation();
-            robot.driveByDistance(90, 0.5, 60);
-            sleep(3000);
+        else{
+            //more past the foundation but not quite to the bridge
+            robot.driveByDistance(100, 0.5, 130);
+            //go forward to be closer to the bridge
+            robot.driveByDistance(0, 0.5, 90);
+            //go the rest of the way under the bridge
+            robot.driveByDistance(90, 0.5, 80);
+            //tap the bridge to try and line up more
+            robot.driveByDistance(0, 0.25, 10);
         }
+        //if you wanna be under the bridge, go forward
         StopMovement();
         StopRobot();
     }
