@@ -11,8 +11,8 @@ public class DevFoundationBlueSide extends Auto {
         startRobot();
         waitForStart();
         sleep(1000);
-        //ready gripper to grab foundation (the grip/releaseFoundation functions are reversed)
-        robot.gripFoundation();
+        //ready gripper to grab foundation
+        robot.releaseFoundation();
         //go forward 70 cm
         robot.driveByDistance(0, 0.5, 90);
         //go left 75 cm
@@ -20,7 +20,7 @@ public class DevFoundationBlueSide extends Auto {
         //go forward 25 cm to correct
         robot.driveByDistance(5, 0.5, 30);
         //grip foundation
-        robot.releaseFoundation();
+        robot.gripFoundation();
         //delay
         sleep(2000);
         //pull it backwards
@@ -30,7 +30,7 @@ public class DevFoundationBlueSide extends Auto {
         //go a tad forward to push gripper off foundation
         robot.driveByDistance(0, 0.25, 5);
         //release servos
-        robot.gripFoundation();
+        robot.releaseFoundation();
         if(endOnWall){
             //go under bridge
             robot.driveByDistance(100, 0.5, 225);

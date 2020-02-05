@@ -957,12 +957,12 @@ public class Robot extends Thread {
 
     //grips the foundation, meant to be human readable (by judges)
     public void gripFoundation() {
-        setFoundationGripperState(0.9);
+        setFoundationGripperState(0);
     }
 
     //lets go of the foundation, meant to be human readable (by judges)
     public void releaseFoundation() {
-        setFoundationGripperState(0);
+        setFoundationGripperState(0.9);
     }
 
     // Drive Helper Method
