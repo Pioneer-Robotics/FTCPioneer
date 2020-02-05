@@ -168,7 +168,7 @@ public class Robot extends Thread {
             bTelemetry.print("Configuring wall tracking...");
             wallTrack.Start(opmode);
         }
-        foundationServo0 = opmode.hardwareMap.get(ServoImplEx.class, RobotConfiguration.foundationGrip0);
+        foundationServo0 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip0);
         foundationServo1 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip1);
 
         setFoundationGripperState(1);
