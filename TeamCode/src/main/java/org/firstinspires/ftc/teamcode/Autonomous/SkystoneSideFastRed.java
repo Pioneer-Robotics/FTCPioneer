@@ -5,20 +5,39 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 
 @Autonomous(name = "Skystone Stone Fast", group = "ftcPio")
-public class SkystoneSideFast extends Auto {
+public class SkystoneSideFastRed extends Auto {
+
+    public boolean endOnWall = false;
 
     @Override
     public void runOpMode() {
         startRobot();
-        robot.arm.rotationMode = RobotArm.ArmThreadMode.Enabled;
+        robot.arm.rotationMode = RobotArm.ArmRotationMode.Threaded;
 
         speed_high = 0.5;
         speed_med = 0.30;
         speed_low = 0.1;
 
+        while (!opModeIsActive()) {
+
+            if (gamepad1.x) {
+                break;
+            }
+
+            if (gamepad1.a) {
+                endOnWall = !endOnWall;
+                sleep(500);
+            }
+
+            telemetry.addData("End state: ", endOnWall ? "Ending on WALL" : "Ending on BRIDGE");
+            telemetry.addData("Press X to continue... ", "Press A to toggle wall state");
+            telemetry.update();
+        }
+
         waitForStart();
 
-        deployGripper(true);
+        //0.035 == lift
+        deployGripper(true, 0.030);
 
 
 //        int cycles = 2;
@@ -32,7 +51,11 @@ public class SkystoneSideFast extends Auto {
 
 
         robot.driveByDistance(180, 0.75, 22.86);
-        robot.driveByDistance(90, 0.8, 50);
+        if (endOnWall) {
+            robot.driveByDistance(-90, 0.8, 70);
+        } else {
+            robot.driveByDistance(90, 0.8, 50);
+        }
 
 //        160
 //        193
@@ -49,7 +72,7 @@ public class SkystoneSideFast extends Auto {
     }
 
     //Deploys the gripper, enabling async will have the arm movement happen in the background without pausing the main thread.
-    private void deployGripper(boolean async) {
+    private void deployGripper(boolean async, double armLiftAmount) {
 
         //Sets the gripper to an idle state
         robot.arm.setGripState(RobotArm.GripState.CLOSED, 1);
@@ -65,17 +88,31 @@ public class SkystoneSideFast extends Auto {
         sleep(800);
 
         if (async) {
-            robot.arm.setArmStateAsync(0.03, 0.3);
+            robot.arm.setArmStateAsync(armLiftAmount, 0.3);
         } else {
-            robot.arm.setArmStateWait(0.03, 0.3);
+            robot.arm.setArmStateWait(armLiftAmount, 0.3);
         }
     }
 
     private void runDeliveryCycle(double fwdDistance, long servoDelayMS, double distanceFromStone, double endingOffset, double bridgeDistance, boolean moveBackToBridge) {
 
-        collectStoneFoward(fwdDistance, servoDelayMS, distanceFromStone);
+        //Drives forward so the arm is making contact with the stone
+        driveToSkystone(fwdDistance);
 
-        driveToFoundationSide(bridgeDistance);
+        //Closes the gripper on the stone
+        robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
+
+        //Wait to ensure the gripper is closed
+        sleep(servoDelayMS);
+
+        //Drive backwards, breaking sticktion and allowing the gripper to close completely
+        robot.driveByDistance(180, 0.5, distanceFromStone, 2);
+
+        //Rotates to face the foundation
+        rotateAccurate(-90);
+
+        //Drives to foundation at a high speed
+        robot.driveByDistance(0, 1, bridgeDistance, 2.1);
 
         //Releases the stone
         robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
@@ -84,7 +121,7 @@ public class SkystoneSideFast extends Auto {
         sleep(servoDelayMS);
 
         //Resets rotation after speedyness
-        rotateFast(90);
+        rotateFast(-90);
 
         if (moveBackToBridge) {
             //Wait to make sure the stone is dropped
@@ -94,7 +131,7 @@ public class SkystoneSideFast extends Auto {
             robot.driveByDistance(180, 1, bridgeDistance, 2.7);
 
             //Resets rotation
-            rotateFast(90);
+            rotateFast(-90);
 
             //Rolls back again so the bot is aligned with the next stone
             robot.driveByDistance(180, 0.35, endingOffset);
@@ -104,41 +141,18 @@ public class SkystoneSideFast extends Auto {
         }
     }
 
-    //Collects the stone 'distanceToStone' away and then rolls back 'backwardDistance'
-    private void collectStoneFoward(double distanceToStone, long servoDelayMS, double backwardsDistance) {
-        //Drives forward so the arm is making contact with the stone
-        driveToSkystone(distanceToStone);
-
-        //Closes the gripper on the stone
-        robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
-
-        //Wait to ensure the gripper is closed
-        sleep(servoDelayMS);
-
-        //Drive backwards, breaking sticktion and allowing the gripper to close completely
-        robot.driveByDistance(180, 0.5, backwardsDistance, 2);
-    }
-
-    private void driveToFoundationSide(double bridgeDistance) {
-        //Rotates to face the foundation
-        rotateAccurate(90);
-
-        //Drives to foundation at a high speed
-        robot.driveByDistance(0, 1, bridgeDistance, 2.1);
-    }
-
     public void driveToSkystone(double distanceFoward) {
         robot.driveByDistance(0, 0.35, distanceFoward, 2.6);
     }
 
     public void rotateFast(double angle) {
-        robot.rotatePID(angle, 2, 2);
+        robot.rotatePID(angle, 1, 6);
 //        robot.rotateSimple(angle, 2, 2, 0.5); //This one is a fail safe that will mostly work.
     }
 
 
     public void rotateAccurate(double angle) {
-        robot.rotatePID(angle, 2, 2);
+        robot.rotatePID(angle, 1, 6, 0.6);
         //robot.rotateSimple(angle, 1, 0.5, 0.25); //This one is a fail safe that will mostly work.
     }
 }

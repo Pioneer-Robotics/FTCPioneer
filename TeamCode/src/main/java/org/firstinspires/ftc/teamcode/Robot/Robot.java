@@ -22,7 +22,9 @@ import org.firstinspires.ftc.teamcode.Hardware.bIMU;
 import org.firstinspires.ftc.teamcode.Hardware.Potentiometer;
 import org.firstinspires.ftc.teamcode.Robot.Input.RobotInputThread;
 
+import java.sql.Time;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 //TODO: clean up the canmove system
 public class Robot extends Thread {
@@ -68,6 +70,8 @@ public class Robot extends Thread {
 
     //If our thread is running, using atomics to avoid thread conflicts. Might not be completely necessary
     private AtomicBoolean threadRunning = new AtomicBoolean();
+
+    private AtomicLong threadLastRunTime = new AtomicLong(0);
 
     private PID rotationPID = new PID();
 
@@ -267,13 +271,20 @@ public class Robot extends Thread {
 
     }
 
+    ElapsedTime threadArmRotationTime = new ElapsedTime();
+    double threadArmTime = 0;
+
+    double lastTargetPosition;
 
     //Enabled run method, right now this is just for IMU stuff, at some point we might put some avoidance stuff in here (background wall tracking?)
     public void run() {
         threadRunning.set(true);
+        threadArmRotationTime.reset();
 
         while (threadRunning.get()) {
 
+            //Set the sync value
+//            threadLastRunTime.set(:CURRENTTIME:);
             //Update our 'rotation' value
             updateBackgroundRotation();
 
@@ -288,15 +299,25 @@ public class Robot extends Thread {
 
                 arm.length.setPower(arm.targetLengthSpeed);
                 arm.length.setTargetPosition((int) arm.targetLength);
+            if (arm.rotationMode == RobotArm.ArmRotationMode.Threaded) {
+                threadArmTime += threadArmRotationTime.seconds();
 
+                if (arm.targetRotation != lastTargetPosition) {
+                    lastTargetPosition = arm.targetRotation;
+                    threadArmTime = 0;
+                }
 
-            if (arm.rotationMode == RobotArm.ArmThreadMode.Enabled) {
                 desiredArmRotationPower = ((arm.rotation.getCurrentPosition() - arm.targetRotation) / (RobotConfiguration.arm_rotationMax * 0.5)) * 1;
 
-                if (Math.abs(desiredArmRotationPower) > 0.1) {
-                    arm.rotation.setPower(bMath.Clamp(desiredArmRotationPower, Math.copySign(0.1, desiredArmRotationPower), Math.copySign(1, desiredArmRotationPower)));
+                if (Math.abs(desiredArmRotationPower) > 0.02) {
+                    if (threadArmTime < 0.2) {
+                        arm.rotation.setPower(bMath.Clamp(desiredArmRotationPower, Math.copySign(1, desiredArmRotationPower), Math.copySign(1.5, desiredArmRotationPower)));
+                    } else {
+                        arm.rotation.setPower(bMath.Clamp(desiredArmRotationPower, Math.copySign(0.3, desiredArmRotationPower), Math.copySign(1, desiredArmRotationPower)));
+                    }
                 }
             }
+            threadArmRotationTime.reset();
         }
 
 
@@ -385,7 +406,8 @@ public class Robot extends Thread {
         //P of 3 and 0 for other gains seems to work really well
 //        rotationPID.start(3, 0, 0.1);
 
-        rotationPID.start(7.10647, 0, 0.754351);
+        rotationPID.start(7.10647, 0, 0.8507085);
+//        rotationPID.start(7.10647, 0, 0.754351);
 //        rotationPID.start(3.02, 0, 0.085);
 //        rotationPID.start(4.01, 0.003, 0.0876);
 
@@ -402,7 +424,7 @@ public class Robot extends Thread {
         ElapsedTime deltaTime = new ElapsedTime();
 
         while (Op.opModeIsActive()) {
-            rotationPower = rotationPID.loop(bMath.DeltaDegree(imu.getSingleRotation(AngleUnit.DEGREES), targetAngle), 0);
+            rotationPower = rotationPID.loop(bMath.DeltaDegree(imu.imu_0.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle, targetAngle), 0);
             rotationPower = (rotationPower / (360)) * rotationSpeed;
             rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
 
@@ -420,7 +442,10 @@ public class Robot extends Thread {
             rotateSimple(rotationPower);
 
             //Exit the PID loop if the bots not rotating or is withing 1.25 degrees of the target angle or if we hit the maxtime
-            if (Math.abs(rotationPower) < 0.1 || bMath.DeltaDegree(rotation, targetAngle) < 1.25 || timer >= maxTime) {
+//            Math.abs(rotationPower) < 0.1 ||
+
+//            if (bMath.DeltaDegree(rotation, targetAngle) < 1.25 || timer >= maxTime) {
+            if (timer >= maxTime || Math.abs(rotationPID.error) < 0.75) {
                 break;
             }
 
@@ -430,6 +455,63 @@ public class Robot extends Thread {
         }
 
         setPowerDouble4(0, 0, 0, 0, 0);
+
+    }
+
+    public void rotatePID(double targetAngle, double rotationSpeed, double maxTime, double overrideExitThreshold) {
+        //P of 3 and 0 for other gains seems to work really well
+//        rotationPID.start(3, 0, 0.1);
+
+        rotationPID.start(7.10647, 0, 0.8507085);
+//        rotationPID.start(7.10647, 0, 0.754351);
+//        rotationPID.start(3.02, 0, 0.085);
+//        rotationPID.start(4.01, 0.003, 0.0876);
+
+//        rotationPID.start(1, 0.075, 0.022);
+
+//        rotationPID.start(3, 0.21, 0.69);
+//        rotationPID.start(0.5, 0.075, 0.015);
+//        rotationPID.start(1, 0.25, 0.035);
+//        rotationPID.start(0.025, 0.005, 0);
+
+        double rotationPower;
+        double timer = 0;
+
+        ElapsedTime deltaTime = new ElapsedTime();
+
+        while (Op.opModeIsActive()) {
+            rotationPower = rotationPID.loop(bMath.DeltaDegree(imu.imu_0.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle, targetAngle), 0);
+            rotationPower = (rotationPower / (360)) * rotationSpeed;
+            rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
+
+            Op.telemetry.addData("Error ", rotationPID.error);
+            Op.telemetry.addData("Last Error  ", rotationPID.lastError);
+            Op.telemetry.addData("Derivative ", rotationPID.derivative);
+            Op.telemetry.addData("Integral ", rotationPID.integral);
+            Op.telemetry.addData("TD ", rotationPID.deltaTime.seconds());
+            Op.telemetry.addData("Rotation ", rotation);
+            Op.telemetry.addData("rotationPower ", rotationPower);
+            Op.telemetry.addData("rotationSpeed ", rotationSpeed);
+            Op.telemetry.addData("time ", timer);
+            Op.telemetry.update();
+
+            rotateSimple(rotationPower);
+
+            //Exit the PID loop if the bots not rotating or is withing 1.25 degrees of the target angle or if we hit the maxtime
+//            Math.abs(rotationPower) < 0.1 ||
+
+//            if (bMath.DeltaDegree(rotation, targetAngle) < 1.25 || timer >= maxTime) {
+            if (timer >= maxTime || Math.abs(rotationPID.error) < overrideExitThreshold) {
+                break;
+            }
+
+            timer += deltaTime.seconds();
+
+            deltaTime.reset();
+        }
+
+        setPowerDouble4(0, 0, 0, 0, 0);
+
     }
 
     public void rotatePID(double targetAngle, double rotationSpeed, double maxTime, double p, double i, double d) {
@@ -463,7 +545,7 @@ public class Robot extends Thread {
 //            Math.abs(rotationPower) < 0.1 ||
 
 //            if (bMath.DeltaDegree(rotation, targetAngle) < 1.25 || timer >= maxTime) {
-            if (timer >= maxTime || Math.abs(rotationPID.error) < 0.75 ) {
+            if (timer >= maxTime || Math.abs(rotationPID.error) < 0.75) {
                 break;
             }
 
