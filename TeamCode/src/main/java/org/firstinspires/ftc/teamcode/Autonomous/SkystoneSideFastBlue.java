@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 
 @Autonomous(name = "Skystone Stone Fast", group = "ftcPio")
-public class SkystoneSideFast extends Auto {
+public class SkystoneSideFastBlue extends Auto {
 
     @Override
     public void runOpMode() {
@@ -18,7 +18,8 @@ public class SkystoneSideFast extends Auto {
 
         waitForStart();
 
-        deployGripper(true);
+        //0.035 == lift
+        deployGripper(true, 0.030);
 
 
 //        int cycles = 2;
@@ -49,7 +50,7 @@ public class SkystoneSideFast extends Auto {
     }
 
     //Deploys the gripper, enabling async will have the arm movement happen in the background without pausing the main thread.
-    private void deployGripper(boolean async) {
+    private void deployGripper(boolean async, double armLiftAmount) {
 
         //Sets the gripper to an idle state
         robot.arm.setGripState(RobotArm.GripState.CLOSED, 1);
@@ -65,7 +66,7 @@ public class SkystoneSideFast extends Auto {
         sleep(800);
 
         if (async) {
-            robot.arm.setArmStateAsync(0.03, 0.3);
+            robot.arm.setArmStateAsync(armLiftAmount, 0.3);
         } else {
             robot.arm.setArmStateWait(0.03, 0.3);
         }
@@ -123,13 +124,13 @@ public class SkystoneSideFast extends Auto {
     }
 
     public void rotateFast(double angle) {
-        robot.rotatePID(angle, 2, 2);
+        robot.rotatePID(angle, 1, 6);
 //        robot.rotateSimple(angle, 2, 2, 0.5); //This one is a fail safe that will mostly work.
     }
 
 
     public void rotateAccurate(double angle) {
-        robot.rotatePID(angle, 2, 2);
+        robot.rotatePID(angle, 1, 6);
         //robot.rotateSimple(angle, 1, 0.5, 0.25); //This one is a fail safe that will mostly work.
     }
 }
