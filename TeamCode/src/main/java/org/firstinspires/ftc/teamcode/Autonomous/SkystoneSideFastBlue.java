@@ -9,6 +9,9 @@ public class SkystoneSideFastBlue extends Auto {
 
     public boolean endOnWall = false;
 
+//    public double armGrabLength;
+//    public double armGrabLength;
+
     @Override
     public void runOpMode() {
         startRobot();
@@ -37,7 +40,7 @@ public class SkystoneSideFastBlue extends Auto {
         waitForStart();
 
         //0.035 == lift
-        deployGripper(true, 0.02);
+        deployGripper(true, 0.0117999);
 
 
 //        int cycles = 2;
@@ -46,16 +49,20 @@ public class SkystoneSideFastBlue extends Auto {
 ////            runDeliveryCycle(stone == 1 ? 93 : 30, 1000, 35, stone * 24, 130 + (stone * 30), stone != cycles);
 ////        }
 
-        runDeliveryCycle(93, 1000, 50, 24, 130 + (24), true);
-        runDeliveryCycle(45, 1000, 35, 24, 130 + (48), false);
+        runDeliveryCycle(93, 1000, 50, 36, 130 + (24), true);
+//        runDeliveryCycle(93, 1000, 50, 24, 130 + (24), true);
+        runDeliveryCycle(45, 1000, 35, 48, 130 + (48), false);
 
+        robot.arm.setGripState(RobotArm.GripState.IDLE, 0);
 
-        robot.driveByDistance(180, 0.75, 22.86);
+        robot.arm.setArmStateAsync(0.02248, 0);
+
+        robot.driveByDistance(180, 0.75, 35);
 
         if (endOnWall) {
-            robot.driveByDistance(-90, 0.8, 70);
+            robot.driveByDistance(-90, 0.8, 80);
         } else {
-            robot.driveByDistance(90, 0.8, 50);
+            robot.driveByDistance(90, 0.8, 80);
         }
 //        160
 //        193
@@ -99,10 +106,12 @@ public class SkystoneSideFastBlue extends Auto {
 
         collectStoneFoward(fwdDistance, servoDelayMS, distanceFromStone);
 
+
         driveToFoundationSide(bridgeDistance);
 
         //Releases the stone
         robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
+
 
         //Waits to ensure the stone is completely detached
         sleep(servoDelayMS);
@@ -111,8 +120,7 @@ public class SkystoneSideFastBlue extends Auto {
         rotateFast(90);
 
         if (moveBackToBridge) {
-            //Wait to make sure the stone is dropped
-            sleep(servoDelayMS / 2);
+            robot.arm.setArmStateAsync(0.0117999, 0.3);
 
             //Rolls back to the skystone side quickly
             robot.driveByDistance(180, 1, bridgeDistance, 2.7);
@@ -136,6 +144,9 @@ public class SkystoneSideFastBlue extends Auto {
         //Closes the gripper on the stone
         robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
 
+        robot.arm.setArmStateAsync(0.02148, 0.3);
+//        robot.arm.setArmStateAsync(0.02248, 0.3);
+
         //Wait to ensure the gripper is closed
         sleep(servoDelayMS);
 
@@ -156,13 +167,13 @@ public class SkystoneSideFastBlue extends Auto {
     }
 
     public void rotateFast(double angle) {
-        robot.rotatePID(angle, 1, 6);
+        robot.rotatePID(angle, 1, 2.5, 1);
 //        robot.rotateSimple(angle, 2, 2, 0.5); //This one is a fail safe that will mostly work.
     }
 
 
     public void rotateAccurate(double angle) {
-        robot.rotatePID(angle, 1, 6, 0.6);
+        robot.rotatePID(angle, 1, 3, 0.6);
         //robot.rotateSimple(angle, 1, 0.5, 0.25); //This one is a fail safe that will mostly work.
     }
 }
