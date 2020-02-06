@@ -82,7 +82,8 @@ public class Teleop extends TeleOpMode {
         waitForStart();
 
         lunchboxRot = 1;
-        robot.arm.setGripState(RobotArm.GripState.IDLE, 60);
+        robot.arm.setGripState(RobotArm.GripState.IDLE, 0);
+//        robot.arm.setGripState(RobotArm.GripState.IDLE, 60);
         gripAngle = 180;
         while (opModeIsActive()) {
 
@@ -198,9 +199,9 @@ public class Teleop extends TeleOpMode {
         return new Vector2(newGamepadX, newGamepadY);
     }
 
-        /*
-        This method updates the arm and switches between it's control modes
-         */
+    /*
+    This method updates the arm and switches between it's control modes
+     */
     private void updateArm() {
 
         updateRectControls();
@@ -212,13 +213,13 @@ public class Teleop extends TeleOpMode {
             engiData.powerExtension = false;
             //set power and distance to the Arm.
             engiData.extension = robot.arm.RectExtension(engiData.rectControls_goingUp, engiData.xExtConst, engiData.yExtConst);
-            engiData.extension = bMath.Clamp(robot.arm.cmToTicks(engiData.extension)/ RobotConfiguration.arm_ticksMax);
+            engiData.extension = bMath.Clamp(robot.arm.cmToTicks(engiData.extension) / RobotConfiguration.arm_ticksMax);
             engiData.raiseSpeed = engiData.rectControls_goingUp ? -0.5 * gamepad2.right_stick_y : -0.5 * gamepad2.right_stick_x;
 
         } else {
             telemetry.addLine("Arm Control: Radial");
 
-            if (gamepad2.dpad_left || (gamepad2.right_trigger - gamepad2.right_trigger)<0.05) { //When override or triggers are not pressed, extend using getposition
+            if (gamepad2.dpad_left || (gamepad2.right_trigger - gamepad2.right_trigger) < 0.05) { //When override or triggers are not pressed, extend using getposition
                 engiData.powerExtension = false;
                 engiData.extension += gamepad2.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held and dpad left is pressed
                 engiData.extension -= gamepad2.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held and dpad left is pressed
@@ -227,13 +228,13 @@ public class Teleop extends TeleOpMode {
                 engiData.powerExtension = true;
                 engiData.extendSpeed = gamepad2.right_trigger - gamepad2.right_trigger;
 
-                engiData.extension = robot.arm.length.getCurrentPosition()/ RobotConfiguration.arm_ticksMax;
+                engiData.extension = robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_ticksMax;
             }
             engiData.raiseSpeed = bMath.Clamp(-gamepad2.left_stick_y, -1, 1); //set raise
 
         }
 
-            moveArm();
+        moveArm();
 
     }
 
@@ -259,15 +260,16 @@ public class Teleop extends TeleOpMode {
     /*
     Moves the arm to position specified by the engiData
      */
-    private void moveArm(){
-        if(engiData.powerExtension)  robot.arm.SetArmStateExtensionPower(engiData.extendSpeed, engiData.raiseSpeed);
+    private void moveArm() {
+        if (engiData.powerExtension)
+            robot.arm.SetArmStateExtensionPower(engiData.extendSpeed, engiData.raiseSpeed);
         else robot.arm.SetArmStatePower(engiData.extension, engiData.raiseSpeed);
     }
 
     /*
 
      */
-    private void updateServoControls(){
+    private void updateServoControls() {
 
         //press the X button to put the grabber in "idle" position
         if (gamepad2.x && !xButton2Check) {
@@ -314,7 +316,7 @@ public class Teleop extends TeleOpMode {
     }
 
 
-    private void moveServos(){
+    private void moveServos() {
         robot.capstoneServo.setPosition(lunchboxRot);
 
         robot.foundationServo0.setPosition(gripFoundation ? 0.05 : 1);
@@ -331,7 +333,7 @@ public class Teleop extends TeleOpMode {
 
     }
 
-    private void doTelemetry(){
+    private void doTelemetry() {
         telemetry.addLine("------ Movement ------");
         telemetry.addData("Rotation Locked ", coordinateSystemLock);
         telemetry.addData("Current Rotation ", robot.getRotation());
@@ -349,11 +351,6 @@ public class Teleop extends TeleOpMode {
         telemetry.addData("Current Lunchbox", lunchboxRot);
         telemetry.update();
     }
-
-
-
-
-
 
 
 }
