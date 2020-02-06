@@ -3,8 +3,10 @@ package org.firstinspires.ftc.teamcode.Troubleshooting.TestingOps;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Robot.Robot;
+import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 
 @Autonomous(name = "TestingOpMode2", group = "Trouble Shooting")
 public class TestingOpMode2 extends LinearOpMode {
@@ -13,49 +15,32 @@ public class TestingOpMode2 extends LinearOpMode {
 
 
     @Override
-    public void runOpMode()  {
-        robot.init(this, true);
+    public void runOpMode() {
+        robot.init(this, false);
 
         waitForStart();
 
-        while (opModeIsActive()) {
-//            //-2623
-//            telemetry.addData("Spool Position : ", robot.arm.length.getCurrentPosition());
-//            //-5679
-//            telemetry.addData("Lift Position : ", robot.arm.rotation.getCurrentPosition());
+        robot.arm.rotationMode = RobotArm.ArmThreadMode.Enabled;
+//        robot.arm.rotationMode = RobotArm.ArmRotationMode.Disabled;
 
-//            telemetry.addData("POT Angle", robot.armPotentiometer.getVoltage() / 0.0122222222);
-//            telemetry.addData("POT Voltage", robot.armPotentiometer.getVoltage());
-            telemetry.update();
-        }
-
-
-//        while (opModeIsActive()) {
-//            telemetry.addData("180 : ", robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getWallAngle());
-//            telemetry.addData("180 : ", robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getDistance(RobotWallTrack.SensorGroup.TripletType.Left, DistanceUnit.CM));
-//            telemetry.addData("180 : ", robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getDistance(RobotWallTrack.SensorGroup.TripletType.Right, DistanceUnit.CM));
-//            telemetry.addData("180 : ", robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getWallAngle());
-//            telemetry.addData("270 : ", robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group270).getWallAngle());
-//            telemetry.addData("90 : ", robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getWallAngle());
-//            telemetry.update();
-//        }
-
-
-//        robot.moveSimple(0, 0.5);
+//        robot.arm.rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        robot.arm.rotation.setPower(1);
 //        sleep(2500);
-//
-//
-//        robot.moveSimple(90, 0.5);
-//        sleep(2500);
-//
-//
-//        robot.moveSimple(180, 0.5);
-//        sleep(2500);
-//
-//
-//        robot.moveSimple(270, 0.5);
-//        sleep(2500);
+//        robot.arm.rotation.setPower(0);
 
+//        robot.arm.setArmStateAsync(0.45, 0);
+//        sleep(10000);
+
+//        robot.arm.setArmStateAsync(0.03, 0);
+//        sleep(10000);
+//
+//        robot.arm.setArmStateAsync(0.035, 0);
+//        sleep(10000);
+
+//        robot.arm.setArmStateWait(0.02, 0.65);
+//        robot.arm.setArmStateWait(0.01, 0.65);
+//        robot.arm.setArmStateWait(0.03, 0.65);
+//        robot.arm.setArmStateWait(0.03, 0.65);
 
         robot.shutdown();
 

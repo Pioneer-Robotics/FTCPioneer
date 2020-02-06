@@ -297,25 +297,39 @@ public class Robot extends Thread {
                 threadRunning.set(false);
             }
 
-                arm.length.setPower(arm.targetLengthSpeed);
-                arm.length.setTargetPosition((int) arm.targetLength);
-            if (arm.rotationMode == RobotArm.ArmRotationMode.Threaded) {
+            arm.length.setPower(arm.targetLengthSpeed);
+            arm.length.setTargetPosition((int) arm.targetLength);
+            if (arm.rotationMode == RobotArm.ArmThreadMode.Enabled) {
                 threadArmTime += threadArmRotationTime.seconds();
 
                 if (arm.targetRotation != lastTargetPosition) {
                     lastTargetPosition = arm.targetRotation;
+                    bTelemetry.print("Arm State Changed");
                     threadArmTime = 0;
                 }
 
-                desiredArmRotationPower = ((arm.rotation.getCurrentPosition() - arm.targetRotation) / (RobotConfiguration.arm_rotationMax * 0.5)) * 1;
+                bTelemetry.print("Arm Time", threadArmTime);
+//                bTelemetry.print("Target Arm Position", desiredArmRotationPower);
 
-                if (Math.abs(desiredArmRotationPower) > 0.02) {
-                    if (threadArmTime < 0.2) {
-                        arm.rotation.setPower(bMath.Clamp(desiredArmRotationPower, Math.copySign(1, desiredArmRotationPower), Math.copySign(1.5, desiredArmRotationPower)));
-                    } else {
-                        arm.rotation.setPower(bMath.Clamp(desiredArmRotationPower, Math.copySign(0.3, desiredArmRotationPower), Math.copySign(1, desiredArmRotationPower)));
-                    }
+
+                desiredArmRotationPower = (arm.targetRotation - arm.rotation.getCurrentPosition()) / RobotConfiguration.arm_rotationMax * 5;
+
+//                arm.rotation.setPower(Math.copySign(0.3, desiredArmRotationPower));
+
+                if (Math.abs(desiredArmRotationPower / 5) > 0.0005) {
+
+                    arm.rotation.setPower(Math.copySign(bMath.Clamp(Math.abs(desiredArmRotationPower), 0.15, 1), desiredArmRotationPower));
+                } else {
+                    arm.rotation.setPower(0);
                 }
+//                arm.rotation.setPower(bMath.Clamp(desiredArmRotationPower, Math.copySign(0.025, desiredArmRotationPower), Math.copySign(1, desiredArmRotationPower)));
+//                    if (threadArmTime < 1) {
+////                        arm.rotation.setPower(1);
+//                        arm.rotation.setPower(Math.copySign(1, desiredArmRotationPower));
+//                    } else {
+//                        arm.rotation.setPower(bMath.Clamp(desiredArmRotationPower, Math.copySign(0.025, desiredArmRotationPower), Math.copySign(1, desiredArmRotationPower)));
+//                    }
+//                }
             }
             threadArmRotationTime.reset();
         }

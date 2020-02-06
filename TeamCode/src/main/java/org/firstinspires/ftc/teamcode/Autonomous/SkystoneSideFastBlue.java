@@ -37,7 +37,7 @@ public class SkystoneSideFastBlue extends Auto {
         waitForStart();
 
         //0.035 == lift
-        deployGripper(true, 0.030);
+        deployGripper(true, 0.02);
 
 
 //        int cycles = 2;
@@ -79,6 +79,7 @@ public class SkystoneSideFastBlue extends Auto {
 
         //Extends the arm
         robot.arm.setArmStateWait(0, 0.65);
+        robot.arm.setArmStateAsync(armLiftAmount, 0.65);
 
         sleep(500);
 
