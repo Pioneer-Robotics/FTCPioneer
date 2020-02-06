@@ -23,7 +23,7 @@ public class SkystoneSideFastBlue extends Auto {
 
         while (!opModeIsActive()) {
 
-            if (gamepad1.x) {
+            if (true) {
                 break;
             }
 
@@ -49,20 +49,21 @@ public class SkystoneSideFastBlue extends Auto {
 ////            runDeliveryCycle(stone == 1 ? 93 : 30, 1000, 35, stone * 24, 130 + (stone * 30), stone != cycles);
 ////        }
 
-        runDeliveryCycle(93, 1000, 50, 36, 130 + (24), true);
+        runDeliveryCycle(93, 500, 20, 36, 130 + (24), true, 250);
 //        runDeliveryCycle(93, 1000, 50, 24, 130 + (24), true);
-        runDeliveryCycle(45, 1000, 35, 48, 130 + (48), false);
-
-        robot.arm.setGripState(RobotArm.GripState.IDLE, 0);
+        runDeliveryCycle(10, 500, 15, 48, 130 + (48), false,250);
 
         robot.arm.setArmStateAsync(0.02248, 0);
 
-        robot.driveByDistance(180, 0.75, 35);
+        robot.driveByDistance(180, 0.75, 35,);
+
+        robot.arm.setGripState(RobotArm.GripState.IDLE, 0);
 
         if (endOnWall) {
             robot.driveByDistance(-90, 0.8, 80);
         } else {
-            robot.driveByDistance(90, 0.8, 80);
+            robot.driveByDistance(90, 0.8, 10);
+            robot.driveByDistance(180, 0.5, 20);
         }
 //        160
 //        193
@@ -85,7 +86,7 @@ public class SkystoneSideFastBlue extends Auto {
         robot.arm.setGripState(RobotArm.GripState.CLOSED, 1);
 
         //Extends the arm
-        robot.arm.setArmStateWait(0, 0.65);
+        //robot.arm.setArmStateWait(0, 0.65);
         robot.arm.setArmStateAsync(armLiftAmount, 0.65);
 
         sleep(500);
@@ -102,7 +103,7 @@ public class SkystoneSideFastBlue extends Auto {
         }
     }
 
-    private void runDeliveryCycle(double fwdDistance, long servoDelayMS, double distanceFromStone, double endingOffset, double bridgeDistance, boolean moveBackToBridge) {
+    private void runDeliveryCycle(double fwdDistance, long servoDelayMS, double distanceFromStone, double endingOffset, double bridgeDistance, boolean moveBackToBridge, long servoDelayShortMS) {
 
         collectStoneFoward(fwdDistance, servoDelayMS, distanceFromStone);
 
@@ -114,25 +115,26 @@ public class SkystoneSideFastBlue extends Auto {
 
 
         //Waits to ensure the stone is completely detached
-        sleep(servoDelayMS);
+        sleep(servoDelayShortMS);
 
         //Resets rotation after speedyness
-        rotateFast(90);
+        adjustHeading(90);
 
         if (moveBackToBridge) {
             robot.arm.setArmStateAsync(0.0117999, 0.3);
 
             //Rolls back to the skystone side quickly
-            robot.driveByDistance(180, 1, bridgeDistance, 2.7);
-
-            //Resets rotation
-            rotateFast(90);
-
-            //Rolls back again so the bot is aligned with the next stone
-            robot.driveByDistance(180, 0.35, endingOffset);
-
+            robot.driveByDistance(180, 1, bridgeDistance + endingOffset, 2.7);
             //Rotates to face the next stone
             rotateFast(0);
+
+            //Resets rotation
+            //adjustHeading(90); see above rotation
+
+            //Rolls back again so the bot is aligned with the next stone
+            //robot.driveByDistance(180, 0.35, endingOffset); Because added to skystone side
+
+
         }
     }
 
@@ -169,6 +171,10 @@ public class SkystoneSideFastBlue extends Auto {
     public void rotateFast(double angle) {
         robot.rotatePID(angle, 1, 2.5, 1);
 //        robot.rotateSimple(angle, 2, 2, 0.5); //This one is a fail safe that will mostly work.
+    }
+
+    public void adjustHeading(double angle){
+        robot.rotatePID(angle, 1,0.5,1);
     }
 
 

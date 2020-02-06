@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 
-@Autonomous(name = "Skystone Low Key Sabotage Full", group = "ftcPio")
+//@Autonomous(name = "Skystone Low Key Sabotage Full", group = "ftcPio")
 public class SkystoneSelectionSabotageFull extends Auto {
 
     /// Here is an example of a refactored version of SkystoneSelectionSabotageFull.java
