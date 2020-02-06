@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 
-@Autonomous(name = "Skystone Stone Fast", group = "ftcPio")
+@Autonomous(name = "Skystone Stone Fast Blue", group = "ftcPio")
 public class SkystoneSideFastBlue extends Auto {
 
     public boolean endOnWall = false;
@@ -18,8 +18,8 @@ public class SkystoneSideFastBlue extends Auto {
         robot.arm.rotationMode = RobotArm.ArmThreadMode.Enabled;
 
         speed_high = 0.5;
-        speed_med = 0.30;
-        speed_low = 0.1;
+        speed_med = 0.50; //0.3
+        speed_low = 0.3; //0.1
 
         while (!opModeIsActive()) {
 
@@ -51,7 +51,7 @@ public class SkystoneSideFastBlue extends Auto {
 
         runDeliveryCycle(93, 500, 20, 36, 90 + 24, true, 250);
 //        runDeliveryCycle(93, 1000, 50, 24, 130 + (24), true);
-        runDeliveryCycle(10, 500, 15, 48, 90 + (48), false,250);
+        runDeliveryCycle(10, 500, 15, 48, 100 + (48), false,250);
 
         robot.arm.setArmStateAsync(0.02248, 0);
 
