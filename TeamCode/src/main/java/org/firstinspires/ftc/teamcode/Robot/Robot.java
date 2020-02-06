@@ -757,6 +757,47 @@ public class Robot extends Thread {
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    public void driveByDistance(double angle, double speed, double distance, boolean slowDown) {
+
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
+        Double4 a = bMath.getMecMovement(angle, 0, 0);
+
+        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
+        setPowerDouble4(1, 1, 1, 1, speed);
+
+//        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
+//        setPowerDouble4(a.x, a.y, a.z, a.w, speed);
+
+
+        setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        Op.telemetry.addData("Driving by distance ", distance * ((RobotConfiguration.wheel_circumference * RobotConfiguration.wheel_ticksPerRotation)));
+        Op.telemetry.update();
+        while (Op.opModeIsActive() && wheelsBusy()) {
+            Op.telemetry.addData("Wheel Busy", "");
+            Op.telemetry.addData("Wheel Front Right Postion", driveManager.frontRight.getCurrentPosition());
+            Op.telemetry.addData("Wheel Front Right Target", driveManager.frontRight.motor.getTargetPosition());
+            Op.telemetry.update();
+
+            if (!Op.opModeIsActive()) {
+                break;
+            }
+            //Wait until we are at our target distance
+        }
+
+        Op.telemetry.addData("Target Reached", "");
+        Op.telemetry.update();
+
+        //shutdown motors
+        setPowerDouble4(0, 0, 0, 0, 0);
+
+        //Set up for normal driving
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
     public void driveByDistance(double angle, double speed, double distance, double maxTime) {
 
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

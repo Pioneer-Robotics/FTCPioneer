@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 
-@Autonomous(name = "Skystone Low Key Sabotage", group = "ftcPio")
+//@Autonomous(name = "Skystone Low Key Sabotage", group = "ftcPio")
 public class SkystoneSelectionSabotage extends Auto {
 
     private double startRotation;

@@ -49,13 +49,13 @@ public class SkystoneSideFastBlue extends Auto {
 ////            runDeliveryCycle(stone == 1 ? 93 : 30, 1000, 35, stone * 24, 130 + (stone * 30), stone != cycles);
 ////        }
 
-        runDeliveryCycle(93, 500, 20, 36, 130 + (24), true, 250);
+        runDeliveryCycle(93, 500, 20, 36, 90 + 24, true, 250);
 //        runDeliveryCycle(93, 1000, 50, 24, 130 + (24), true);
-        runDeliveryCycle(10, 500, 15, 48, 130 + (48), false,250);
+        runDeliveryCycle(10, 500, 15, 48, 90 + (48), false,250);
 
         robot.arm.setArmStateAsync(0.02248, 0);
 
-        robot.driveByDistance(180, 0.75, 35,);
+        robot.driveByDistance(180, 0.75, 35);
 
         robot.arm.setGripState(RobotArm.GripState.IDLE, 0);
 
@@ -63,7 +63,7 @@ public class SkystoneSideFastBlue extends Auto {
             robot.driveByDistance(-90, 0.8, 80);
         } else {
             robot.driveByDistance(90, 0.8, 10);
-            robot.driveByDistance(180, 0.5, 20);
+            //robot.driveByDistance(180, 0.5, 20);
         }
 //        160
 //        193
