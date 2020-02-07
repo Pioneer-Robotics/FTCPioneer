@@ -219,17 +219,22 @@ public class Teleop extends TeleOpMode {
         } else {
             telemetry.addLine("Arm Control: Radial");
 
-            if (gamepad2.dpad_left || (gamepad2.right_trigger - gamepad2.right_trigger) < 0.05) { //When override or triggers are not pressed, extend using getposition
-                engiData.powerExtension = false;
-                engiData.extension += gamepad2.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held and dpad left is pressed
-                engiData.extension -= gamepad2.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held and dpad left is pressed
-                engiData.extension = bMath.Clamp(engiData.extension, 0, 1);
-            } else {
-                engiData.powerExtension = true;
-                engiData.extendSpeed = gamepad2.right_trigger - gamepad2.right_trigger;
+//            if (gamepad2.dpad_left || (gamepad2.right_trigger - gamepad2.right_trigger) < 0.05) { //When override or triggers are not pressed, extend using getposition
+//                engiData.powerExtension = false;
+//                engiData.extension += gamepad2.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held and dpad left is pressed
+//                engiData.extension -= gamepad2.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held and dpad left is pressed
+//                engiData.extension = bMath.Clamp(engiData.extension, 0, 1);
+//            } else {
+//                engiData.powerExtension = true;
+//                engiData.extendSpeed = gamepad2.right_trigger - gamepad2.right_trigger;
+//
+//                engiData.extension = robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_ticksMax;
+//            }
 
-                engiData.extension = robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_ticksMax;
-            }
+            engiData.powerExtension = false;
+            engiData.extension += gamepad2.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held and dpad left is pressed
+            engiData.extension -= gamepad2.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held and dpad left is pressed
+            engiData.extension = bMath.Clamp(engiData.extension, 0, 1);
             engiData.raiseSpeed = bMath.Clamp(-gamepad2.left_stick_y, -1, 1); //set raise
 
         }
