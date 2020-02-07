@@ -52,7 +52,7 @@ public class Teleop extends TeleOpMode {
     //Arm Control Variables
 //    private double raiseSpeed = 0;
 //    private double extension = 0;
-    private double gripAngle = 180;
+    private double gripAngle = 0;
 
     //Rectangular Control Variables New
     /// Code clean up advice --- State variable that have a similar concept should be grouped into a single object
