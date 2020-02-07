@@ -6,6 +6,9 @@ public class EngineeringControlData {
     public double extension = 0;
     public double extendSpeed = 0;
     public double raiseSpeed = 0;
+    //spool protection override
+    public boolean spoolProtect = true;
+    public boolean spoolProtectCheck = false;
     //rectangular control state
     public boolean rectControls = false;
     public boolean rectControlsCheck = false;
@@ -14,4 +17,5 @@ public class EngineeringControlData {
     //rect control constants
     public double xExtConst = 1;
     public double yExtConst = 1;
+
 }

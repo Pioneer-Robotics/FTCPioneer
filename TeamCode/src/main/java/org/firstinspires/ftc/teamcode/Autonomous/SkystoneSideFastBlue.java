@@ -133,9 +133,9 @@ public class SkystoneSideFastBlue extends Auto {
 
             //Rolls back again so the bot is aligned with the next stone
             //robot.driveByDistance(180, 0.35, endingOffset); Because added to skystone side
-
-
         }
+
+
     }
 
     //Collects the stone 'distanceToStone' away and then rolls back 'backwardDistance'

@@ -77,7 +77,7 @@ public class Teleop extends TeleOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(this, false);
-        gamepad1.setJoystickDeadzone(0.05f);
+        //gamepad1.setJoystickDeadzone(0.05f);
 
         waitForStart();
 
@@ -295,7 +295,7 @@ public class Teleop extends TeleOpMode {
 
         //hold A button to make the gripper point down
         if (gamepad2.a) {
-            gripAngle = 90 - robot.arm.thetaAngle();
+            gripAngle = 90 - robot.arm.thetaAngle() - 10;
         }
 
         //rotate gripper down with the left dpad
@@ -317,6 +317,10 @@ public class Teleop extends TeleOpMode {
 
         if (dropLunchBox) lunchboxRot = 0;
         else lunchboxRot = 0.738;
+
+        if (gamepad1.dpad_down && !engiData.spoolProtectCheck) engiData.spoolProtect = !engiData.spoolProtect;
+        robot.arm.setSpoolProtect(engiData.spoolProtect);
+        engiData.spoolProtectCheck = gamepad1.dpad_down;
 
     }
 

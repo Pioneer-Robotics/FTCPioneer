@@ -228,6 +228,10 @@ can be plugged into realPotentiometerAngle to determine what the pot should be r
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
+    public void setSpoolProtect(boolean _spoolProtect){
+        protectSpool = _spoolProtect;
+    }
+
     public boolean armRotationTargetReached() {
         return Math.abs(rotation.getCurrentPosition() - targetRotation) < 10;
     }
