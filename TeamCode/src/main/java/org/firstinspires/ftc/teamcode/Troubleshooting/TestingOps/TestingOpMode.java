@@ -17,7 +17,11 @@ public class TestingOpMode extends Auto {
 
         waitForStart();
 
-        robot.rotateSimple(90, 1, 2, 0.5);
+//        robot.rotateSimple(90, 1, 2, 0.5);
+
+        robot.experimentalDriveByDistance(0, 0.35, 0.05, 0, 25);
+        robot.experimentalDriveByDistance(179, 1, 0.1, 0, 125);
+        robot.experimentalDriveByDistanceWithRotationYeahItsPrettyCoool(0, 0.35, 0.2, 0, 90, 25);
 
 //        GrabArm(0.3);
 

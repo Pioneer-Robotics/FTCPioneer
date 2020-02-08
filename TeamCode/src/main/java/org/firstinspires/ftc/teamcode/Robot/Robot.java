@@ -846,14 +846,50 @@ public class Robot extends Thread {
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-//    public void experimentalDriveByDistance(double driveAngle, double correctionAngle, double distance) {
-//        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
-//
-//        Double4 a = bMath.getMecMovement(90,, 0, 2);
-//        Double4 targetPositions = a.x * distanceTicks, a.)
-//        y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
-//moveComplex
-//    }
+    public void experimentalDriveByDistance(double driveHeading, double driveSpeed, double initalSpeed, double correctionAngle, double distance) {
+        driveManager.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveManager.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
+
+        double speedAdd = initalSpeed;
+
+        double percentComplete = 0;
+
+        while (driveManager.backRight.getCurrentPosition() < distanceTicks) {
+
+            percentComplete = driveManager.backRight.getCurrentPosition() / distanceTicks;
+
+            moveComplex(driveHeading, (Math.sin(percentComplete * Math.PI) * driveSpeed) + initalSpeed, getRotation() - correctionAngle, 0);
+//            moveComplex(driveHeading, driveSpeed, getRotation() - correctionAngle, 0);
+        }
+        stopDrive();
+    }
+
+    public void experimentalDriveByDistanceWithRotationYeahItsPrettyCoool(double driveHeading, double driveSpeed, double initalSpeed, double initalAngle, double finalAngle, double distance) {
+        driveManager.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveManager.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
+
+        double speedAdd = initalSpeed;
+
+        double percentComplete = 0;
+
+        while (driveManager.backRight.getCurrentPosition() < distanceTicks) {
+
+            percentComplete = driveManager.backRight.getCurrentPosition() / distanceTicks;
+
+            moveComplex(getRotation() - driveHeading, (Math.sin(percentComplete * Math.PI) * driveSpeed) + initalSpeed, getRotation() - (percentComplete > 0.5 ? finalAngle : initalAngle), 0);
+//            moveComplex(driveHeading, driveSpeed, getRotation() - correctionAngle, 0);
+        }
+        stopDrive();
+    }
+
+    public void stopDrive() {
+        setPowerDouble4(0, 0, 0, 0, 0);
+    }
+
 
     @Deprecated
     public enum simpleDirection {
