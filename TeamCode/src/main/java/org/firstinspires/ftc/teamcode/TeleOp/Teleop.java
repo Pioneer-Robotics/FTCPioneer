@@ -115,6 +115,8 @@ public class Teleop extends TeleOpMode {
         robot.shutdown();
     }
 
+    RotationData rotationData;
+    DriverTeleopData driverTeleopData;
 
     /*
     This method updates and applies any changes to the driver controls and handles movement
@@ -123,8 +125,11 @@ public class Teleop extends TeleOpMode {
         ///DRIVER CONTROLS
 
         // Create driverTeleopData to get values to update robot state
-        RotationData rotationData = new RotationData(rotationLockAngle, leftRotateCoordCheck, rightRotateCoordCheck);
-        DriverTeleopData driverTeleopData = TeleopDriverControls.setupDriverController(gamepad1,
+//        rotationData = new RotationData(rotationLockAngle, leftRotateCoordCheck, rightRotateCoordCheck);
+        rotationData.rotationLockAngle = rotationLockAngle;
+        rotationData.leftRotateCoordCheck = leftRotateCoordCheck;
+        rotationData.rightRotateCoordCheck = rightRotateCoordCheck;
+        driverTeleopData = TeleopDriverControls.setupDriverController(gamepad1,
                 robot,
                 rotationData,
                 movementModeToggleCheck,
@@ -153,6 +158,8 @@ public class Teleop extends TeleOpMode {
         robot.updateRobotDrive(frontLeftWheelPower, frontRightWheelPower, backLeftWheelPower, backRightWheelPower);
     }
 
+    Vector2 movementVectorCache_left = new Vector2(0, 0);
+
     // TODO: - Move to ??? Class
     /*
     This method determines the power levels for the wheels
@@ -166,8 +173,8 @@ public class Teleop extends TeleOpMode {
         if (useLockedRotation) {
             telemetry.addData("Drive System", "New");
 
-            Vector2 movementVector = getMovementVector(movementInput_x, movementInput_y);
-            return ((-movementVector.y + movementVector.x) / sq2);
+            movementVectorCache_left = getMovementVector(movementInput_x, movementInput_y);
+            return ((-movementVectorCache_left.y + movementVectorCache_left.x) / sq2);
         } else {
             telemetry.addData("Drive System", "Old");
 
@@ -175,6 +182,8 @@ public class Teleop extends TeleOpMode {
         }
 
     }
+
+    Vector2 movementVectorCache_right = new Vector2(0, 0);
 
     private double getRightDiagPower(boolean useLockedRotation,
                                      double movementInput_x,
@@ -185,8 +194,8 @@ public class Teleop extends TeleOpMode {
         if (useLockedRotation) {
             telemetry.addData("Drive System", "New");
 
-            Vector2 movementVector = getMovementVector(movementInput_x, movementInput_y);
-            return ((-movementVector.y - movementVector.x) / sq2);
+            movementVectorCache_right = getMovementVector(movementInput_x, movementInput_y);
+            return ((-movementVectorCache_right.y - movementVectorCache_right.x) / sq2);
 
         } else {
             telemetry.addData("Drive System", "Old");
@@ -194,6 +203,7 @@ public class Teleop extends TeleOpMode {
         }
     }
 
+    Vector2 movementVectorCache = new Vector2(0, 0);
 
     // TODO: - Move to a Math Class
     private Vector2 getMovementVector(double movementInput_x, double movementInput_y) {
@@ -207,8 +217,9 @@ public class Teleop extends TeleOpMode {
         double newGamepadX = (gamepad1.left_stick_x <= 0) ? -_newGamepadX : _newGamepadX;
         double newGamepadY = (gamepad1.left_stick_x <= 0) ? -_newGamepadY : _newGamepadY;
 
-
-        return new Vector2(newGamepadX, newGamepadY);
+        movementVectorCache.x = newGamepadX;
+        movementVectorCache.y = newGamepadY;
+        return movementVectorCache;
     }
 
     /*

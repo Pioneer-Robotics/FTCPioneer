@@ -5,6 +5,7 @@ public class RotationData {
     public boolean leftRotateCoordCheck;
     public boolean rightRotateCoordCheck;
 
+
     public RotationData(double rotationLockAngle, boolean leftRotateCoordCheck, boolean rightRotateCoordCheck) {
         this.rotationLockAngle = rotationLockAngle;
         this.leftRotateCoordCheck = leftRotateCoordCheck;
