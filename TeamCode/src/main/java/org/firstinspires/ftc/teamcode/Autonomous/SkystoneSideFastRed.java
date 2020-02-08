@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 @Autonomous(name = "Skystone Stone Fast Red", group = "ftcPio")
 public class SkystoneSideFastRed extends Auto {
 
+
     public boolean endOnWall = false;
 
 //    public double armGrabLength;
@@ -16,6 +17,7 @@ public class SkystoneSideFastRed extends Auto {
     public void runOpMode() {
         startRobot();
         robot.arm.rotationMode = RobotArm.ArmThreadMode.Enabled;
+        robot.arm.extensionMode = RobotArm.ArmThreadMode.Disabled;
 
         speed_high = 0.5;
         speed_med = 0.50; //0.3

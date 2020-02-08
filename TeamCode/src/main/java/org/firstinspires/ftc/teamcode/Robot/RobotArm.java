@@ -36,6 +36,7 @@ public class RobotArm extends Thread {
     public Servo grip;
 
     public ArmThreadMode rotationMode;
+    public ArmThreadMode extensionMode;
 
     //Arm rotation mode, setting to 'threaded' will arm rotation handled by a thread while 'disabled' will not effect arm rotation
     public enum ArmThreadMode {
@@ -228,9 +229,6 @@ can be plugged into realPotentiometerAngle to determine what the pot should be r
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
-    public void setSpoolProtect(boolean _spoolProtect){
-        protectSpool = _spoolProtect;
-    }
 
     public boolean armRotationTargetReached() {
         return Math.abs(rotation.getCurrentPosition() - targetRotation) < 10;
@@ -243,6 +241,10 @@ can be plugged into realPotentiometerAngle to determine what the pot should be r
 
     public boolean armAsyncTargetReached() {
         return armRotationTargetReached() && armLengthTargetReached();
+    }
+
+    public void setSpoolProtect(boolean _spoolProtect){
+        protectSpool = _spoolProtect;
     }
 
     /*
@@ -280,6 +282,8 @@ can be plugged into realPotentiometerAngle to determine what the pot should be r
         rotation.setPower(angleSpeed);
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        length.setPower(targetLengthSpeed);
+        length.setTargetPosition((int)targetLength);
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
     }

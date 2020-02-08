@@ -28,7 +28,8 @@ public class Teleop extends TeleOpMode {
 
     private Robot robot = new Robot();
 
-    private ElapsedTime deltaTime = new ElapsedTime();
+    private ElapsedTime deltaTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
 
     //Program state
 
@@ -52,7 +53,7 @@ public class Teleop extends TeleOpMode {
     //Arm Control Variables
 //    private double raiseSpeed = 0;
 //    private double extension = 0;
-    private double gripAngle = 0;
+    private double gripAngle = 180;
 
     //Rectangular Control Variables New
     /// Code clean up advice --- State variable that have a similar concept should be grouped into a single object
@@ -77,7 +78,8 @@ public class Teleop extends TeleOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(this, false);
-        //gamepad1.setJoystickDeadzone(0.05f);
+        gamepad1.setJoystickDeadzone(0.1f);
+
 
         waitForStart();
 
@@ -234,7 +236,7 @@ public class Teleop extends TeleOpMode {
             engiData.powerExtension = false;
             engiData.extension += gamepad2.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held and dpad left is pressed
             engiData.extension -= gamepad2.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held and dpad left is pressed
-            engiData.extension = bMath.Clamp(engiData.extension, 0, 1);
+            if (!engiData.spoolProtect) engiData.extension = bMath.Clamp(engiData.extension, 0, 1);
             engiData.raiseSpeed = bMath.Clamp(-gamepad2.left_stick_y, -1, 1); //set raise
 
         }
@@ -318,9 +320,9 @@ public class Teleop extends TeleOpMode {
         if (dropLunchBox) lunchboxRot = 0;
         else lunchboxRot = 0.738;
 
-        if (gamepad1.dpad_down && !engiData.spoolProtectCheck) engiData.spoolProtect = !engiData.spoolProtect;
+        if (gamepad2.dpad_down && !engiData.spoolProtectCheck) engiData.spoolProtect = !engiData.spoolProtect;
         robot.arm.setSpoolProtect(engiData.spoolProtect);
-        engiData.spoolProtectCheck = gamepad1.dpad_down;
+        engiData.spoolProtectCheck = gamepad2.dpad_down;
 
     }
 
@@ -343,6 +345,8 @@ public class Teleop extends TeleOpMode {
     }
 
     private void doTelemetry() {
+        telemetry.addLine("------ Control ------");
+        telemetry.addData("deltaTime", deltaTime.milliseconds() );
         telemetry.addLine("------ Movement ------");
         telemetry.addData("Rotation Locked ", coordinateSystemLock);
         telemetry.addData("Current Rotation ", robot.getRotation());
@@ -356,6 +360,7 @@ public class Teleop extends TeleOpMode {
         telemetry.addData("spool position", robot.arm.length.getCurrentPosition());
         telemetry.addData("spool position as percent", robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_ticksMax);
         telemetry.addData("arm rotation as percent", robot.arm.rotation.getCurrentPosition() / RobotConfiguration.arm_rotationMax);
+        telemetry.addData("spoolProtect",engiData.spoolProtect);
         telemetry.addLine("------ Lunchbox ------");
         telemetry.addData("Current Lunchbox", lunchboxRot);
         telemetry.update();

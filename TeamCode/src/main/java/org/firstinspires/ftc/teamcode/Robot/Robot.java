@@ -297,8 +297,11 @@ public class Robot extends Thread {
                 threadRunning.set(false);
             }
 
-            arm.length.setPower(arm.targetLengthSpeed);
-            arm.length.setTargetPosition((int) arm.targetLength);
+            if (arm.extensionMode == RobotArm.ArmThreadMode.Enabled) {
+                arm.length.setPower(arm.targetLengthSpeed);
+                arm.length.setTargetPosition((int) arm.targetLength);
+            }
+
             if (arm.rotationMode == RobotArm.ArmThreadMode.Enabled) {
                 threadArmTime += threadArmRotationTime.seconds();
 
