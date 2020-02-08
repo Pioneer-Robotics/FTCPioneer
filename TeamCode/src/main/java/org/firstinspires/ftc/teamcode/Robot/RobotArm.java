@@ -365,7 +365,7 @@ can be plugged into realPotentiometerAngle to determine what the pot should be r
 
 
     public void setGripState(GripState gripState, double rotationPosition) {
-        grip.setPosition(gripState == GripState.CLOSED ? 0 : (gripState == GripState.IDLE ? 0.2 : 0.74));
+        grip.setPosition(gripState == GripState.CLOSED ? 0 : (gripState == GripState.IDLE ? 0.4 : 0.74));
         gripRotation.setPosition(rotationPosition);
     }
 
