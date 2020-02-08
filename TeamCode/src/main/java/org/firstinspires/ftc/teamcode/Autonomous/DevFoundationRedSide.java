@@ -3,12 +3,27 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "DevFoundationRed", group = "ftcPio")
+@Autonomous(name = "RED FOUNDATION", group = "ftcPio")
 public class DevFoundationRedSide extends Auto {
     @Override
     public void runOpMode() {
         boolean endOnWall = false;
         startRobot();
+
+        while (!opModeIsActive()) {
+            if (gamepad1.x) {
+                break;
+            }
+            if (gamepad1.a) {
+                endOnWall = !endOnWall;
+                sleep(1000);
+            }
+
+            telemetry.addData("End on wall ", endOnWall);
+            telemetry.addData("Press X to EXIT", "");
+            telemetry.update();
+        }
+
         waitForStart();
         sleep(1000);
         //ready gripper to grab foundation
@@ -31,15 +46,14 @@ public class DevFoundationRedSide extends Auto {
         robot.driveByDistance(0, 0.25, 5);
         //release servos
         robot.releaseFoundation();
-        if(endOnWall){
+        if (endOnWall) {
             //go under bridge
             robot.driveByDistance(-100, 0.5, 225);
             //pull into the wall, to make sure you're there
             robot.driveByDistance(180, 0.5, 25);
             //go right a little more, to center robot
             robot.driveByDistance(-100, 0.5, 20);
-        }
-        else{
+        } else {
             //more past the foundation but not quite to the bridge
             robot.driveByDistance(-100, 0.5, 130);
             //go forward to be closer to the bridge

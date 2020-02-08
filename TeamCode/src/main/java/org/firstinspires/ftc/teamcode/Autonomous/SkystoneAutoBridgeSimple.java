@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "SkystoneBridgeSimple", group = "ftcPio")
+//@Autonomous(name = "SkystoneBridgeSimple", group = "ftcPio")
 public class SkystoneAutoBridgeSimple extends Auto {
 
     @Override

@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name = "SkystoneBridge", group = "ftcPio")
+//@Autonomous(name = "SkystoneBridge", group = "ftcPio")
 public class SkystoneAutoBridge extends Auto {
 
     private double startRotation;

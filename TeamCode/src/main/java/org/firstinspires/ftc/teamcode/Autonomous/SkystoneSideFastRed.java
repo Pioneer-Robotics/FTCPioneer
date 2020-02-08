@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 
-@Autonomous(name = "Skystone Stone Fast Red", group = "ftcPio")
+@Autonomous(name = "RED STONES", group = "ftcPio")
 public class SkystoneSideFastRed extends Auto {
 
 

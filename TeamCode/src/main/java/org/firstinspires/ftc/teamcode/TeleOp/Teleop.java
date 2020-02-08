@@ -271,8 +271,11 @@ public class Teleop extends TeleOpMode {
 //            }
 
             engiData.powerExtension = false;
-            engiData.extension += gamepad2.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held and dpad left is pressed
-            engiData.extension -= gamepad2.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held and dpad left is pressed
+//            engiData.extension += gamepad2.right_trigger * deltaTime.seconds() * 1;    //extend arm when right trigger held and dpad left is pressed
+//            engiData.extension -= gamepad2.left_trigger * deltaTime.seconds() * 1;     //retract arm when left trigger held and dpad left is pressed
+
+
+
             if (!engiData.spoolProtect) engiData.extension = bMath.Clamp(engiData.extension, 0, 1);
             engiData.raiseSpeed = bMath.Clamp(-gamepad2.left_stick_y, -1, 1); //set raise
 
@@ -288,7 +291,7 @@ public class Teleop extends TeleOpMode {
      */
     private void updateRectControls() {
         // Activates rectControls when right stick is being moved
-        engiData.rectControls = ((Math.abs(gamepad2.right_stick_y) > 0.1) || (Math.abs(gamepad2.right_stick_x) > 0.1));
+        engiData.rectControls = false;// DISABLED((Math.abs(gamepad2.right_stick_y) > 0.1) || (Math.abs(gamepad2.right_stick_x) > 0.1));
         //sets direction of rectControls to whichever axis is greater
         engiData.rectControls_goingUp = Math.abs(gamepad2.right_stick_y) > Math.abs(gamepad2.right_stick_x);
 
