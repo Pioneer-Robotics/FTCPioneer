@@ -39,7 +39,7 @@ public class Auto extends LinearOpMode {
         print("Status: Initiating robot.");
 
         //init the bot hardware! This sets up the static references for the bot as well so make sure to run this before any other code
-        robot.init(this, true);
+        robot.init(this, false);
 
         print("Status: Initiating all jobs.");
 //        Test Comment
@@ -90,6 +90,10 @@ public class Auto extends LinearOpMode {
 //        robot.arm.setGripState(RobotArm.GripState.IDLE, 1);
 //        robot.arm.setArmStateWait(0, 0, 1);
         robot.arm.setGripState(RobotArm.GripState.CLOSED, 1);
+
+        //Sets up the threaded arm modes
+        robot.arm.extensionMode = RobotArm.ArmThreadMode.Enabled;
+        robot.arm.rotationMode = RobotArm.ArmThreadMode.Enabled;
 
         print("Status: Awaiting start. Running on side " + (side == FieldSide.SIDE_BLUE ? "BLU" : "RED"));
     }
@@ -217,6 +221,7 @@ public class Auto extends LinearOpMode {
         robot.arm.setArmStateWait(liftFactor, extensionLength);
 
     }
+
     //Same as GrabArm, except this one operates based on the last length declared
     public void DepositeArm(double lastLength, double extensionLength) {
 

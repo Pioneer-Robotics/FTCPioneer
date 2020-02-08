@@ -35,8 +35,8 @@ public class RobotArm extends Thread {
     public Servo gripRotation;
     public Servo grip;
 
-    public ArmThreadMode rotationMode;
-    public ArmThreadMode extensionMode;
+    public ArmThreadMode rotationMode = ArmThreadMode.Enabled;
+    public ArmThreadMode extensionMode = ArmThreadMode.Enabled;
 
     //Arm rotation mode, setting to 'threaded' will arm rotation handled by a thread while 'disabled' will not effect arm rotation
     public enum ArmThreadMode {
@@ -101,8 +101,8 @@ public class RobotArm extends Thread {
         double C0 = bMath.squared(l) + bMath.squared(k) - (2 * k * l * Math.cos(potentiometerMeasurement));
         double C = Math.sqrt(C0);
         double Numerator1 = bMath.squared(l) + bMath.squared(C) - bMath.squared(k);
-        double thetaPart1 = Math.acos( Numerator1 / 2 / C / l );
-        double thetaPart2 = Math.acos( h / C);
+        double thetaPart1 = Math.acos(Numerator1 / 2 / C / l);
+        double thetaPart2 = Math.acos(h / C);
         return thetaPart1 + thetaPart2 - (Math.PI / 2);
 
     }
@@ -112,18 +112,19 @@ public class RobotArm extends Thread {
     it outputs the angle the potentiometer should be measuring in radians
     this function can be useful for checking the accuracy of the potentiometer
      */
-    public double derivedPotentiometerAngle (double dLengthIn_cm){
+    public double derivedPotentiometerAngle(double dLengthIn_cm) {
         double d = dLengthIn_cm;
         double intermedieteVal1 = (l * l) + (k * k) - (d * d) - (h * h);
         double intermedVal2 = intermedieteVal1 / 2 / k / l;
         return Math.acos(intermedVal2);
     }
-/*
-This function returns the horizotntal distance between the shuttle joint and the arm joint.
-can be plugged into realPotentiometerAngle to determine what the pot should be reading.
- */
-    public double currentArmQuadBaseDistance(){
-        return RobotConfiguration.armQuadBaseMaxCm - ((double) rotation.getCurrentPosition()*(1.0/1440.0)*(120.0/48.0)*(0.2/1.0));
+
+    /*
+    This function returns the horizotntal distance between the shuttle joint and the arm joint.
+    can be plugged into realPotentiometerAngle to determine what the pot should be reading.
+     */
+    public double currentArmQuadBaseDistance() {
+        return RobotConfiguration.armQuadBaseMaxCm - ((double) rotation.getCurrentPosition() * (1.0 / 1440.0) * (120.0 / 48.0) * (0.2 / 1.0));
     }
 
 
@@ -194,7 +195,6 @@ can be plugged into realPotentiometerAngle to determine what the pot should be r
         targetLength = cmToTicks(_targetLength);
 
 
-
         targetRotation = (RobotConfiguration.arm_rotationMax * targetAngle);
 
         rotation.setTargetPosition((int) (RobotConfiguration.arm_rotationMax * targetAngle));
@@ -243,7 +243,7 @@ can be plugged into realPotentiometerAngle to determine what the pot should be r
         return armRotationTargetReached() && armLengthTargetReached();
     }
 
-    public void setSpoolProtect(boolean _spoolProtect){
+    public void setSpoolProtect(boolean _spoolProtect) {
         protectSpool = _spoolProtect;
     }
 
@@ -263,7 +263,7 @@ can be plugged into realPotentiometerAngle to determine what the pot should be r
         rotation.setPower(angleSpeed);
         rotation.setTargetPosition((int) ((double) RobotConfiguration.arm_rotationMax * targetAngle));
         rotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        length.setTargetPosition((int)targetLength);
+        length.setTargetPosition((int) targetLength);
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
     }
@@ -283,7 +283,7 @@ can be plugged into realPotentiometerAngle to determine what the pot should be r
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         length.setPower(targetLengthSpeed);
-        length.setTargetPosition((int)targetLength);
+        length.setTargetPosition((int) targetLength);
         length.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
     }

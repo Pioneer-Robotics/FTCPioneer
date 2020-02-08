@@ -271,7 +271,6 @@ public class Robot extends Thread {
 
     }
 
-    ElapsedTime threadArmRotationTime = new ElapsedTime();
     double threadArmTime = 0;
 
     double lastTargetPosition;
@@ -279,7 +278,6 @@ public class Robot extends Thread {
     //Enabled run method, right now this is just for IMU stuff, at some point we might put some avoidance stuff in here (background wall tracking?)
     public void run() {
         threadRunning.set(true);
-        threadArmRotationTime.reset();
 
         while (threadRunning.get()) {
 
@@ -292,7 +290,7 @@ public class Robot extends Thread {
 //            op.telemetry.update();
 
             //Make sure that the robot stops once we request a stop
-            if (Op.isStopRequested()) {
+            if (Op.isStopRequested() ) {
                 setPowerDouble4(0, 0, 0, 0, 0);
                 threadRunning.set(false);
             }
@@ -303,7 +301,6 @@ public class Robot extends Thread {
             }
 
             if (arm.rotationMode == RobotArm.ArmThreadMode.Enabled) {
-                threadArmTime += threadArmRotationTime.seconds();
 
                 if (arm.targetRotation != lastTargetPosition) {
                     lastTargetPosition = arm.targetRotation;
@@ -334,7 +331,6 @@ public class Robot extends Thread {
 //                    }
 //                }
             }
-            threadArmRotationTime.reset();
         }
 
 
