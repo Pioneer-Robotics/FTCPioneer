@@ -336,10 +336,12 @@ public class Robot extends Thread {
 
     }
 
+    AtomicBoolean rotationRecent = new AtomicBoolean(false);
 
     public void updateBackgroundRotation() {
         //Updates the current rotation
         rotation = imu.getRotation(AngleUnit.DEGREES);
+        rotationRecent.set(true);
     }
 
 
@@ -435,9 +437,21 @@ public class Robot extends Thread {
         double timer = 0;
 
         ElapsedTime deltaTime = new ElapsedTime();
-
+        double currentRotation = 0;
         while (Op.opModeIsActive()) {
-            rotationPower = rotationPID.loop(bMath.DeltaDegree(imu.imu_0.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle, targetAngle), 0);
+
+            //Thread safty check to prevent race conditions and mismatched input
+            //Waits for new input
+            while (!rotationRecent.get()) {
+
+            }
+            //Marks input
+            rotationRecent.set(false);
+
+            currentRotation = getRotation();
+
+            rotationPower = rotationPID.loop(bMath.DeltaDegree(currentRotation, targetAngle), 0);
+
             rotationPower = (rotationPower / (360)) * rotationSpeed;
             rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
 
@@ -471,7 +485,8 @@ public class Robot extends Thread {
 
     }
 
-    public void rotatePID(double targetAngle, double rotationSpeed, double maxTime, double overrideExitThreshold) {
+    public void rotatePID(double targetAngle, double rotationSpeed, double maxTime,
+                          double overrideExitThreshold) {
         //P of 3 and 0 for other gains seems to work really well
 //        rotationPID.start(3, 0, 0.1);
 
@@ -527,7 +542,8 @@ public class Robot extends Thread {
 
     }
 
-    public void rotatePID(double targetAngle, double rotationSpeed, double maxTime, double p, double i, double d) {
+    public void rotatePID(double targetAngle, double rotationSpeed, double maxTime, double p,
+                          double i, double d) {
 
         rotationPID.start(p, i, d);
 
@@ -571,7 +587,8 @@ public class Robot extends Thread {
     }
 
 
-    public void rotateSimple(double targetAngle, double rotationSpeed, double tolerance, double exitTime) {
+    public void rotateSimple(double targetAngle, double rotationSpeed, double tolerance,
+                             double exitTime) {
         double exitTimer = 0;
         ElapsedTime deltaTime = new ElapsedTime();
 
@@ -661,7 +678,8 @@ public class Robot extends Thread {
         driveManager.backRight.setTargetPosition(driveManager.backRight.getCurrentPosition() + (int) delta);
     }
 
-    public void setRelativeEncoderPosition(double deltaX, double deltaY, double deltaZ, double deltaW) {
+    public void setRelativeEncoderPosition(double deltaX, double deltaY, double deltaZ,
+                                           double deltaW) {
 
         driveManager.frontLeft.setTargetPosition(driveManager.frontLeft.getCurrentPosition() + (int) deltaX);
         driveManager.backLeft.setTargetPosition(driveManager.backLeft.getCurrentPosition() + (int) deltaY);
@@ -846,7 +864,8 @@ public class Robot extends Thread {
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void experimentalDriveByDistance(double driveHeading, double driveSpeed, double initalSpeed, double correctionAngle, double distance) {
+    public void experimentalDriveByDistance(double driveHeading, double driveSpeed,
+                                            double initalSpeed, double correctionAngle, double distance) {
         driveManager.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         driveManager.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -866,7 +885,9 @@ public class Robot extends Thread {
         stopDrive();
     }
 
-    public void experimentalDriveByDistanceWithRotationYeahItsPrettyCoool(double driveHeading, double driveSpeed, double initalSpeed, double initalAngle, double finalAngle, double distance) {
+    public void experimentalDriveByDistanceWithRotationYeahItsPrettyCoool(double driveHeading,
+                                                                          double driveSpeed, double initalSpeed, double initalAngle, double finalAngle,
+                                                                          double distance) {
         driveManager.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         driveManager.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -886,6 +907,7 @@ public class Robot extends Thread {
         stopDrive();
     }
 
+
     public void stopDrive() {
         setPowerDouble4(0, 0, 0, 0, 0);
     }
@@ -902,7 +924,8 @@ public class Robot extends Thread {
     // can go forward, backwards, or sideways
     //distance should be in cm
     @Deprecated
-    public void driveByDistancePoorly(double distance, simpleDirection direction, double speedMultiplier) {
+    public void driveByDistancePoorly(double distance, simpleDirection direction,
+                                      double speedMultiplier) {
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         int targetEncoders = (int) ((480.0 / RobotConfiguration.wheel_circumference) * distance);
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -1020,7 +1043,8 @@ public class Robot extends Thread {
     }
 
     // Drive Helper Method
-    public void updateRobotDrive(double frontLeft, double frontRight, double backLeft, double backRight) {
+    public void updateRobotDrive(double frontLeft, double frontRight, double backLeft,
+                                 double backRight) {
         driveManager.frontLeft.setPower(frontLeft);
         driveManager.frontRight.setPower(frontRight);
         driveManager.backLeft.setPower(backLeft);
