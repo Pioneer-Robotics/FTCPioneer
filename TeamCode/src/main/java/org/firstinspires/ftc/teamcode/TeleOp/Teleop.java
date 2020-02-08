@@ -83,7 +83,7 @@ public class Teleop extends TeleOpMode {
 
         robot.arm.rotationMode = RobotArm.ArmThreadMode.Disabled;
         robot.arm.extensionMode = RobotArm.ArmThreadMode.Disabled;
-
+        robot.arm.length.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         for (bMotor motor : robot.driveManager.driveMotors) {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
@@ -269,12 +269,10 @@ public class Teleop extends TeleOpMode {
 //
 //                engiData.extension = robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_ticksMax;
 //            }
-
-            engiData.powerExtension = false;
+            engiData.extendSpeed = (gamepad2.right_trigger - gamepad2.left_trigger);
+            engiData.powerExtension = true;
 //            engiData.extension += gamepad2.right_trigger * deltaTime.seconds() * 1;    //extend arm when right trigger held and dpad left is pressed
 //            engiData.extension -= gamepad2.left_trigger * deltaTime.seconds() * 1;     //retract arm when left trigger held and dpad left is pressed
-
-
 
             if (!engiData.spoolProtect) engiData.extension = bMath.Clamp(engiData.extension, 0, 1);
             engiData.raiseSpeed = bMath.Clamp(-gamepad2.left_stick_y, -1, 1); //set raise
