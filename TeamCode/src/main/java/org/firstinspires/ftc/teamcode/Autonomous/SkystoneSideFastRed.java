@@ -16,8 +16,6 @@ public class SkystoneSideFastRed extends Auto {
     @Override
     public void runOpMode() {
         startRobot();
-        robot.arm.rotationMode = RobotArm.ArmThreadMode.Enabled;
-        robot.arm.extensionMode = RobotArm.ArmThreadMode.Disabled;
 
         speed_high = 0.5;
         speed_med = 0.50; //0.3
@@ -53,9 +51,9 @@ public class SkystoneSideFastRed extends Auto {
 
         runDeliveryCycle(100, 500, 35, 36, 150, true, 250);
 //        runDeliveryCycle(93, 1000, 50, 24, 130 + (24), true);
-        runDeliveryCycle(40, 500, 15, 48, 160, false,250);
+        runDeliveryCycle(40, 500, 15, 48, 160, false, 250);
 
-        robot.arm.setArmStateAsync(0.02248, 0);
+        robot.arm.setArmStateAsync(0.02248, -0.06);
 
         robot.driveByDistance(180, 0.75, 35);
 
@@ -148,7 +146,7 @@ public class SkystoneSideFastRed extends Auto {
         //Closes the gripper on the stone
         robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
 
-        robot.arm.setArmStateAsync(0.02148, 0.3);
+        robot.arm.setArmStateAsync((0.02148 + 0.0117999) / 2, 0.3);
 //        robot.arm.setArmStateAsync(0.02248, 0.3);
 
         //Wait to ensure the gripper is closed
@@ -175,8 +173,8 @@ public class SkystoneSideFastRed extends Auto {
 //        robot.rotateSimple(angle, 2, 2, 0.5); //This one is a fail safe that will mostly work.
     }
 
-    public void adjustHeading(double angle){
-        robot.rotatePID(angle, 1,0.5,1);
+    public void adjustHeading(double angle) {
+        robot.rotatePID(angle, 1, 0.5, 1);
     }
 
 

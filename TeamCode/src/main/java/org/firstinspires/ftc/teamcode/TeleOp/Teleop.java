@@ -2,8 +2,10 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Hardware.bMotor;
 import org.firstinspires.ftc.teamcode.Helpers.Vector2;
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
@@ -78,6 +80,14 @@ public class Teleop extends TeleOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(this, false);
+
+        robot.arm.rotationMode = RobotArm.ArmThreadMode.Disabled;
+        robot.arm.extensionMode = RobotArm.ArmThreadMode.Disabled;
+
+        for (bMotor motor : robot.driveManager.driveMotors) {
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
+
         gamepad1.setJoystickDeadzone(0.1f);
 
 
@@ -320,7 +330,8 @@ public class Teleop extends TeleOpMode {
         if (dropLunchBox) lunchboxRot = 0;
         else lunchboxRot = 0.738;
 
-        if (gamepad2.dpad_down && !engiData.spoolProtectCheck) engiData.spoolProtect = !engiData.spoolProtect;
+        if (gamepad2.dpad_down && !engiData.spoolProtectCheck)
+            engiData.spoolProtect = !engiData.spoolProtect;
         robot.arm.setSpoolProtect(engiData.spoolProtect);
         engiData.spoolProtectCheck = gamepad2.dpad_down;
 
@@ -346,7 +357,11 @@ public class Teleop extends TeleOpMode {
 
     private void doTelemetry() {
         telemetry.addLine("------ Control ------");
-        telemetry.addData("deltaTime", deltaTime.milliseconds() );
+
+        telemetry.addData("robot arm extension state", robot.arm.extensionMode.toString());
+        telemetry.addData("robot arm extension state", robot.arm.rotationMode.toString());
+
+        telemetry.addData("deltaTime", deltaTime.milliseconds());
         telemetry.addLine("------ Movement ------");
         telemetry.addData("Rotation Locked ", coordinateSystemLock);
         telemetry.addData("Current Rotation ", robot.getRotation());
@@ -354,13 +369,13 @@ public class Teleop extends TeleOpMode {
         telemetry.addLine("-------- Arm  --------");
         telemetry.addData("Current Arm Angle", bMath.toDegrees(robot.arm.thetaAngle()));
         telemetry.addData("Current Potentiometer angle", robot.armPotentiometer.getAngle());
-        telemetry.addData("Rotation Position", robot.arm.rotation.getCurrentPosition()/RobotConfiguration.arm_rotationMax);
+        telemetry.addData("Rotation Position", robot.arm.rotation.getCurrentPosition() / RobotConfiguration.arm_rotationMax);
         telemetry.addData("RectWanted?:", engiData.rectControls);
         telemetry.addData("target spool position", engiData.extension * RobotConfiguration.arm_ticksMax);
         telemetry.addData("spool position", robot.arm.length.getCurrentPosition());
         telemetry.addData("spool position as percent", robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_ticksMax);
         telemetry.addData("arm rotation as percent", robot.arm.rotation.getCurrentPosition() / RobotConfiguration.arm_rotationMax);
-        telemetry.addData("spoolProtect",engiData.spoolProtect);
+        telemetry.addData("spoolProtect", engiData.spoolProtect);
         telemetry.addLine("------ Lunchbox ------");
         telemetry.addData("Current Lunchbox", lunchboxRot);
         telemetry.update();

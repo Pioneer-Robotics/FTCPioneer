@@ -290,7 +290,7 @@ public class Robot extends Thread {
 //            op.telemetry.update();
 
             //Make sure that the robot stops once we request a stop
-            if (Op.isStopRequested() ) {
+            if (Op.isStopRequested()) {
                 setPowerDouble4(0, 0, 0, 0, 0);
                 threadRunning.set(false);
             }
@@ -304,11 +304,11 @@ public class Robot extends Thread {
 
                 if (arm.targetRotation != lastTargetPosition) {
                     lastTargetPosition = arm.targetRotation;
-                    bTelemetry.print("Arm State Changed");
+//                    bTelemetry.print("Arm State Changed");
                     threadArmTime = 0;
                 }
 
-                bTelemetry.print("Arm Time", threadArmTime);
+//                bTelemetry.print("Arm Time", threadArmTime);
 //                bTelemetry.print("Target Arm Position", desiredArmRotationPower);
 
 
@@ -846,50 +846,14 @@ public class Robot extends Thread {
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void driveByDistanceArmAsync(double angle, double speed, double distance, double targetArmDelay, double targetArmLength, double targetArmRotation) {
-
-        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
-        Double4 a = bMath.getMecMovement(angle, 0, 0);
-
-        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
-        setPowerDouble4(1, 1, 1, 1, speed);
-
-//        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
-//        setPowerDouble4(a.x, a.y, a.z, a.w, speed);
-
-
-        setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        double runTime = 0;
-        ElapsedTime deltaTime = new ElapsedTime();
-
-        while (Op.opModeIsActive() && wheelsBusy() && !arm.armAsyncTargetReached()) {
-            deltaTime.reset();
-
-            if (runTime > targetArmDelay) {
-                arm.setArmStateAsync(targetArmRotation, targetArmLength);
-            }
-
-            runTime += deltaTime.seconds();
-
-            if (!Op.opModeIsActive()) {
-                break;
-            }
-            //Wait until we are at our target distance
-        }
-
-        Op.telemetry.addData("Target Reached", "");
-        Op.telemetry.update();
-
-        //shutdown motors
-        setPowerDouble4(0, 0, 0, 0, 0);
-
-        //Set up for normal driving
-        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
+//    public void experimentalDriveByDistance(double driveAngle, double correctionAngle, double distance) {
+//        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
+//
+//        Double4 a = bMath.getMecMovement(90,, 0, 2);
+//        Double4 targetPositions = a.x * distanceTicks, a.)
+//        y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
+//moveComplex
+//    }
 
     @Deprecated
     public enum simpleDirection {

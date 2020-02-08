@@ -15,7 +15,6 @@ public class SkystoneSideFastBlue extends Auto {
     @Override
     public void runOpMode() {
         startRobot();
-        robot.arm.rotationMode = RobotArm.ArmThreadMode.Enabled;
 
         speed_high = 0.5;
         speed_med = 0.50; //0.3
@@ -49,11 +48,11 @@ public class SkystoneSideFastBlue extends Auto {
 ////            runDeliveryCycle(stone == 1 ? 93 : 30, 1000, 35, stone * 24, 130 + (stone * 30), stone != cycles);
 ////        }
 
-        runDeliveryCycle(93, 500, 20, 36, 90 + 24, true, 250);
+        runDeliveryCycle(93, 500, 20, 36, 120 + 24, true, 250);
 //        runDeliveryCycle(93, 1000, 50, 24, 130 + (24), true);
-        runDeliveryCycle(10, 500, 15, 48, 100 + (48), false,250);
+        runDeliveryCycle(10, 500, 30, 48, 120 + (48), false,250);
 
-        robot.arm.setArmStateAsync(0.02248, 0);
+        robot.arm.setArmStateAsync(0.02248, -0.06);
 
         robot.driveByDistance(180, 0.75, 35);
 
@@ -62,7 +61,7 @@ public class SkystoneSideFastBlue extends Auto {
         if (endOnWall) {
             robot.driveByDistance(-90, 0.8, 80);
         } else {
-            robot.driveByDistance(90, 0.8, 10);
+            robot.driveByDistance(90, 0.8, 20);
             //robot.driveByDistance(180, 0.5, 20);
         }
 //        160
@@ -146,7 +145,9 @@ public class SkystoneSideFastBlue extends Auto {
         //Closes the gripper on the stone
         robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
 
-        robot.arm.setArmStateAsync(0.02148, 0.3);
+        robot.arm.setArmStateAsync((0.02148+0.0117999)/2, 0.3);
+        //        robot.arm.setArmStateAsync(0.02148, 0.3);
+
 //        robot.arm.setArmStateAsync(0.02248, 0.3);
 
         //Wait to ensure the gripper is closed
