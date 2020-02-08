@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public class DevFoundationRedSide extends Auto {
     @Override
     public void runOpMode() {
-        boolean endOnWall = true;
+        boolean endOnWall = false;
         startRobot();
         waitForStart();
         sleep(1000);
@@ -41,11 +41,11 @@ public class DevFoundationRedSide extends Auto {
         }
         else{
             //more past the foundation but not quite to the bridge
-            robot.driveByDistance(100, 0.5, 130);
+            robot.driveByDistance(-100, 0.5, 130);
             //go forward to be closer to the bridge
             robot.driveByDistance(0, 0.5, 90);
             //go the rest of the way under the bridge
-            robot.driveByDistance(90, 0.5, 80);
+            robot.driveByDistance(-90, 0.5, 80);
             //tap the bridge to try and line up more
             robot.driveByDistance(0, 0.25, 10);
         }

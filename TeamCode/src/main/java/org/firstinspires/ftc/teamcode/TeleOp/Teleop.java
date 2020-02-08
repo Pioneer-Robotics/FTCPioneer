@@ -115,8 +115,8 @@ public class Teleop extends TeleOpMode {
         robot.shutdown();
     }
 
-    RotationData rotationData;
-    DriverTeleopData driverTeleopData;
+    RotationData rotationData = new RotationData(0, false, false);
+    DriverTeleopData driverTeleopData = new DriverTeleopData(0, new RotationData(0, false, false), false, false);
 
     /*
     This method updates and applies any changes to the driver controls and handles movement
@@ -151,12 +151,17 @@ public class Teleop extends TeleOpMode {
         rightRotatePower = -gamepad1.right_stick_x;
 
         // Update Robot Drive
-        double frontLeftWheelPower = moveSpeed * (leftDiagPower + leftRotatePower);
-        double frontRightWheelPower = moveSpeed * (rightDiagPower + rightRotatePower);
-        double backLeftWheelPower = moveSpeed * (rightDiagPower + leftRotatePower);
-        double backRightWheelPower = moveSpeed * (leftDiagPower + rightRotatePower);
+        frontLeftWheelPower = moveSpeed * (leftDiagPower + leftRotatePower);
+        frontRightWheelPower = moveSpeed * (rightDiagPower + rightRotatePower);
+        backLeftWheelPower = moveSpeed * (rightDiagPower + leftRotatePower);
+        backRightWheelPower = moveSpeed * (leftDiagPower + rightRotatePower);
         robot.updateRobotDrive(frontLeftWheelPower, frontRightWheelPower, backLeftWheelPower, backRightWheelPower);
     }
+
+    double frontLeftWheelPower;
+    double frontRightWheelPower;
+    double backLeftWheelPower;
+    double backRightWheelPower;
 
     Vector2 movementVectorCache_left = new Vector2(0, 0);
 
@@ -207,20 +212,31 @@ public class Teleop extends TeleOpMode {
 
     // TODO: - Move to a Math Class
     private Vector2 getMovementVector(double movementInput_x, double movementInput_y) {
-        double angle = Math.toRadians(robot.getRotation() - rotationLockAngle);
+        angle = Math.toRadians(robot.getRotation() - rotationLockAngle);
 
-        double movementSpeed = (Math.sqrt(Math.pow(movementInput_x, 2) + Math.pow(movementInput_y, 2)));
+        movementSpeed = (Math.sqrt(Math.pow(movementInput_x, 2) + Math.pow(movementInput_y, 2)));
 
-        double _newGamepadX = movementSpeed * Math.cos(angle + Math.atan(movementInput_y / movementInput_x));
-        double _newGamepadY = movementSpeed * Math.sin(angle + Math.atan(movementInput_y / movementInput_x));
+        _newGamepadX = movementSpeed * Math.cos(angle + Math.atan(movementInput_y / movementInput_x));
+        _newGamepadY = movementSpeed * Math.sin(angle + Math.atan(movementInput_y / movementInput_x));
 
-        double newGamepadX = (gamepad1.left_stick_x <= 0) ? -_newGamepadX : _newGamepadX;
-        double newGamepadY = (gamepad1.left_stick_x <= 0) ? -_newGamepadY : _newGamepadY;
+        newGamepadX = (gamepad1.left_stick_x <= 0) ? -_newGamepadX : _newGamepadX;
+        newGamepadY = (gamepad1.left_stick_x <= 0) ? -_newGamepadY : _newGamepadY;
 
         movementVectorCache.x = newGamepadX;
         movementVectorCache.y = newGamepadY;
         return movementVectorCache;
     }
+
+    double angle;
+
+    double movementSpeed;
+
+    double _newGamepadX;
+    double _newGamepadY;
+
+    double newGamepadX;
+    double newGamepadY;
+
 
     /*
     This method updates the arm and switches between it's control modes
@@ -367,27 +383,27 @@ public class Teleop extends TeleOpMode {
     }
 
     private void doTelemetry() {
-        telemetry.addLine("------ Control ------");
-
-        telemetry.addData("robot arm extension state", robot.arm.extensionMode.toString());
-        telemetry.addData("robot arm extension state", robot.arm.rotationMode.toString());
-
+//        telemetry.addLine("------ Control ------");
+//
+//        telemetry.addData("robot arm extension state", robot.arm.extensionMode.toString());
+//        telemetry.addData("robot arm extension state", robot.arm.rotationMode.toString());
+//
         telemetry.addData("deltaTime", deltaTime.milliseconds());
-        telemetry.addLine("------ Movement ------");
+//        telemetry.addLine("------ Movement ------");
         telemetry.addData("Rotation Locked ", coordinateSystemLock);
-        telemetry.addData("Current Rotation ", robot.getRotation());
-//            telemetry.addData("Offset Angle ", angle);
-        telemetry.addLine("-------- Arm  --------");
-        telemetry.addData("Current Arm Angle", bMath.toDegrees(robot.arm.thetaAngle()));
-        telemetry.addData("Current Potentiometer angle", robot.armPotentiometer.getAngle());
-        telemetry.addData("Rotation Position", robot.arm.rotation.getCurrentPosition() / RobotConfiguration.arm_rotationMax);
+//        telemetry.addData("Current Rotation ", robot.getRotation());
+////            telemetry.addData("Offset Angle ", angle);
+//        telemetry.addLine("-------- Arm  --------");
+//        telemetry.addData("Current Arm Angle", bMath.toDegrees(robot.arm.thetaAngle()));
+//        telemetry.addData("Current Potentiometer angle", robot.armPotentiometer.getAngle());
+//        telemetry.addData("Rotation Position", robot.arm.rotation.getCurrentPosition() / RobotConfiguration.arm_rotationMax);
         telemetry.addData("RectWanted?:", engiData.rectControls);
-        telemetry.addData("target spool position", engiData.extension * RobotConfiguration.arm_ticksMax);
-        telemetry.addData("spool position", robot.arm.length.getCurrentPosition());
-        telemetry.addData("spool position as percent", robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_ticksMax);
-        telemetry.addData("arm rotation as percent", robot.arm.rotation.getCurrentPosition() / RobotConfiguration.arm_rotationMax);
+//        telemetry.addData("target spool position", engiData.extension * RobotConfiguration.arm_ticksMax);
+//        telemetry.addData("spool position", robot.arm.length.getCurrentPosition());
+//        telemetry.addData("spool position as percent", robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_ticksMax);
+//        telemetry.addData("arm rotation as percent", robot.arm.rotation.getCurrentPosition() / RobotConfiguration.arm_rotationMax);
         telemetry.addData("spoolProtect", engiData.spoolProtect);
-        telemetry.addLine("------ Lunchbox ------");
+//        telemetry.addLine("------ Lunchbox ------");
         telemetry.addData("Current Lunchbox", lunchboxRot);
         telemetry.update();
     }
