@@ -5,6 +5,7 @@ import android.renderscript.Double4;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
@@ -15,6 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Helpers.PID;
+import org.firstinspires.ftc.teamcode.Helpers.Vector2;
 import org.firstinspires.ftc.teamcode.Helpers.bDataManager;
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
 import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
@@ -1029,5 +1031,23 @@ public class Robot extends Thread {
         driveManager.backLeft.setPower(backLeft);
         driveManager.backRight.setPower(backRight);
     }
+
+    public Vector2 getMovementVector(Gamepad gamepad,
+                                     double rotationLockAngle,
+                                     double movementInput_x,
+                                     double movementInput_y) {
+        Vector2 result = new Vector2(0, 0);
+
+        double angle = Math.toRadians(getRotation() - rotationLockAngle);
+        double movementSpeed = (Math.sqrt(Math.pow(movementInput_x, 2) + Math.pow(movementInput_y, 2)));
+
+        double _newGamepadX = movementSpeed * Math.cos(angle + Math.atan(movementInput_y / movementInput_x));
+        double _newGamepadY = movementSpeed * Math.sin(angle + Math.atan(movementInput_y / movementInput_x));
+
+        result.x = (gamepad.left_stick_x <= 0) ? -_newGamepadX : _newGamepadX;
+        result.y = (gamepad.left_stick_x <= 0) ? -_newGamepadY : _newGamepadY; // **** IS `left_stick_x` a BUG **** shouldn't it be y ???
+        return result;
+    }
+
 
 }

@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Helpers.bMath;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 import org.firstinspires.ftc.teamcode.Robot.RobotConfiguration;
+import org.firstinspires.ftc.teamcode.TeleOp.ArmControls.TeleopArmControls;
 import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.DriverTeleopData;
 import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.EngineeringControlData;
 import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.RotationData;
@@ -77,6 +78,20 @@ public class Teleop extends TeleOpMode {
     private boolean bButton1Check = false;
     //Mode Switch Variables
 
+    // Additional properties
+    double frontLeftWheelPower;
+    double frontRightWheelPower;
+    double backLeftWheelPower;
+    double backRightWheelPower;
+
+    Vector2 movementVectorCache_left = new Vector2(0, 0);
+    Vector2 movementVectorCache_right = new Vector2(0, 0);
+
+    RotationData rotationData = new RotationData(0, false, false);
+    DriverTeleopData driverTeleopData = new DriverTeleopData(0, new RotationData(0, false, false), false, false);
+
+
+    // Life Cycle Methods
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(this, false);
@@ -114,9 +129,6 @@ public class Teleop extends TeleOpMode {
         }
         robot.shutdown();
     }
-
-    RotationData rotationData = new RotationData(0, false, false);
-    DriverTeleopData driverTeleopData = new DriverTeleopData(0, new RotationData(0, false, false), false, false);
 
     /*
     This method updates and applies any changes to the driver controls and handles movement
@@ -158,13 +170,6 @@ public class Teleop extends TeleOpMode {
         robot.updateRobotDrive(frontLeftWheelPower, frontRightWheelPower, backLeftWheelPower, backRightWheelPower);
     }
 
-    double frontLeftWheelPower;
-    double frontRightWheelPower;
-    double backLeftWheelPower;
-    double backRightWheelPower;
-
-    Vector2 movementVectorCache_left = new Vector2(0, 0);
-
     // TODO: - Move to ??? Class
     /*
     This method determines the power levels for the wheels
@@ -178,7 +183,7 @@ public class Teleop extends TeleOpMode {
         if (useLockedRotation) {
             telemetry.addData("Drive System", "New");
 
-            movementVectorCache_left = getMovementVector(movementInput_x, movementInput_y);
+            movementVectorCache_left = robot.getMovementVector(gamepad1, rotationLockAngle, movementInput_x, movementInput_y);
             return ((-movementVectorCache_left.y + movementVectorCache_left.x) / sq2);
         } else {
             telemetry.addData("Drive System", "Old");
@@ -187,8 +192,6 @@ public class Teleop extends TeleOpMode {
         }
 
     }
-
-    Vector2 movementVectorCache_right = new Vector2(0, 0);
 
     private double getRightDiagPower(boolean useLockedRotation,
                                      double movementInput_x,
@@ -199,7 +202,7 @@ public class Teleop extends TeleOpMode {
         if (useLockedRotation) {
             telemetry.addData("Drive System", "New");
 
-            movementVectorCache_right = getMovementVector(movementInput_x, movementInput_y);
+            movementVectorCache_right = robot.getMovementVector(gamepad1, rotationLockAngle, movementInput_x, movementInput_y);
             return ((-movementVectorCache_right.y - movementVectorCache_right.x) / sq2);
 
         } else {
@@ -208,103 +211,64 @@ public class Teleop extends TeleOpMode {
         }
     }
 
-    Vector2 movementVectorCache = new Vector2(0, 0);
 
-    // TODO: - Move to a Math Class
+    // All Moved to Robot.java
+    // I left this commented out for reference for now (remove after read and understood)
+
+    // ******* Also I may have found a BUG ****** Look in the method in Robot to fix it IF necessary **************
+
+    /*
+    // *** These variables are always set internally to the methods, so they should be scoped to the function
+//    double _newGamepadX;
+//    double _newGamepadY;
+
+    // *** These variables never leave the internal methods either and are always set in the fuction be fore they are returned in Vector2
+//    double newGamepadX;
+//    double newGamepadY;
+
+    // All of these variables also never leave the method and should be scoped only internally to the methods. (Not class wide)
+//    double movementSpeed;
+//    double angle;
+//    Vector2 movementVectorCache = new Vector2(0, 0);
+
+    // TODO: - Move to a Robot Class
     private Vector2 getMovementVector(double movementInput_x, double movementInput_y) {
-        angle = Math.toRadians(robot.getRotation() - rotationLockAngle);
+        // A common pattern is to name the object that will be returned `result` so that it can be easily understood
+        // With this in mind I'm renaming `movementVectorCache` to result since that is the Result object of this method
 
-        movementSpeed = (Math.sqrt(Math.pow(movementInput_x, 2) + Math.pow(movementInput_y, 2)));
+        Vector2 result = new Vector2(0, 0);
 
-        _newGamepadX = movementSpeed * Math.cos(angle + Math.atan(movementInput_y / movementInput_x));
-        _newGamepadY = movementSpeed * Math.sin(angle + Math.atan(movementInput_y / movementInput_x));
+        double angle = Math.toRadians(robot.getRotation() - rotationLockAngle);
 
-        newGamepadX = (gamepad1.left_stick_x <= 0) ? -_newGamepadX : _newGamepadX;
-        newGamepadY = (gamepad1.left_stick_x <= 0) ? -_newGamepadY : _newGamepadY;
+        double movementSpeed = (Math.sqrt(Math.pow(movementInput_x, 2) + Math.pow(movementInput_y, 2)));
 
-        movementVectorCache.x = newGamepadX;
-        movementVectorCache.y = newGamepadY;
-        return movementVectorCache;
+        // *** These should be scoped to the method since they are only used in the method and are always reset before use in the methods
+        //      In General try to scope variables to as small as scope as possible. This helps alleviate bugs
+
+        double _newGamepadX = movementSpeed * Math.cos(angle + Math.atan(movementInput_y / movementInput_x));
+        double _newGamepadY = movementSpeed * Math.sin(angle + Math.atan(movementInput_y / movementInput_x));
+
+        // *** Variables `newGamepadX` & `newGamepadY` never leave the internal methods either and are always set in the fuction be fore they are returned in Vector2
+        //      I also colapsed them directly into `result.x` & `result.y` since other then for logging purposes they were unnecessary.
+        result.x = (gamepad1.left_stick_x <= 0) ? -_newGamepadX : _newGamepadX;
+        result.y = (gamepad1.left_stick_x <= 0) ? -_newGamepadY : _newGamepadY; // **** IS `gamepad1.left_stick_x` a BUG **** shouldn't it be y ???
+        return result;
     }
-
-    double angle;
-
-    double movementSpeed;
-
-    double _newGamepadX;
-    double _newGamepadY;
-
-    double newGamepadX;
-    double newGamepadY;
-
+*/
 
     /*
-    This method updates the arm and switches between it's control modes
-     */
+    Asks TeleopArmControls for the updated arm data (engiData) and then calls move arm
+    */
     private void updateArm() {
-
-        updateRectControls();
-
-        //Allows the Gripper to be moved straight up and down with the right joystick
-        if (engiData.rectControls) {
-            telemetry.addLine("Arm Control: Rect");
-            //Switch mode to position based extension
-            engiData.powerExtension = false;
-            //set power and distance to the Arm.
-            engiData.extension = robot.arm.RectExtension(engiData.rectControls_goingUp, engiData.xExtConst, engiData.yExtConst);
-            engiData.extension = bMath.Clamp(robot.arm.cmToTicks(engiData.extension) / RobotConfiguration.arm_ticksMax);
-            engiData.raiseSpeed = engiData.rectControls_goingUp ? -0.5 * gamepad2.right_stick_y : -0.5 * gamepad2.right_stick_x;
-
-        } else {
-            telemetry.addLine("Arm Control: Radial");
-
-//            if (gamepad2.dpad_left || (gamepad2.right_trigger - gamepad2.right_trigger) < 0.05) { //When override or triggers are not pressed, extend using getposition
-//                engiData.powerExtension = false;
-//                engiData.extension += gamepad2.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held and dpad left is pressed
-//                engiData.extension -= gamepad2.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held and dpad left is pressed
-//                engiData.extension = bMath.Clamp(engiData.extension, 0, 1);
-//            } else {
-//                engiData.powerExtension = true;
-//                engiData.extendSpeed = gamepad2.right_trigger - gamepad2.right_trigger;
-//
-//                engiData.extension = robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_ticksMax;
-//            }
-
-            engiData.powerExtension = false;
-            engiData.extension += gamepad2.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held and dpad left is pressed
-            engiData.extension -= gamepad2.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held and dpad left is pressed
-            if (!engiData.spoolProtect) engiData.extension = bMath.Clamp(engiData.extension, 0, 1);
-            engiData.raiseSpeed = bMath.Clamp(-gamepad2.left_stick_y, -1, 1); //set raise
-
-        }
-
-        moveArm();
-
-    }
-
-    /*
-    This method calculates all rectangular control information and determines whether the arm should
-    be in a rectangular control state.
-     */
-    private void updateRectControls() {
-        // Activates rectControls when right stick is being moved
-        engiData.rectControls = ((Math.abs(gamepad2.right_stick_y) > 0.1) || (Math.abs(gamepad2.right_stick_x) > 0.1));
-        //sets direction of rectControls to whichever axis is greater
-        engiData.rectControls_goingUp = Math.abs(gamepad2.right_stick_y) > Math.abs(gamepad2.right_stick_x);
-
-        //get new extension constants if rectControls changes or if direction changes
-        if ((engiData.rectControls != engiData.rectControlsCheck) || (engiData.rectControls_goingUp != engiData.rectControls_goingUpCheck))
-            engiData.xExtConst = robot.arm.xExtConst();
-        engiData.yExtConst = robot.arm.yExtConst();
-
-        engiData.rectControlsCheck = engiData.rectControls;
-        engiData.rectControls_goingUpCheck = engiData.rectControls_goingUp;
+        EngineeringControlData result = TeleopArmControls.updateArm(gamepad2, robot, engiData, deltaTime, telemetry);
+        moveArm(robot, result);
     }
 
     /*
     Moves the arm to position specified by the engiData
-     */
-    private void moveArm() {
+    */
+    private void moveArm(Robot robot,
+                         EngineeringControlData engiData) {
         if (engiData.powerExtension)
             robot.arm.SetArmStateExtensionPower(engiData.extendSpeed, engiData.raiseSpeed);
         else robot.arm.SetArmStatePower(engiData.extension, engiData.raiseSpeed);
