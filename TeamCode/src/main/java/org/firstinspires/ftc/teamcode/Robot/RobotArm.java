@@ -59,8 +59,6 @@ public class RobotArm extends Thread {
     }
 
     // lets make some real changes
-    private AtomicBoolean runningThread = new AtomicBoolean();
-
     private ElapsedTime deltaTime = new ElapsedTime();
 
     //The scale range Double2's are interpreted as X = min and Y = max.
@@ -369,8 +367,5 @@ public class RobotArm extends Thread {
         gripRotation.setPosition(rotationPosition);
     }
 
-    public void Stop() {
-        runningThread.set(false);
-    }
 }
 //oof

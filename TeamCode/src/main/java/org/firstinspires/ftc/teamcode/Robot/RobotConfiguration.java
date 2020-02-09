@@ -106,9 +106,6 @@ public class RobotConfiguration {
     //The max speed our wheel motors will ever rotate (in ticks per second), 3 rotations per second. Used in calibration.
     public static final int wheel_maxTicksPerSecond = 4320;
 
-    //How many times we need to spin the motor in order to rotate the wheel once
-    public static final double wheel_GearCoefficient = 2;
-
     //pi * diameter
     public static final double wheel_circumference = 32.2;
 }

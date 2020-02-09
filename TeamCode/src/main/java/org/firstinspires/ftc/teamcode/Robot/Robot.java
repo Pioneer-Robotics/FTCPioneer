@@ -59,16 +59,13 @@ public class Robot extends Thread {
     //Delta time, used in the thread for timing
     public ElapsedTime threadDeltaTime = new ElapsedTime();
 
-
     //The data manager serves to store data locally on the phone, used in calibration and PID tuning.
     public bDataManager dataManger = new bDataManager();
 
     double desiredArmRotationPower;
 
     public LinearOpMode Op;
-//    public OpMode LinearOpMode;
 
-    //If our thread is running, using atomics to avoid thread conflicts. Might not be completely necessary
     private AtomicBoolean threadRunning = new AtomicBoolean();
 
     private AtomicLong threadLastRunTime = new AtomicLong(0);
@@ -346,7 +343,7 @@ public class Robot extends Thread {
 
 
     public void shutdown() {
-        arm.Stop();
+
         experimentalInput.Stop();
         threadRunning.set(false);
         setPowerDouble4(0, 0, 0, 0, 0);
@@ -774,46 +771,6 @@ public class Robot extends Thread {
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void driveByDistance(double angle, double speed, double distance, boolean slowDown) {
-
-        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
-        Double4 a = bMath.getMecMovement(angle, 0, 0);
-
-        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
-        setPowerDouble4(1, 1, 1, 1, speed);
-
-//        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
-//        setPowerDouble4(a.x, a.y, a.z, a.w, speed);
-
-
-        setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        Op.telemetry.addData("Driving by distance ", distance * ((RobotConfiguration.wheel_circumference * RobotConfiguration.wheel_ticksPerRotation)));
-        Op.telemetry.update();
-        while (Op.opModeIsActive() && wheelsBusy()) {
-            Op.telemetry.addData("Wheel Busy", "");
-            Op.telemetry.addData("Wheel Front Right Postion", driveManager.frontRight.getCurrentPosition());
-            Op.telemetry.addData("Wheel Front Right Target", driveManager.frontRight.motor.getTargetPosition());
-            Op.telemetry.update();
-
-            if (!Op.opModeIsActive()) {
-                break;
-            }
-            //Wait until we are at our target distance
-        }
-
-        Op.telemetry.addData("Target Reached", "");
-        Op.telemetry.update();
-
-        //shutdown motors
-        setPowerDouble4(0, 0, 0, 0, 0);
-
-        //Set up for normal driving
-        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
 
     public void driveByDistance(double angle, double speed, double distance, double maxTime) {
 
@@ -885,9 +842,9 @@ public class Robot extends Thread {
         stopDrive();
     }
 
-    public void experimentalDriveByDistanceWithRotationYeahItsPrettyCoool(double driveHeading,
-                                                                          double driveSpeed, double initalSpeed, double initalAngle, double finalAngle,
-                                                                          double distance) {
+    public void experimentalDriveByDistanceWithRotationYeahItsPrettyCo0o0oOo0OoO0Oool(double driveHeading,
+                                                                                      double driveSpeed, double initalSpeed, double initalAngle, double finalAngle,
+                                                                                      double distance) {
         driveManager.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         driveManager.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -907,6 +864,28 @@ public class Robot extends Thread {
         stopDrive();
     }
 
+    public void experimentalDriveByDistanceCurve(double driveHeading, double headingDrift, double driveSpeed,
+                                                 double initalSpeed, double correctionAngle, double distance) {
+        driveManager.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveManager.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
+
+        double speedAdd = initalSpeed;
+
+        double percentComplete = 0;
+
+        ElapsedTime dTime = new ElapsedTime();
+        dTime.reset();
+        while (driveManager.backRight.getCurrentPosition() < distanceTicks) {
+
+            percentComplete = driveManager.backRight.getCurrentPosition() / distanceTicks;
+            headingDrift += dTime.seconds();
+            moveComplex(bMath.Loop(driveHeading + headingDrift, 180), (Math.sin(percentComplete * Math.PI) * driveSpeed) + initalSpeed, getRotation() - correctionAngle, 0);
+            dTime.reset();
+        }
+        stopDrive();
+    }
 
     public void stopDrive() {
         setPowerDouble4(0, 0, 0, 0, 0);
