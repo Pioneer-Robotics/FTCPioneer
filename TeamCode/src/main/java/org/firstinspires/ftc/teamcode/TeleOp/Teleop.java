@@ -100,8 +100,7 @@ public class Teleop extends TeleOpMode {
         while (opModeIsActive()) {
 
             updateDriverControls();
-
-            updateArm();
+            //yeeeeett
 
             updateServoControls();
 
