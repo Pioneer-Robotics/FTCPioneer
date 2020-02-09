@@ -107,7 +107,7 @@ public class Teleop extends TeleOpMode {
             moveServos();
 
             doTelemetry();
-
+//gjkdsh
             // Update deltaTime
             deltaTime.reset();
         }
