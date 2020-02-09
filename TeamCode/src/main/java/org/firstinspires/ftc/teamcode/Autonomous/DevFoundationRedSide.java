@@ -48,7 +48,7 @@ public class DevFoundationRedSide extends Auto {
         robot.releaseFoundation();
         if (endOnWall) {
             //go under bridge
-            robot.driveByDistance(-100, 0.5, 225);
+            robot.driveByDistance(-100, 0.5, 235);
             //pull into the wall, to make sure you're there
             robot.driveByDistance(180, 0.5, 25);
             //go right a little more, to center robot
