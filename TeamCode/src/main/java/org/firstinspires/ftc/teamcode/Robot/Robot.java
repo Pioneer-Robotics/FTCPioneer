@@ -828,64 +828,39 @@ public class Robot extends Thread {
 
         double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
 
-        double speedAdd = initalSpeed;
-
         double percentComplete = 0;
 
-        while (driveManager.backRight.getCurrentPosition() < distanceTicks) {
+        while ( Math.abs(driveManager.backRight.getCurrentPosition() - distanceTicks) < 8) {
 
             percentComplete = driveManager.backRight.getCurrentPosition() / distanceTicks;
 
             moveComplex(driveHeading, (Math.sin(percentComplete * Math.PI) * driveSpeed) + initalSpeed, getRotation() - correctionAngle, 0);
-//            moveComplex(driveHeading, driveSpeed, getRotation() - correctionAngle, 0);
         }
         stopDrive();
     }
 
-    public void experimentalDriveByDistanceWithRotationYeahItsPrettyCo0o0oOo0OoO0Oool(double driveHeading,
-                                                                                      double driveSpeed, double initalSpeed, double initalAngle, double finalAngle,
-                                                                                      double distance) {
-        driveManager.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        driveManager.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//    public void experimentalDriveByDistanceWithRotationYeahItsPrettyCo0o0oOo0OoO0Oool(double driveHeading,
+//                                                                                      double driveSpeed, double initalSpeed, double initalAngle, double finalAngle,
+//                                                                                      double distance) {
+//        driveManager.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        driveManager.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//
+//        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
+//
+//        double speedAdd = initalSpeed;
+//
+//        double percentComplete = 0;
+//
+//        while (driveManager.backRight.getCurrentPosition() < distanceTicks) {
+//
+//            percentComplete = driveManager.backRight.getCurrentPosition() / distanceTicks;
+//
+//            moveComplex(getRotation() - driveHeading, (Math.sin(percentComplete * Math.PI) * driveSpeed) + initalSpeed, getRotation() - (percentComplete > 0.5 ? finalAngle : initalAngle), 0);
+////            moveComplex(driveHeading, driveSpeed, getRotation() - correctionAngle, 0);
+//        }
+//        stopDrive();
+//    }
 
-        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
-
-        double speedAdd = initalSpeed;
-
-        double percentComplete = 0;
-
-        while (driveManager.backRight.getCurrentPosition() < distanceTicks) {
-
-            percentComplete = driveManager.backRight.getCurrentPosition() / distanceTicks;
-
-            moveComplex(getRotation() - driveHeading, (Math.sin(percentComplete * Math.PI) * driveSpeed) + initalSpeed, getRotation() - (percentComplete > 0.5 ? finalAngle : initalAngle), 0);
-//            moveComplex(driveHeading, driveSpeed, getRotation() - correctionAngle, 0);
-        }
-        stopDrive();
-    }
-
-    public void experimentalDriveByDistanceCurve(double driveHeading, double headingDrift, double driveSpeed,
-                                                 double initalSpeed, double correctionAngle, double distance) {
-        driveManager.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        driveManager.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
-
-        double speedAdd = initalSpeed;
-
-        double percentComplete = 0;
-
-        ElapsedTime dTime = new ElapsedTime();
-        dTime.reset();
-        while (driveManager.backRight.getCurrentPosition() < distanceTicks) {
-
-            percentComplete = driveManager.backRight.getCurrentPosition() / distanceTicks;
-            headingDrift += dTime.seconds();
-            moveComplex(bMath.Loop(driveHeading + headingDrift, 180), (Math.sin(percentComplete * Math.PI) * driveSpeed) + initalSpeed, getRotation() - correctionAngle, 0);
-            dTime.reset();
-        }
-        stopDrive();
-    }
 
     public void stopDrive() {
         setPowerDouble4(0, 0, 0, 0, 0);

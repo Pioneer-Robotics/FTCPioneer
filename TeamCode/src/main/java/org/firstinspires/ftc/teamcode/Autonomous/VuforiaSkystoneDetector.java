@@ -182,6 +182,8 @@ public class VuforiaSkystoneDetector {
 
     public void Update(OpMode op) {
 
+
+
         // check all the trackable targets to see which one (if any) is visible.
         targetVisible = false;
         for (VuforiaTrackable trackable : allTrackables) {
