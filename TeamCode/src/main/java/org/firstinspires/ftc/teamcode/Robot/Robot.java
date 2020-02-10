@@ -822,21 +822,23 @@ public class Robot extends Thread {
     }
 
     public void experimentalDriveByDistance(double driveHeading, double driveSpeed,
-                                            double initalSpeed, double correctionAngle, double distance) {
-        driveManager.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        driveManager.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                                            double attackSpeed, double decaySpeed, double correctionAngle, double distance,int distanceExitThreshold) {
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
-
         double percentComplete = 0;
 
-        while ( Math.abs(driveManager.backRight.getCurrentPosition() - distanceTicks) < 8) {
-
+        while (Math.abs((totalWheelEncoderTicks() / 4) - distanceTicks) < distanceExitThreshold) {
             percentComplete = driveManager.backRight.getCurrentPosition() / distanceTicks;
 
-            moveComplex(driveHeading, (Math.sin(percentComplete * Math.PI) * driveSpeed) + initalSpeed, getRotation() - correctionAngle, 0);
+            moveComplex(driveHeading, (Math.sin(percentComplete * Math.PI) * driveSpeed) + bMath.Lerp(attackSpeed, decaySpeed, percentComplete), getRotation() - correctionAngle, 0);
         }
         stopDrive();
+    }
+
+    int totalWheelEncoderTicks() {
+        return driveManager.backRight.getCurrentPosition() + driveManager.backLeft.getCurrentPosition() + driveManager.frontLeft.getCurrentPosition() + driveManager.frontRight.getCurrentPosition();
     }
 
 //    public void experimentalDriveByDistanceWithRotationYeahItsPrettyCo0o0oOo0OoO0Oool(double driveHeading,

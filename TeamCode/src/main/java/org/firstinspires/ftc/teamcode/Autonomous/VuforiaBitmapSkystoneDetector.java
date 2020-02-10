@@ -127,8 +127,9 @@ public class VuforiaBitmapSkystoneDetector {
             image = vuforia.convertFrameToBitmap(frame);
 
 
-            //Get the average color of the first third of the image
-
+            getColorFromBitmap(image, 0, 1 / 3);
+            getColorFromBitmap(image, 1 / 3 * image.getWidth(), 1 / 3);
+            getColorFromBitmap(image, 2 / 3 * image.getWidth(), 1 / 3);
 
             frame.close();
         } catch (InterruptedException e) {
@@ -139,7 +140,7 @@ public class VuforiaBitmapSkystoneDetector {
     Int2 imageScale = new Int2(0, 0);
 
     //Returns an average color from a portion of a bitmap
-    private int getColorFromBitmap(Bitmap bitmap, int xPixelOffset, float xRange) {
+    private int getColorFromBitmap(Bitmap bitmap, int xPixelOffset, double xRange) {
 
         imageScale.x = bitmap.getWidth();
         imageScale.y = bitmap.getHeight();
@@ -178,6 +179,4 @@ public class VuforiaBitmapSkystoneDetector {
         return rgb;
     }
 
-    public void Stop() {
-    }
 }
