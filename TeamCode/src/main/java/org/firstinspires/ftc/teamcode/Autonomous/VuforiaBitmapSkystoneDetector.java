@@ -138,6 +138,7 @@ public class VuforiaBitmapSkystoneDetector {
 
     Int2 imageScale = new Int2(0, 0);
 
+    //Returns an average color from a portion of a bitmap
     private int getColorFromBitmap(Bitmap bitmap, int xPixelOffset, float xRange) {
 
         imageScale.x = bitmap.getWidth();
@@ -162,9 +163,19 @@ public class VuforiaBitmapSkystoneDetector {
             }
         }
 
+        redTotal /= xPixelCount * imageScale.y;
+        greenTotal /= xPixelCount * imageScale.y;
+        blueTotal /= xPixelCount * imageScale.y;
 
 //        bitmap.getPixel()
-        return 0;
+        return toColor(redTotal, greenTotal, blueTotal);
+    }
+
+    public int toColor(int r, int g, int b) {
+        int rgb = r;
+        rgb = (rgb << 8) + g;
+        rgb = (rgb << 8) + b;
+        return rgb;
     }
 
     public void Stop() {
