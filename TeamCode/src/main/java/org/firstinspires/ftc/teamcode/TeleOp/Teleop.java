@@ -98,7 +98,7 @@ public class Teleop extends TeleOpMode {
 
         robot.arm.rotationMode = RobotArm.ArmThreadMode.Disabled;
         robot.arm.extensionMode = RobotArm.ArmThreadMode.Disabled;
-
+        robot.arm.length.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         for (bMotor motor : robot.driveManager.driveMotors) {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }

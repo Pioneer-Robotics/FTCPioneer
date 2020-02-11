@@ -290,8 +290,14 @@ public class RobotArm extends Thread {
 
         rotation.setPower(angleSpeed);
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        if (length.getCurrentPosition() / RobotConfiguration.arm_ticksMax < 0 && protectSpool) {
+            lengthSpeed = bMath.Clamp(lengthSpeed, 0, 1 );
+        } else if (length.getCurrentPosition() / RobotConfiguration.arm_ticksMax > 1 && protectSpool){
+            lengthSpeed = bMath.Clamp(lengthSpeed, -1, 1 );
+        }
 
-        targetLengthSpeed = lengthSpeed;
+        robot.arm.length.setPower(lengthSpeed);
+        length.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         length.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     }
