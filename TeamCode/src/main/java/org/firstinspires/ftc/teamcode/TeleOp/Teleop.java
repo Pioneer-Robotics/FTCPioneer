@@ -1,59 +1,42 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Hardware.bMotor;
-import org.firstinspires.ftc.teamcode.Helpers.Vector2;
-import org.firstinspires.ftc.teamcode.Helpers.bMath;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 import org.firstinspires.ftc.teamcode.TeleOp.ArmControls.TeleopArmControls;
+import org.firstinspires.ftc.teamcode.TeleOp.ArmControls.TeleopServosControls;
 import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.DriverTeleopData;
 import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.EngineeringControlData;
 import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.RotationData;
 import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.TeleopDriverControls;
 
-/// Advice-
-/// Consolidate State variable into a similar concept object. (see EngineeringControlData for example etc...)
-/// Move helper functions into Classes that relate (see Robot updateRobotDrive() for example, getMovementVector() still needs to be moved to a Math class)
-/// Create layers of abstration to the code that makes it easier to read and understand (see TeleopDriverControls for example)
-/// In general, attempt to create sub-layers of abstractions that have code that will almost never change so that if can be added to the code base and then confidently ignored as working flawlessly. (Adding self testing code with a testing framework would also be very helpful)
-/// Adding layers of abstrations allow the coder to only focus on the level of code that needs to be updated (or read and understood) without unnecessary added complexity.
-
 
 @TeleOp(name = "TeleOp", group = "Sensor")
 public class Teleop extends TeleOpMode {
 
-
     private Robot robot = new Robot();
 
+    //Program State
     private ElapsedTime deltaTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
-
-    //Program state
-
-    //Driver Control Variables
+    //Driver Control State Variables
+    private boolean movementModeToggleCheck = false;
+    private boolean coordinateSystemLock = false;
+    private double rotationLockAngle = 0;
     private boolean leftRotateCoordCheck = false;
     private boolean rightRotateCoordCheck = false;
 
-    private final double sq2 = Math.pow(2, 1 / 2);
-
-    private double rotationLockAngle = 0;
-
-    private boolean movementModeToggleCheck = false;
-    private boolean coordinateSystemLock = false;
-
-    //Arm Control Variables
-    private double gripAngle = 180;
-
-    //Rectangular Control Variables New
-    /// Code clean up advice --- State variable that have a similar concept should be grouped into a single object
     private EngineeringControlData engiData = new EngineeringControlData();
 
+
     //Gripper Control
+    private double gripAngle = 180;
+
     private boolean grab = true; //whether the gripper is not gripping
     private boolean bButton2Check = false; //prevState of grab
 
@@ -72,6 +55,28 @@ public class Teleop extends TeleOpMode {
     // Life Cycle Methods
     @Override
     public void runOpMode() throws InterruptedException {
+        preStartSetup();
+
+        waitForStart();
+
+        lunchboxRot = 1;
+        robot.arm.setGripState(RobotArm.GripState.IDLE, 0);
+//        robot.arm.setGripState(RobotArm.GripState.IDLE, 60);
+        gripAngle = 180;
+
+        while (opModeIsActive()) {
+            updateDriverControls();
+            updateArm();
+            updateServoControls();
+            doTelemetry();
+            deltaTime.reset(); // Update deltaTime
+        }
+
+        robot.shutdown();
+    }
+
+    // Private Methods
+    private void preStartSetup() {
         robot.init(this, false);
 
         robot.arm.rotationMode = RobotArm.ArmThreadMode.Disabled;
@@ -82,29 +87,9 @@ public class Teleop extends TeleOpMode {
         }
 
         gamepad1.setJoystickDeadzone(0.1f);
-
-
-        waitForStart();
-
-        lunchboxRot = 1;
-        robot.arm.setGripState(RobotArm.GripState.IDLE, 0);
-//        robot.arm.setGripState(RobotArm.GripState.IDLE, 60);
-        gripAngle = 180;
-        while (opModeIsActive()) {
-
-            updateDriverControls();
-
-            updateArm();
-
-            updateServoControls();
-
-            doTelemetry();
-
-            // Update deltaTime
-            deltaTime.reset();
-        }
-        robot.shutdown();
     }
+
+    // ************** Driver Methods **************
 
     /*
     This method updates and applies any changes to the driver controls and handles movement
@@ -127,6 +112,7 @@ public class Teleop extends TeleOpMode {
 
         // Handle returned data values here
         double moveSpeed = driverTeleopData.moveSpeed;
+
         movementModeToggleCheck = driverTeleopData.movementModeToggleCheck;
         coordinateSystemLock = driverTeleopData.coordinateSystemLock;
         rotationLockAngle = driverTeleopData.rotationData.rotationLockAngle;
@@ -134,8 +120,8 @@ public class Teleop extends TeleOpMode {
         rightRotateCoordCheck = driverTeleopData.rotationData.rightRotateCoordCheck;
 
         // Update Diag Power
-        double leftDiagPower = getLeftDiagPower(coordinateSystemLock, gamepad1.left_stick_x, gamepad1.left_stick_y);
-        double rightDiagPower = getRightDiagPower(coordinateSystemLock, gamepad1.left_stick_x, gamepad1.left_stick_y);
+        double leftDiagPower = TeleopDriverControls.getLeftDiagPower(gamepad1, robot, coordinateSystemLock, rotationLockAngle, telemetry);
+        double rightDiagPower = TeleopDriverControls.getRightDiagPower(gamepad1, robot, coordinateSystemLock, rotationLockAngle, telemetry);
 
         double leftRotatePower = gamepad1.right_stick_x;
         double rightRotatePower = -gamepad1.right_stick_x;
@@ -148,87 +134,7 @@ public class Teleop extends TeleOpMode {
         robot.updateRobotDrive(frontLeftWheelPower, frontRightWheelPower, backLeftWheelPower, backRightWheelPower);
     }
 
-    // TODO: - Move to ??? Class
-    /*
-    This method determines the power levels for the wheels
-     */
-    private double getLeftDiagPower(boolean useLockedRotation,
-                                    double movementInput_x,
-                                    double movementInput_y) {
-        // drive code
-        if (useLockedRotation) {
-            telemetry.addData("Drive System", "New");
-
-            Vector2 movementVectorCache_left = robot.getMovementVector(gamepad1, rotationLockAngle, movementInput_x, movementInput_y);
-            return ((-movementVectorCache_left.y + movementVectorCache_left.x) / sq2);
-        } else {
-            telemetry.addData("Drive System", "Old");
-
-            return ((-gamepad1.left_stick_y + gamepad1.left_stick_x) / sq2);
-        }
-
-    }
-
-    private double getRightDiagPower(boolean useLockedRotation,
-                                     double movementInput_x,
-                                     double movementInput_y) {
-
-        if (useLockedRotation) {
-            telemetry.addData("Drive System", "New");
-
-            Vector2 movementVectorCache_right = robot.getMovementVector(gamepad1, rotationLockAngle, movementInput_x, movementInput_y);
-            return ((-movementVectorCache_right.y - movementVectorCache_right.x) / sq2);
-
-        } else {
-            telemetry.addData("Drive System", "Old");
-            return ((-gamepad1.left_stick_y - gamepad1.left_stick_x) / sq2);
-        }
-    }
-
-
-    // All Moved to Robot.java
-    // I left this commented out for reference for now (remove after read and understood)
-
-    // ******* Also I may have found a BUG ****** Look in the method in Robot to fix it IF necessary **************
-
-    /*
-    // *** These variables are always set internally to the methods, so they should be scoped to the function
-//    double _newGamepadX;
-//    double _newGamepadY;
-
-    // *** These variables never leave the internal methods either and are always set in the fuction be fore they are returned in Vector2
-//    double newGamepadX;
-//    double newGamepadY;
-
-    // All of these variables also never leave the method and should be scoped only internally to the methods. (Not class wide)
-//    double movementSpeed;
-//    double angle;
-//    Vector2 movementVectorCache = new Vector2(0, 0);
-
-    // TODO: - Move to a Robot Class
-    private Vector2 getMovementVector(double movementInput_x, double movementInput_y) {
-        // A common pattern is to name the object that will be returned `result` so that it can be easily understood
-        // With this in mind I'm renaming `movementVectorCache` to result since that is the Result object of this method
-
-        Vector2 result = new Vector2(0, 0);
-
-        double angle = Math.toRadians(robot.getRotation() - rotationLockAngle);
-
-        double movementSpeed = (Math.sqrt(Math.pow(movementInput_x, 2) + Math.pow(movementInput_y, 2)));
-
-        // *** These should be scoped to the method since they are only used in the method and are always reset before use in the methods
-        //      In General try to scope variables to as small as scope as possible. This helps alleviate bugs
-
-        double _newGamepadX = movementSpeed * Math.cos(angle + Math.atan(movementInput_y / movementInput_x));
-        double _newGamepadY = movementSpeed * Math.sin(angle + Math.atan(movementInput_y / movementInput_x));
-
-        // *** Variables `newGamepadX` & `newGamepadY` never leave the internal methods either and are always set in the fuction be fore they are returned in Vector2
-        //      I also colapsed them directly into `result.x` & `result.y` since other then for logging purposes they were unnecessary.
-        result.x = (gamepad1.left_stick_x <= 0) ? -_newGamepadX : _newGamepadX;
-        result.y = (gamepad1.left_stick_x <= 0) ? -_newGamepadY : _newGamepadY; // **** IS `gamepad1.left_stick_x` a BUG **** shouldn't it be y ???
-        return result;
-    }
-*/
+    // ************** Arm Methods **************
 
     /*
     Asks TeleopArmControls for the updated arm data (engiData) and then calls move arm
@@ -249,7 +155,7 @@ public class Teleop extends TeleOpMode {
     }
 
     /*
-
+    Servo
      */
     private void updateServoControls() {
 
@@ -295,31 +201,17 @@ public class Teleop extends TeleOpMode {
         if (dropLunchBox) lunchboxRot = 0;
         else lunchboxRot = 0.738;
 
-        if (gamepad2.dpad_down && !engiData.spoolProtectCheck)
+        if (gamepad2.dpad_down && !engiData.spoolProtectCheck) {
             engiData.spoolProtect = !engiData.spoolProtect;
+        }
+
         robot.arm.setSpoolProtect(engiData.spoolProtect);
         engiData.spoolProtectCheck = gamepad2.dpad_down;
 
-        moveServos();
+        gripAngle = TeleopServosControls.moveServosAndGetGripAngle(robot, lunchboxRot, gripAngle, idle, grab, gripFoundation);
     }
 
-
-    private void moveServos() {
-        robot.capstoneServo.setPosition(lunchboxRot);
-
-        robot.foundationServo0.setPosition(gripFoundation ? 0.05 : 1);
-        robot.foundationServo1.setPosition(gripFoundation ? 0.95 : 0);
-
-        gripAngle = bMath.Clamp(gripAngle, 0, 180);
-        if (idle) {
-            robot.arm.setGripState(RobotArm.GripState.IDLE, gripAngle / 180);
-        } else if (grab) {
-            robot.arm.setGripState(RobotArm.GripState.CLOSED, gripAngle / 180);
-        } else {
-            robot.arm.setGripState(RobotArm.GripState.OPEN, gripAngle / 180);
-        }
-
-    }
+    // ************** Telementry **************
 
     private void doTelemetry() {
 //        telemetry.addLine("------ Control ------");
