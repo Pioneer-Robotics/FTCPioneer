@@ -33,7 +33,6 @@ public class Teleop extends TeleOpMode {
 
     private EngineeringControlData engiData = new EngineeringControlData();
 
-
     //Gripper Control
     private double gripAngle = 180;
 
@@ -52,7 +51,7 @@ public class Teleop extends TeleOpMode {
     private boolean bButton1Check = false;
 
 
-    // Life Cycle Methods
+    // ************** Life Cycle Methods **************
     @Override
     public void runOpMode() throws InterruptedException {
         preStartSetup();
@@ -157,6 +156,9 @@ public class Teleop extends TeleOpMode {
     /*
     Servo
      */
+
+    // TODO: - This Methods needs to be refactored and all of the related state needs to be consolidated
+
     private void updateServoControls() {
 
         //press the X button to put the grabber in "idle" position
@@ -181,18 +183,14 @@ public class Teleop extends TeleOpMode {
             gripAngle = 90 - robot.arm.thetaAngle() - 10;
         }
 
-        //rotate gripper down with the left dpad
-        if (gamepad2.left_bumper) {
-            gripAngle += deltaTime.seconds() * 135 * 1.5;
-        }
 
-        //rotate gripper up with the right dpad
-        if (gamepad2.right_bumper) {
-            gripAngle -= deltaTime.seconds() * 135 * 1.5;
-        }
+        gripAngle = TeleopServosControls.pointGripperDown(gamepad2, robot, gripAngle);
+        gripAngle = TeleopServosControls.rotateGripperDown(gamepad2, gripAngle, deltaTime);
+        gripAngle = TeleopServosControls.rotateGripperUp(gamepad2, gripAngle, deltaTime);
+
 
         //move foundation grippers with b button
-        if (gamepad1.b && !bButton1Check) gripFoundation = !gripFoundation;
+        if (gamepad1.b && !bButton1Check) gripFoundation = !gripFoundation; // BUG? Should this be gamepad 1 ???
         bButton1Check = gamepad1.b;
 
         if (gamepad2.y && !yButton2Check) dropLunchBox = !dropLunchBox;
@@ -211,7 +209,8 @@ public class Teleop extends TeleOpMode {
         gripAngle = TeleopServosControls.moveServosAndGetGripAngle(robot, lunchboxRot, gripAngle, idle, grab, gripFoundation);
     }
 
-    // ************** Telementry **************
+
+        // ************** Telementry **************
 
     private void doTelemetry() {
 //        telemetry.addLine("------ Control ------");
@@ -238,6 +237,4 @@ public class Teleop extends TeleOpMode {
         telemetry.addData("Current Lunchbox", lunchboxRot);
         telemetry.update();
     }
-
-
 }
