@@ -19,8 +19,8 @@ public class Potentiometer {
     public double regIntercept = bMath.toRadians(-4.62);
 
     public final int datapoints = 10;
-    private double voltages[];
-    private double angles[];
+    private double[] voltages = new double[datapoints];
+    private double[] angles = new double [datapoints];
     private int arrayPos = 0;
 
 
@@ -69,3 +69,4 @@ public class Potentiometer {
         dataManager.writeData("pot_reg_intercept", regIntercept);
     }
 }
+
