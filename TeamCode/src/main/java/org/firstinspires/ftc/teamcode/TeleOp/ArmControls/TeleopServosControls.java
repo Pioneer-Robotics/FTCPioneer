@@ -21,16 +21,16 @@ public class TeleopServosControls {
         robot.foundationServo0.setPosition(gripFoundation ? 0.05 : 1);
         robot.foundationServo1.setPosition(gripFoundation ? 0.95 : 0);
 
-        double _gripAngle = bMath.Clamp(gripAngle, 0, 180);
+        double result = bMath.Clamp(gripAngle, 0, 180);
 
         if (idle) {
-            robot.arm.setGripState(RobotArm.GripState.IDLE, _gripAngle / 180);
+            robot.arm.setGripState(RobotArm.GripState.IDLE, result / 180);
         } else if (grab) {
-            robot.arm.setGripState(RobotArm.GripState.CLOSED, _gripAngle / 180);
+            robot.arm.setGripState(RobotArm.GripState.CLOSED, result / 180);
         } else {
-            robot.arm.setGripState(RobotArm.GripState.OPEN, _gripAngle / 180);
+            robot.arm.setGripState(RobotArm.GripState.OPEN, result / 180);
         }
-        return _gripAngle;
+        return result;
     }
 
     /*
@@ -71,11 +71,7 @@ public class TeleopServosControls {
     return lunchBoxRot based on dropLunchBox boolean's value
      */
     public static double getLunchBoxRot(boolean dropLunchBox) {
-        if (dropLunchBox) {
-            return 0;
-        }   else {
-            return 0.738;
-        }
+        return (dropLunchBox) ? 0 : 0.738;
     }
 
     /*
@@ -95,4 +91,17 @@ public class TeleopServosControls {
 
         return result;
     }
+
+    /*
+    Updates Idle based on gamepad value and xButton2Check
+    Press the X button to put the grabber in "idle" position
+     */
+    public static boolean getUpdatedIdle(Gamepad gamepad, boolean xButton2Check, boolean idle) {
+        //press the X button to put the grabber in "idle" position
+        if (gamepad.x && !xButton2Check) {
+            return true;
+        }
+        return idle;
+    }
+
 }

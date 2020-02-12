@@ -163,9 +163,7 @@ public class Teleop extends TeleOpMode {
     private void updateServoControls() {
 
         //press the X button to put the grabber in "idle" position
-        if (gamepad2.x && !xButton2Check) {
-            idle = true;
-        }
+        idle = TeleopServosControls.getUpdatedIdle(gamepad2, xButton2Check, idle);
         xButton2Check = gamepad2.x;
 
 
@@ -186,27 +184,17 @@ public class Teleop extends TeleOpMode {
         gripAngle = TeleopServosControls.rotateGripperUp(gamepad2, gripAngle, deltaTime);
 
 
-        // Upon second look, these 2 bugs may not be bugs, but it's bad practice to code this way as the code intention is very difficult to comprehend
-
-        // ??? Bug... due to missing {}
-//        //move foundation grippers with b button
-//        if (gamepad1.b && !bButton1Check) gripFoundation = !gripFoundation;
-//        bButton1Check = gamepad1.b;
-
         //move foundation grippers with b button
         if (gamepad1.b && !bButton1Check) {
             gripFoundation = !gripFoundation;
-            bButton1Check = gamepad1.b; // Also, BUG? Should this be gamepad 1 ???
         }
+        bButton1Check = gamepad1.b; // Also, BUG? Should this be gamepad 1 ???
 
-        // ??? Bug... due to missing {}
-//        if (gamepad2.y && !yButton2Check) dropLunchBox = !dropLunchBox;
-//        yButton2Check = gamepad2.y;
-
+        // ???
         if (gamepad2.y && !yButton2Check) {
             dropLunchBox = !dropLunchBox;
-            yButton2Check = gamepad2.y;
         }
+        yButton2Check = gamepad2.y;
 
         lunchboxRot = TeleopServosControls.getLunchBoxRot(dropLunchBox);
 
