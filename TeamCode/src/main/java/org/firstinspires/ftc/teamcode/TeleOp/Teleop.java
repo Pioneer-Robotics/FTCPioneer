@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Hardware.bMotor;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
@@ -67,7 +67,7 @@ public class Teleop extends TeleOpMode {
             updateDriverControls();
             updateArm();
             updateServoControls();
-            doTelemetry();
+            doTelemetry(telemetry, deltaTime, coordinateSystemLock, engiData, lunchboxRot);
             deltaTime.reset(); // Update deltaTime
         }
 
@@ -154,9 +154,7 @@ public class Teleop extends TeleOpMode {
         }
     }
 
-    /*
-    Servo
-     */
+    // ************** Servo Methods **************
 
     // TODO: - This Methods needs to be refactored and all of the related state needs to be consolidated
 
@@ -166,7 +164,7 @@ public class Teleop extends TeleOpMode {
         idle = TeleopServosControls.getUpdatedIdle(gamepad2, xButton2Check, idle);
         xButton2Check = gamepad2.x;
 
-
+        // TODO: - Refactor this into TeleopServosControls
         //press the B button to open or close grabber
         if (gamepad2.b && !bButton2Check) {
             if (idle) {
@@ -184,50 +182,37 @@ public class Teleop extends TeleOpMode {
         gripAngle = TeleopServosControls.rotateGripperUp(gamepad2, gripAngle, deltaTime);
 
 
-        //move foundation grippers with b button
+        // TODO: - Refactor these 2 into TeleopServosControls
+        // move foundation grippers with b button
         if (gamepad1.b && !bButton1Check) {
             gripFoundation = !gripFoundation;
         }
-        bButton1Check = gamepad1.b; // Also, BUG? Should this be gamepad 1 ???
+        bButton1Check = gamepad1.b;
 
-        // ???
+        // dropLunchBox with y button
         if (gamepad2.y && !yButton2Check) {
             dropLunchBox = !dropLunchBox;
         }
         yButton2Check = gamepad2.y;
 
+
         lunchboxRot = TeleopServosControls.getLunchBoxRot(dropLunchBox);
-
         engiData = TeleopServosControls.protectSpoolAndUpdateEngiData(gamepad2, engiData, robot);
-
         gripAngle = TeleopServosControls.moveServosAndGetGripAngle(robot, lunchboxRot, gripAngle, idle, grab, gripFoundation);
     }
 
 
-        // ************** Telementry **************
+        // ************** Telemetry **************
 
-    private void doTelemetry() {
-//        telemetry.addLine("------ Control ------");
-//
-//        telemetry.addData("robot arm extension state", robot.arm.extensionMode.toString());
-//        telemetry.addData("robot arm extension state", robot.arm.rotationMode.toString());
-//
+    private void doTelemetry(Telemetry telemetry,
+                                    ElapsedTime deltaTime,
+                                    boolean coordinateSystemLock,
+                                    EngineeringControlData engiData,
+                                    double lunchboxRot) {
         telemetry.addData("deltaTime", deltaTime.milliseconds());
-//        telemetry.addLine("------ Movement ------");
         telemetry.addData("Rotation Locked ", coordinateSystemLock);
-//        telemetry.addData("Current Rotation ", robot.getRotation());
-////            telemetry.addData("Offset Angle ", angle);
-//        telemetry.addLine("-------- Arm  --------");
-//        telemetry.addData("Current Arm Angle", bMath.toDegrees(robot.arm.thetaAngle()));
-//        telemetry.addData("Current Potentiometer angle", robot.armPotentiometer.getAngle());
-//        telemetry.addData("Rotation Position", robot.arm.rotation.getCurrentPosition() / RobotConfiguration.arm_rotationMax);
         telemetry.addData("RectWanted?:", engiData.rectControls);
-//        telemetry.addData("target spool position", engiData.extension * RobotConfiguration.arm_ticksMax);
-//        telemetry.addData("spool position", robot.arm.length.getCurrentPosition());
-//        telemetry.addData("spool position as percent", robot.arm.length.getCurrentPosition() / RobotConfiguration.arm_ticksMax);
-//        telemetry.addData("arm rotation as percent", robot.arm.rotation.getCurrentPosition() / RobotConfiguration.arm_rotationMax);
         telemetry.addData("spoolProtect", engiData.spoolProtect);
-//        telemetry.addLine("------ Lunchbox ------");
         telemetry.addData("Current Lunchbox", lunchboxRot);
         telemetry.update();
     }
