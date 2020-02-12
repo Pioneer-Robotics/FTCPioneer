@@ -32,7 +32,7 @@ public class Teleop extends LinearOpMode {
     private double rightDiagPower = 0;
     private double ogLeftDiagPower = 0;
     private double ogRightDiagPower = 0;
-    private final double sq2 = Math.pow(2, 1 / 2);
+    private final double sq2 = Math.pow(2, 0.5);
     private double leftRotatePower = 0;
     private double rightRotatePower = 0;
 
