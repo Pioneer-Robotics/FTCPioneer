@@ -45,12 +45,12 @@ public class TeleopDriverControls {
         updateMovementModeToggleCheck = gamePad.y;
 
         // Return 4 updated Objects
-        DriverTeleopData driverTelopData = new DriverTeleopData(updateMoveSpeed,
+        DriverTeleopData result = new DriverTeleopData(updateMoveSpeed,
                 updateRotationData,
                 updateMovementModeToggleCheck,
                 updateCoordinateSystemLock);
 
-        return driverTelopData;
+        return result;
     }
 
     /*
@@ -116,12 +116,12 @@ public class TeleopDriverControls {
     private static RotationData updateDPadRotationData(Gamepad gamePad,
                                                        RotationData rotationData) {
         //left and right dpad can shift "front" of robot by 90 degrees in coordinate lock mode
-        RotationData updatedRotationData = rotationData;
-        updatedRotationData.rotationLockAngle = ((updatedRotationData.rotationLockAngle + 450) % fullRotation) - fullRotation;
+        RotationData result = rotationData;
+        result.rotationLockAngle = ((result.rotationLockAngle + 450) % fullRotation) - fullRotation;
 
-        updatedRotationData = updateDPadLeft(gamePad, updatedRotationData);
-        updatedRotationData = updateDPadRight(gamePad, updatedRotationData);
-        return updatedRotationData;
+        result = updateDPadLeft(gamePad, result);
+        result = updateDPadRight(gamePad, result);
+        return result;
     }
 
     private static RotationData updateDPadLeft(Gamepad gamePad, RotationData rotationData) {
