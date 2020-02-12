@@ -53,7 +53,7 @@ public class RobotConfiguration {
     public static final double arm_rotationMax = 5678 * 3;
 
     //The initialization horizontal distance between the shuttle joint and the base joint
-    public static final double armQuadBaseMaxCm = 40; //TODO Determine
+    public static final double armQuadBaseMaxCm = 350; //TODO Determine
 
     //The offset to determine the interior angle between member k and L
     public static final double pot_interiorOffset = 149.8; //

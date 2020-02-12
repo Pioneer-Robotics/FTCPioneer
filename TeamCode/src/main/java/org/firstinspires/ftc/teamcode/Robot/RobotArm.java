@@ -124,7 +124,7 @@ public class RobotArm extends Thread {
     can be plugged into realPotentiometerAngle to determine what the pot should be reading.
      */
     public double currentArmQuadBaseDistance() {
-        return RobotConfiguration.armQuadBaseMaxCm - ((double) rotation.getCurrentPosition() * (1.0 / 1440.0) * (120.0 / 48.0) * (0.2 / 1.0));
+        return RobotConfiguration.armQuadBaseMaxCm - ((double) rotation.getCurrentPosition() * (1.0 / 1440.0) * (120.0 / 48.0) * (2 / 1.0));
     }
 
 
