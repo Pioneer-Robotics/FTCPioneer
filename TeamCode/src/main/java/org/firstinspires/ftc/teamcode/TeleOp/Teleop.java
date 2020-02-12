@@ -146,11 +146,12 @@ public class Teleop extends TeleOpMode {
     /*
     Moves the arm to position specified by the engiData
     */
-    private void moveArm(Robot robot,
-                         EngineeringControlData engiData) {
-        if (engiData.powerExtension)
+    private void moveArm(Robot robot, EngineeringControlData engiData) {
+        if (engiData.powerExtension) {
             robot.arm.SetArmStateExtensionPower(engiData.extendSpeed, engiData.raiseSpeed);
-        else robot.arm.SetArmStatePower(engiData.extension, engiData.raiseSpeed);
+        } else  {
+            robot.arm.SetArmStatePower(engiData.extension, engiData.raiseSpeed);
+        }
     }
 
     /*
@@ -178,26 +179,36 @@ public class Teleop extends TeleOpMode {
         }
         bButton2Check = gamepad2.b;
 
-        //hold A button to make the gripper point down
-        if (gamepad2.a) {
-            gripAngle = 90 - robot.arm.thetaAngle() - 10;
-        }
-
-
         gripAngle = TeleopServosControls.pointGripperDown(gamepad2, robot, gripAngle);
         gripAngle = TeleopServosControls.rotateGripperDown(gamepad2, gripAngle, deltaTime);
         gripAngle = TeleopServosControls.rotateGripperUp(gamepad2, gripAngle, deltaTime);
 
+        // Bug... due to missing {}
+//        //move foundation grippers with b button
+//        if (gamepad1.b && !bButton1Check) gripFoundation = !gripFoundation;
+//        bButton1Check = gamepad1.b;
 
         //move foundation grippers with b button
-        if (gamepad1.b && !bButton1Check) gripFoundation = !gripFoundation; // BUG? Should this be gamepad 1 ???
-        bButton1Check = gamepad1.b;
+        if (gamepad1.b && !bButton1Check) {
+            gripFoundation = !gripFoundation;
+            bButton1Check = gamepad1.b; // Also, BUG? Should this be gamepad 1 ???
+        }
 
-        if (gamepad2.y && !yButton2Check) dropLunchBox = !dropLunchBox;
-        yButton2Check = gamepad2.y;
+        // Bug... due to missing {}
+//        if (gamepad2.y && !yButton2Check) dropLunchBox = !dropLunchBox;
+//        yButton2Check = gamepad2.y;
 
-        if (dropLunchBox) lunchboxRot = 0;
-        else lunchboxRot = 0.738;
+
+        if (gamepad2.y && !yButton2Check) {
+            dropLunchBox = !dropLunchBox;
+            yButton2Check = gamepad2.y;
+        }
+
+        if (dropLunchBox) {
+            lunchboxRot = 0;
+        }   else {
+            lunchboxRot = 0.738;
+        }
 
         if (gamepad2.dpad_down && !engiData.spoolProtectCheck) {
             engiData.spoolProtect = !engiData.spoolProtect;
