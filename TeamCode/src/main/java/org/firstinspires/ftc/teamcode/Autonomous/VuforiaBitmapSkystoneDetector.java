@@ -110,6 +110,7 @@ public class VuforiaBitmapSkystoneDetector {
 
         op.telemetry.addData("Vuforia instansiated.", "");
 
+        vuforia.setFrameQueueCapacity(1);
         vuforia.enableConvertFrameToBitmap();
     }
 
@@ -127,20 +128,26 @@ public class VuforiaBitmapSkystoneDetector {
             image = vuforia.convertFrameToBitmap(frame);
 
 
-            getColorFromBitmap(image, 0, 1 / 3);
-            getColorFromBitmap(image, 1 / 3 * image.getWidth(), 1 / 3);
-            getColorFromBitmap(image, 2 / 3 * image.getWidth(), 1 / 3);
+//            op.telemetry.addData("yeeet", "");
+            op.telemetry.addData("first third color ", getAlphaFromBitmap(image, 0, 1));
+//            op.telemetry.addData("second third color ", getColorFromBitmap(image, (1 / 3) * image.getWidth(), 1 / 3));
+//            op.telemetry.addData("third third color ", getColorFromBitmap(image, 2 / 3 * image.getWidth(), 1 / 3));
+            op.telemetry.addData("image x", image.getWidth());
+            op.telemetry.addData("image y", image.getHeight());
+            op.telemetry.addData("image y", image.getHeight());
+            op.telemetry.update();
 
             frame.close();
         } catch (InterruptedException e) {
-
+            op.telemetry.addData("yoiiiiink", "");
+            op.telemetry.update();
         }
     }
 
     Int2 imageScale = new Int2(0, 0);
 
     //Returns an average color from a portion of a bitmap
-    private int getColorFromBitmap(Bitmap bitmap, int xPixelOffset, double xRange) {
+    private long getAlphaFromBitmap(Bitmap bitmap, int xPixelOffset, double xRange) {
 
         imageScale.x = bitmap.getWidth();
         imageScale.y = bitmap.getHeight();
@@ -149,27 +156,27 @@ public class VuforiaBitmapSkystoneDetector {
 
         int color = 0;
 
-        int redTotal = 0;
-        int greenTotal = 0;
-        int blueTotal = 0;
+        long totalAlpha = 0L;
+
 
         for (int x = xPixelOffset; x < xPixelCount; x++) {
 
             for (int y = 0; y < imageScale.y; y++) {
                 color = bitmap.getPixel(x, y);
 
-                redTotal += Color.red(color);
-                greenTotal += Color.green(color);
-                blueTotal += Color.blue(color);
+                totalAlpha += Color.red(color) + Color.blue(color) + Color.green(color);
+
             }
         }
 
-        redTotal /= xPixelCount * imageScale.y;
-        greenTotal /= xPixelCount * imageScale.y;
-        blueTotal /= xPixelCount * imageScale.y;
+//        redTotal /= xPixelCount * imageScale.y;
+//        greenTotal /= xPixelCount * imageScale.y;
+//        blueTotal /= xPixelCount * imageScale.y;
+
 
 //        bitmap.getPixel()
-        return toColor(redTotal, greenTotal, blueTotal);
+//        return toColor(redTotal, greenTotal, blueTotal);
+        return totalAlpha;
     }
 
     public int toColor(int r, int g, int b) {

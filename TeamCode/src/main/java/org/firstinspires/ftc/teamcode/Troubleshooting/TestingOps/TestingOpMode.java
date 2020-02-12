@@ -4,28 +4,26 @@ package org.firstinspires.ftc.teamcode.Troubleshooting.TestingOps;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Autonomous.Auto;
+import org.firstinspires.ftc.teamcode.Autonomous.VuforiaBitmapSkystoneDetector;
 import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
 
 @Autonomous(name = "TestingOpMode", group = "Trouble Shooting")
 public class TestingOpMode extends Auto {
 
+    public VuforiaBitmapSkystoneDetector t = new VuforiaBitmapSkystoneDetector();
 
     @Override
     public void runOpMode() {
-        startRobot();
+
+        t.Start(this);
 
         waitForStart();
 
-//        robot.rotateSimple(90, 1, 2, 0.5);
-
-        bTelemetry.print("Driving by distance 0");
-        robot.experimentalDriveByDistance(0, 0.35, 0.35, 0.05, 0, 50, 5);
-
-
-        sleep(1000);
-
-        StopMovement();
-        StopRobot();
+        while (opModeIsActive()) {
+            t.Update(this);
+//            telemetry.addData("yoink", "");
+//            telemetry.update();
+        }
     }
 
 }
