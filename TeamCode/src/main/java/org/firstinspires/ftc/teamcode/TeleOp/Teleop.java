@@ -168,6 +168,7 @@ public class Teleop extends TeleOpMode {
         }
         xButton2Check = gamepad2.x;
 
+
         //press the B button to open or close grabber
         if (gamepad2.b && !bButton2Check) {
             if (idle) {
@@ -179,11 +180,15 @@ public class Teleop extends TeleOpMode {
         }
         bButton2Check = gamepad2.b;
 
+
         gripAngle = TeleopServosControls.pointGripperDown(gamepad2, robot, gripAngle);
         gripAngle = TeleopServosControls.rotateGripperDown(gamepad2, gripAngle, deltaTime);
         gripAngle = TeleopServosControls.rotateGripperUp(gamepad2, gripAngle, deltaTime);
 
-        // Bug... due to missing {}
+
+        // Upon second look, these 2 bugs may not be bugs, but it's bad practice to code this way as the code intention is very difficult to comprehend
+
+        // ??? Bug... due to missing {}
 //        //move foundation grippers with b button
 //        if (gamepad1.b && !bButton1Check) gripFoundation = !gripFoundation;
 //        bButton1Check = gamepad1.b;
@@ -194,28 +199,18 @@ public class Teleop extends TeleOpMode {
             bButton1Check = gamepad1.b; // Also, BUG? Should this be gamepad 1 ???
         }
 
-        // Bug... due to missing {}
+        // ??? Bug... due to missing {}
 //        if (gamepad2.y && !yButton2Check) dropLunchBox = !dropLunchBox;
 //        yButton2Check = gamepad2.y;
-
 
         if (gamepad2.y && !yButton2Check) {
             dropLunchBox = !dropLunchBox;
             yButton2Check = gamepad2.y;
         }
 
-        if (dropLunchBox) {
-            lunchboxRot = 0;
-        }   else {
-            lunchboxRot = 0.738;
-        }
+        lunchboxRot = TeleopServosControls.getLunchBoxRot(dropLunchBox);
 
-        if (gamepad2.dpad_down && !engiData.spoolProtectCheck) {
-            engiData.spoolProtect = !engiData.spoolProtect;
-        }
-
-        robot.arm.setSpoolProtect(engiData.spoolProtect);
-        engiData.spoolProtectCheck = gamepad2.dpad_down;
+        engiData = TeleopServosControls.protectSpoolAndUpdateEngiData(gamepad2, engiData, robot);
 
         gripAngle = TeleopServosControls.moveServosAndGetGripAngle(robot, lunchboxRot, gripAngle, idle, grab, gripFoundation);
     }

@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
+import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.EngineeringControlData;
 
 public class TeleopServosControls {
 
@@ -66,4 +67,32 @@ public class TeleopServosControls {
         return result;
     }
 
+    /*
+    return lunchBoxRot based on dropLunchBox boolean's value
+     */
+    public static double getLunchBoxRot(boolean dropLunchBox) {
+        if (dropLunchBox) {
+            return 0;
+        }   else {
+            return 0.738;
+        }
+    }
+
+    /*
+    Protects the Spool by updating the EngineeringControlData value
+     */
+    public static EngineeringControlData protectSpoolAndUpdateEngiData(Gamepad gamepad,
+                                                                       EngineeringControlData engiData,
+                                                                       Robot robot) {
+        EngineeringControlData result = engiData;
+
+        if (gamepad.dpad_down && !result.spoolProtectCheck) {
+            result.spoolProtect = !result.spoolProtect;
+        }
+
+        robot.arm.setSpoolProtect(result.spoolProtect);
+        result.spoolProtectCheck = gamepad.dpad_down;
+
+        return result;
+    }
 }
