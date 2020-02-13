@@ -118,8 +118,8 @@ public class Robot extends Thread {
         driveManager.backRight.powerCoefficent = dataManger.readData("wheel_back_right_powerCo", -1);
         bTelemetry.print("      Back Right  : " + driveManager.backRight.powerCoefficent);
 
-        armPotentiometer.regSlope = dataManger.readData("pot_reg_slope", bMath.toRadians(133));
-        armPotentiometer.regIntercept = dataManger.readData("pot_reg_intercept", bMath.toRadians(-4.62));
+        //armPotentiometer.regSlope = dataManger.readData("pot_reg_slope", bMath.toRadians(133));
+        //armPotentiometer.regIntercept = dataManger.readData("pot_reg_intercept", bMath.toRadians(-4.62));
 
 
         bTelemetry.print("      Arm Regression Slope    : " + armPotentiometer.regSlope);

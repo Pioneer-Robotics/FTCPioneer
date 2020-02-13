@@ -15,16 +15,21 @@ import java.util.Map;
 public class Potentiometer {
 
     //Exposed for telemetry data
-    public double regSlope = bMath.toRadians(133);
-    public double regIntercept = bMath.toRadians(-4.62);
+    public double regSlope;
+    public double regIntercept;
 
     public final int datapoints = 10;
-    private double[] voltages = new double[datapoints];
-    private double[] angles = new double [datapoints];
-    private int arrayPos = 0;
+    public double[] voltages = new double[datapoints];
+    public double[] angles = new double [datapoints];
+    public int arrayPos = 0;
 
+    public double xSum=0; //angles
+    public double ySum=0; //voltage
+    public double x2Sum=0; //x squared sum
+    public double xySum=0;
 
     public AnalogInput analogInput;
+
 
     //DISABLED
     public Potentiometer(OpMode opMode, String inputName ) {
@@ -48,12 +53,12 @@ public class Potentiometer {
 
 
     public void calcRegression() {
-        double xSum=0; //angles
-        double ySum=0; //voltage
-        double x2Sum=0; //x squared sum
-        double xySum=0;
+        xSum = 0; //angles
+        ySum = 0; //voltage
+        x2Sum = 0; //x squared sum
+        xySum = 0;
 
-        for (int i = 0; i < arrayPos; i++) {
+        for (int i = 0; i < angles.length; i++) {
             xSum += angles[i];
             ySum += voltages[i];
             x2Sum += angles[i] * angles[i];
@@ -65,8 +70,8 @@ public class Potentiometer {
     }
 
     public void saveCalibrationData(bDataManager dataManager) {
-        dataManager.writeData("pot_reg_slope", regSlope);
-        dataManager.writeData("pot_reg_intercept", regIntercept);
+        //dataManager.writeData("pot_reg_slope", regSlope);
+        //dataManager.writeData("pot_reg_intercept", regIntercept);
     }
 }
 

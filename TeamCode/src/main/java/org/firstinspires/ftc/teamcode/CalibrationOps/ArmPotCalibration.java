@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Autonomous.Auto;
+import org.firstinspires.ftc.teamcode.Helpers.bMath;
 
 
 @Autonomous(name = "Arm Pot Calibration", group = "Calibration")
@@ -37,16 +38,20 @@ public class ArmPotCalibration extends Auto {
             timer.reset();
             while (timer.seconds() < 0.5) { }
 
-            if (i>2){
+            if (i>1){
                 robot.armPotentiometer.calcRegression();
             }
 
-            telemetry.addData("D value:",robot.arm.currentArmQuadBaseDistance());
-            telemetry.addData("Derived angle:",robot.arm.derivedPotentiometerAngle(robot.arm.currentArmQuadBaseDistance()));
+            telemetry.addData("3rd element:",robot.armPotentiometer.voltages[3]);
+            telemetry.addData("arrayPos",robot.armPotentiometer.arrayPos);
+            telemetry.addData("D value (mm):",robot.arm.currentArmQuadBaseDistance());
+            telemetry.addData("Derived angle:", bMath.toDegrees(robot.arm.derivedPotentiometerAngle(robot.arm.currentArmQuadBaseDistance())));
             telemetry.addData("Voltage:",robot.armPotentiometer.getVoltage());
-            telemetry.addData("Measured Angle:", robot.armPotentiometer.getAngle());
-            telemetry.addData("Regression Slope:",robot.armPotentiometer.regSlope);
-            telemetry.addData("Regression Intercept:",robot.armPotentiometer.regIntercept);
+            telemetry.addData("Measured Angle:", bMath.toDegrees(robot.armPotentiometer.getAngle()));
+            telemetry.addData("Regression Slope:",bMath.toDegrees(robot.armPotentiometer.regSlope));
+            telemetry.addData("Regression Intercept:",bMath.toDegrees(robot.armPotentiometer.regIntercept));
+            telemetry.addData("x2Sum", robot.armPotentiometer.x2Sum);
+            telemetry.addData("xSum",robot.armPotentiometer.xSum);
             telemetry.update();
 
         }
@@ -54,6 +59,10 @@ public class ArmPotCalibration extends Auto {
         robot.armPotentiometer.saveCalibrationData(robot.dataManger);
 
         robot.arm.setArmStateWait(0, 0);
+
+
+
+
 
         StopMovement();
         StopRobot();
