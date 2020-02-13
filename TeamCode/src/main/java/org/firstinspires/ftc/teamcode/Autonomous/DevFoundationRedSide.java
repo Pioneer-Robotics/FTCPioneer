@@ -8,16 +8,18 @@ public class DevFoundationRedSide extends Auto {
     @Override
     public void runOpMode() {
         boolean endOnWall = false;
+        boolean aButton1Check = false;
         startRobot();
 
+        //this while statement is so that you can use a controller to tell the robot where to park
         while (!opModeIsActive()) {
             if (gamepad1.x) {
                 break;
             }
-            if (gamepad1.a) {
+            if (gamepad1.a && !aButton1Check) {
                 endOnWall = !endOnWall;
-                sleep(1000);
             }
+            aButton1Check = gamepad1.a;
 
             telemetry.addData("End on wall ", endOnWall);
             telemetry.addData("Press X to EXIT", "");
