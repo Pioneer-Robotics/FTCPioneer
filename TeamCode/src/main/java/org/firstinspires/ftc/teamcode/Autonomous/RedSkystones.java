@@ -4,8 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 
-@Autonomous(name = "BLUE STONES", group = "ftcPio")
-public class SkystoneSideFastBlue extends Auto {
+@Autonomous(name = "RED STONES", group = "ftcPio")
+public class RedSkystones extends Auto {
+
 
     public boolean endOnWall = false;
 
@@ -48,9 +49,9 @@ public class SkystoneSideFastBlue extends Auto {
 ////            runDeliveryCycle(stone == 1 ? 93 : 30, 1000, 35, stone * 24, 130 + (stone * 30), stone != cycles);
 ////        }
 
-        runDeliveryCycle(93, 500, 20, 36, 120 + 24, true, 250);
+        runDeliveryCycle(100, 500, 35, 36, 150, true, 250);
 //        runDeliveryCycle(93, 1000, 50, 24, 130 + (24), true);
-        runDeliveryCycle(10, 500, 30, 48, 120 + (48), false,250);
+        runDeliveryCycle(40, 500, 15, 48, 160, false, 250);
 
         robot.arm.setArmStateAsync(0.02248, -0.06);
 
@@ -59,10 +60,10 @@ public class SkystoneSideFastBlue extends Auto {
         robot.arm.setGripState(RobotArm.GripState.IDLE, 0);
 
         if (endOnWall) {
-            robot.driveByDistance(-90, 0.8, 80);
+            robot.driveByDistance(90, 0.8, 80);
         } else {
-            robot.driveByDistance(90, 0.8, 20);
-            //robot.driveByDistance(180, 0.5, 20);
+            robot.driveByDistance(-90, 0.8, 50);
+            robot.driveByDistance(0, 0.5, 10);
         }
 //        160
 //        193
@@ -117,7 +118,7 @@ public class SkystoneSideFastBlue extends Auto {
         sleep(servoDelayShortMS);
 
         //Resets rotation after speedyness
-        adjustHeading(90);
+        adjustHeading(-90);
 
         if (moveBackToBridge) {
             robot.arm.setArmStateAsync(0.0117999, 0.3);
@@ -132,9 +133,9 @@ public class SkystoneSideFastBlue extends Auto {
 
             //Rolls back again so the bot is aligned with the next stone
             //robot.driveByDistance(180, 0.35, endingOffset); Because added to skystone side
+
+
         }
-
-
     }
 
     //Collects the stone 'distanceToStone' away and then rolls back 'backwardDistance'
@@ -145,9 +146,7 @@ public class SkystoneSideFastBlue extends Auto {
         //Closes the gripper on the stone
         robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
 
-        robot.arm.setArmStateAsync((0.02148+0.0117999)/2, 0.3);
-        //        robot.arm.setArmStateAsync(0.02148, 0.3);
-
+        robot.arm.setArmStateAsync((0.02148 + 0.0117999) / 2, 0.3);
 //        robot.arm.setArmStateAsync(0.02248, 0.3);
 
         //Wait to ensure the gripper is closed
@@ -159,7 +158,7 @@ public class SkystoneSideFastBlue extends Auto {
 
     private void driveToFoundationSide(double bridgeDistance) {
         //Rotates to face the foundation
-        rotateAccurate(90);
+        rotateAccurate(-90);
 
         //Drives to foundation at a high speed
         robot.driveByDistance(0, 1, bridgeDistance, 2.1);
@@ -174,8 +173,8 @@ public class SkystoneSideFastBlue extends Auto {
 //        robot.rotateSimple(angle, 2, 2, 0.5); //This one is a fail safe that will mostly work.
     }
 
-    public void adjustHeading(double angle){
-        robot.rotatePID(angle, 1,0.5,1);
+    public void adjustHeading(double angle) {
+        robot.rotatePID(angle, 1, 0.5, 1);
     }
 
 
