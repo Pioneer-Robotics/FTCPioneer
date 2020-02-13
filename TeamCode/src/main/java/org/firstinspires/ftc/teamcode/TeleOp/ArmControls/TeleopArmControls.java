@@ -72,11 +72,11 @@ public class TeleopArmControls {
         EngineeringControlData result = engiData;
 
         //Switch mode to position based extension
-        result.powerExtension = false;
+        result.powerExtension = true;
 
         //
-        result.extension += gamePad.right_trigger * deltaTime.seconds() * 1.5;    //extend arm when right trigger held and dpad left is pressed
-        result.extension -= gamePad.left_trigger * deltaTime.seconds() * 1.5;     //retract arm when left trigger held and dpad left is pressed
+        result.extendSpeed = gamePad.right_trigger - gamePad.left_trigger;
+
 
         // This is the previous code without {} - I left it here for reference. I believe this one isn't a bug, but the one below in updateRectControls was
 //        if (!result.spoolProtect) result.extension = bMath.Clamp(result.extension, 0, 1);

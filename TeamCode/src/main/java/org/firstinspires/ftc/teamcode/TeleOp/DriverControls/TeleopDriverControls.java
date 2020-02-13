@@ -11,7 +11,7 @@ public class TeleopDriverControls {
 
     // Private properties
     private static double fullRotation = 360;
-    private static final double sq2 = Math.pow(2, 1 / 2);
+    private static final double sq2 = bMath.sq2();
 
     // Public API
     public static DriverTeleopData setupDriverController(Gamepad gamePad,
