@@ -5,13 +5,18 @@ import android.renderscript.Double4;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Helpers.PID;
+import org.firstinspires.ftc.teamcode.Helpers.Vector2;
 import org.firstinspires.ftc.teamcode.Helpers.bDataManager;
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
 import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
@@ -19,7 +24,9 @@ import org.firstinspires.ftc.teamcode.Hardware.bIMU;
 import org.firstinspires.ftc.teamcode.Hardware.Potentiometer;
 import org.firstinspires.ftc.teamcode.Robot.Input.RobotInputThread;
 
+import java.sql.Time;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 //TODO: clean up the canmove system
 public class Robot extends Thread {
@@ -36,9 +43,9 @@ public class Robot extends Thread {
     //The wall tracker, lets you track along a wall using a sensor group and other data
     public RobotWallTrack wallTrack = new RobotWallTrack();
 
-    public Potentiometer armPotentiometer = new Potentiometer();
+    public Potentiometer armPotentiometer = null;
 
-    public Servo lunchBox;
+    public Servo capstoneServo;
     public Servo foundationServo0;
     public Servo foundationServo1;
 
@@ -54,16 +61,16 @@ public class Robot extends Thread {
     //Delta time, used in the thread for timing
     public ElapsedTime threadDeltaTime = new ElapsedTime();
 
-
     //The data manager serves to store data locally on the phone, used in calibration and PID tuning.
-    private bDataManager dataManger = new bDataManager();
+    public bDataManager dataManger = new bDataManager();
 
+    double desiredArmRotationPower;
 
     public LinearOpMode Op;
-//    public OpMode LinearOpMode;
 
-    //If our thread is running, using atomics to avoid thread conflicts. Might not be completely necessary
     private AtomicBoolean threadRunning = new AtomicBoolean();
+
+    private AtomicLong threadLastRunTime = new AtomicLong(0);
 
     private PID rotationPID = new PID();
 
@@ -87,7 +94,7 @@ public class Robot extends Thread {
 
         getHardware(opmode, useWalltrack);
 
-        lunchBox.setPosition(0.733);
+        capstoneServo.setPosition(0.733);
 
         //Starts the 'run' thread
         start();
@@ -111,6 +118,12 @@ public class Robot extends Thread {
         driveManager.backRight.powerCoefficent = dataManger.readData("wheel_back_right_powerCo", -1);
         bTelemetry.print("      Back Right  : " + driveManager.backRight.powerCoefficent);
 
+        //armPotentiometer.regSlope = dataManger.readData("pot_reg_slope", bMath.toRadians(133));
+        //armPotentiometer.regIntercept = dataManger.readData("pot_reg_intercept", bMath.toRadians(-4.62));
+
+
+        bTelemetry.print("      Arm Regression Slope    : " + armPotentiometer.regSlope);
+        bTelemetry.print("      Arm Regression Int      : " + armPotentiometer.regIntercept);
 
         //Adds the motors and distance sensors to the expInput manager to allow for faster reads
         //DISABLED BUT WORKS
@@ -123,7 +136,7 @@ public class Robot extends Thread {
 //            experimentalInput.AddSensor(sensor);
 //        }
 
-        arm.SetGripState(RobotArm.GripState.IDLE, 1);
+        arm.setGripState(RobotArm.GripState.IDLE, 0.8);
         setFoundationGripperState(0);
 
         bTelemetry.print("Wheel boot successful. Ready to operate!");
@@ -149,7 +162,7 @@ public class Robot extends Thread {
         armPotentiometer = new Potentiometer(opmode, RobotConfiguration.armPotentiometer);
         arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
 
-        lunchBox = opmode.hardwareMap.get(Servo.class, RobotConfiguration.lunchboxGrip);
+        capstoneServo = opmode.hardwareMap.get(Servo.class, RobotConfiguration.capstoneServo);
 
         bTelemetry.print("Configuring IMU...");
         imu.Start(opmode);
@@ -162,6 +175,7 @@ public class Robot extends Thread {
         foundationServo1 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip1);
 
         setFoundationGripperState(1);
+        arm.setGripState(RobotArm.GripState.IDLE, 1);
 
 
         while (imu.initStatus.get() < 2) {
@@ -256,12 +270,18 @@ public class Robot extends Thread {
 
     }
 
-    //Threaded run method, right now this is just for IMU stuff, at some point we might put some avoidance stuff in here (background wall tracking?)
+    double threadArmTime = 0;
+
+    double lastTargetPosition;
+
+    //Enabled run method, right now this is just for IMU stuff, at some point we might put some avoidance stuff in here (background wall tracking?)
     public void run() {
         threadRunning.set(true);
 
         while (threadRunning.get()) {
 
+            //Set the sync value
+//            threadLastRunTime.set(:CURRENTTIME:);
             //Update our 'rotation' value
             updateBackgroundRotation();
 
@@ -274,22 +294,58 @@ public class Robot extends Thread {
                 threadRunning.set(false);
             }
 
-            arm.length.setPower(1);
-            arm.length.setTargetPosition((int) arm.targetLength);
+            if (arm.extensionMode == RobotArm.ArmThreadMode.Enabled) {
+                arm.length.setPower(arm.targetLengthSpeed);
+                arm.length.setTargetPosition((int) arm.targetLength);
+            }
+
+            if (arm.rotationMode == RobotArm.ArmThreadMode.Enabled) {
+
+                if (arm.targetRotation != lastTargetPosition) {
+                    lastTargetPosition = arm.targetRotation;
+//                    bTelemetry.print("Arm State Changed");
+                    threadArmTime = 0;
+                }
+
+//                bTelemetry.print("Arm Time", threadArmTime);
+//                bTelemetry.print("Target Arm Position", desiredArmRotationPower);
+
+
+                desiredArmRotationPower = (arm.targetRotation - arm.rotation.getCurrentPosition()) / RobotConfiguration.arm_rotationMax * 5;
+
+//                arm.rotation.setPower(Math.copySign(0.3, desiredArmRotationPower));
+
+                if (Math.abs(desiredArmRotationPower / 5) > 0.0005) {
+
+                    arm.rotation.setPower(Math.copySign(bMath.Clamp(Math.abs(desiredArmRotationPower), 0.15, 1), desiredArmRotationPower));
+                } else {
+                    arm.rotation.setPower(0);
+                }
+//                arm.rotation.setPower(bMath.Clamp(desiredArmRotationPower, Math.copySign(0.025, desiredArmRotationPower), Math.copySign(1, desiredArmRotationPower)));
+//                    if (threadArmTime < 1) {
+////                        arm.rotation.setPower(1);
+//                        arm.rotation.setPower(Math.copySign(1, desiredArmRotationPower));
+//                    } else {
+//                        arm.rotation.setPower(bMath.Clamp(desiredArmRotationPower, Math.copySign(0.025, desiredArmRotationPower), Math.copySign(1, desiredArmRotationPower)));
+//                    }
+//                }
+            }
         }
 
 
     }
 
+    AtomicBoolean rotationRecent = new AtomicBoolean(false);
 
     public void updateBackgroundRotation() {
         //Updates the current rotation
         rotation = imu.getRotation(AngleUnit.DEGREES);
+        rotationRecent.set(true);
     }
 
 
     public void shutdown() {
-        arm.Stop();
+
         experimentalInput.Stop();
         threadRunning.set(false);
         setPowerDouble4(0, 0, 0, 0, 0);
@@ -364,7 +420,9 @@ public class Robot extends Thread {
         //P of 3 and 0 for other gains seems to work really well
 //        rotationPID.start(3, 0, 0.1);
 
-        rotationPID.start(4.02, 0.0032, 0.0876);
+        rotationPID.start(7.10647, 0, 0.8507085);
+//        rotationPID.start(7.10647, 0, 0.754351);
+//        rotationPID.start(3.02, 0, 0.085);
 //        rotationPID.start(4.01, 0.003, 0.0876);
 
 //        rotationPID.start(1, 0.075, 0.022);
@@ -374,72 +432,66 @@ public class Robot extends Thread {
 //        rotationPID.start(1, 0.25, 0.035);
 //        rotationPID.start(0.025, 0.005, 0);
 
-        double ticker = 0;
-        double startAngle = rotation;
-        int directionChanges = 0;
-        boolean lastPositiveState = true;
-        double rotationPower = 0;
-        ElapsedTime dt = new ElapsedTime();
+        double rotationPower;
+        double timer = 0;
 
-        double correctTime = 0;
+        ElapsedTime deltaTime = new ElapsedTime();
+        double currentRotation = 0;
+        while (Op.opModeIsActive()) {
 
-        while (ticker < maxTime && Op.opModeIsActive()) {
-            rotationPower = rotationPID.loop(targetAngle, rotation);
-            rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - targetAngle));
+            //Thread safty check to prevent race conditions and mismatched input
+            //Waits for new input
+            while (!rotationRecent.get()) {
+
+            }
+            //Marks input
+            rotationRecent.set(false);
+
+            currentRotation = getRotation();
+
+            rotationPower = rotationPID.loop(bMath.DeltaDegree(currentRotation, targetAngle), 0);
+
+            rotationPower = (rotationPower / (360)) * rotationSpeed;
             rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
+
             Op.telemetry.addData("Error ", rotationPID.error);
             Op.telemetry.addData("Last Error  ", rotationPID.lastError);
             Op.telemetry.addData("Derivative ", rotationPID.derivative);
             Op.telemetry.addData("Integral ", rotationPID.integral);
-
             Op.telemetry.addData("TD ", rotationPID.deltaTime.seconds());
-
             Op.telemetry.addData("Rotation ", rotation);
             Op.telemetry.addData("rotationPower ", rotationPower);
             Op.telemetry.addData("rotationSpeed ", rotationSpeed);
-            Op.telemetry.addData("yeets", directionChanges);
+            Op.telemetry.addData("time ", timer);
             Op.telemetry.update();
-            rotateSimple(rotationPower * rotationSpeed);
 
-            if (lastPositiveState != rotationPower > 0) {
-                directionChanges++;
-                lastPositiveState = rotationPower > 0;
-            }
+            rotateSimple(rotationPower);
 
-            if (Math.abs(getRotation() - targetAngle) < 0.15 * rotationPower) {
+            //Exit the PID loop if the bots not rotating or is withing 1.25 degrees of the target angle or if we hit the maxtime
+//            Math.abs(rotationPower) < 0.1 ||
+
+//            if (bMath.DeltaDegree(rotation, targetAngle) < 1.25 || timer >= maxTime) {
+            if (timer >= maxTime || Math.abs(rotationPID.error) < 0.75) {
                 break;
             }
 
-            if (directionChanges > 3) {
-                break;
-            }
+            timer += deltaTime.seconds();
 
-//            if (rotationPID.error < 2) {
-//                correctTime += dt.seconds();
-//            }
-//
-//            if (correctTime > 0.25) {
-//                break;
-//            }
-//
-//            if (directionChanges > 3) {
-//                ticker += cycles * 2;
-//                op.telemetry.addData("Rotation ended", directionChanges);
-//                op.telemetry.update();
-//            }
-            ticker += dt.seconds();
-            dt.reset();
+            deltaTime.reset();
         }
 
         setPowerDouble4(0, 0, 0, 0, 0);
+
     }
 
-    public void rotatePIDRelative(double relativeTargetAngle, double rotationSpeed, double maxTime) {
-
+    public void rotatePID(double targetAngle, double rotationSpeed, double maxTime,
+                          double overrideExitThreshold) {
         //P of 3 and 0 for other gains seems to work really well
 //        rotationPID.start(3, 0, 0.1);
 
-        rotationPID.start(4.02, 0.0032, 0.0876);
+        rotationPID.start(7.10647, 0, 0.8507085);
+//        rotationPID.start(7.10647, 0, 0.754351);
+//        rotationPID.start(3.02, 0, 0.085);
 //        rotationPID.start(4.01, 0.003, 0.0876);
 
 //        rotationPID.start(1, 0.075, 0.022);
@@ -449,102 +501,93 @@ public class Robot extends Thread {
 //        rotationPID.start(1, 0.25, 0.035);
 //        rotationPID.start(0.025, 0.005, 0);
 
-        double ticker = 0;
-        double startAngle = getRotation();
-        double targetAngle = ((startAngle + relativeTargetAngle + 360) % 360) - 360;
+        double rotationPower;
+        double timer = 0;
 
-        targetAngle = bMath.Loop(targetAngle, 180);
+        ElapsedTime deltaTime = new ElapsedTime();
 
-        int directionChanges = 0;
-        boolean lastPositiveState = true;
-        double rotationPower = 0;
-        ElapsedTime dt = new ElapsedTime();
+        while (Op.opModeIsActive()) {
+            rotationPower = rotationPID.loop(bMath.DeltaDegree(imu.imu_0.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle, targetAngle), 0);
+            rotationPower = (rotationPower / (360)) * rotationSpeed;
+            rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
 
-
-        while (ticker < maxTime && Op.opModeIsActive()) {
-            rotationPower = rotationPID.loop(targetAngle, rotation);
-            rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - relativeTargetAngle));
-            rotationPower += (Math.copySign(0.1, rotationPower));
             Op.telemetry.addData("Error ", rotationPID.error);
             Op.telemetry.addData("Last Error  ", rotationPID.lastError);
             Op.telemetry.addData("Derivative ", rotationPID.derivative);
             Op.telemetry.addData("Integral ", rotationPID.integral);
-
             Op.telemetry.addData("TD ", rotationPID.deltaTime.seconds());
-
             Op.telemetry.addData("Rotation ", rotation);
             Op.telemetry.addData("rotationPower ", rotationPower);
             Op.telemetry.addData("rotationSpeed ", rotationSpeed);
-            Op.telemetry.addData("yeets", directionChanges);
+            Op.telemetry.addData("time ", timer);
             Op.telemetry.update();
-            rotateSimple(rotationPower * rotationSpeed);
 
-            if (lastPositiveState != rotationPower > 0) {
-                directionChanges++;
-                lastPositiveState = rotationPower > 0;
-            }
+            rotateSimple(rotationPower);
 
-            if (Math.abs(getRotation() - targetAngle) < 0.15 * rotationPower) {
+            //Exit the PID loop if the bots not rotating or is withing 1.25 degrees of the target angle or if we hit the maxtime
+//            Math.abs(rotationPower) < 0.1 ||
+
+//            if (bMath.DeltaDegree(rotation, targetAngle) < 1.25 || timer >= maxTime) {
+            if (timer >= maxTime || Math.abs(rotationPID.error) < overrideExitThreshold) {
                 break;
             }
 
-            if (directionChanges > 3) {
-                break;
-            }
+            timer += deltaTime.seconds();
 
-            ticker += dt.seconds();
-            dt.reset();
+            deltaTime.reset();
         }
 
         setPowerDouble4(0, 0, 0, 0, 0);
+
     }
 
-    public void rotatePID(double targetAngle, double rotationSpeed, int cycles, double p, double i, double d) {
+    public void rotatePID(double targetAngle, double rotationSpeed, double maxTime, double p,
+                          double i, double d) {
 
-//        rotationPID.start(3, 0.21, 0.69);
         rotationPID.start(p, i, d);
-//        rotationPID.start(0.025, 0.005, 0);
 
-        int ticker = 0;
-        double startAngle = rotation;
-        int directionChanges = 0;
-        boolean lastPositiveState = true;
+        double rotationPower;
+        double timer = 0;
 
-        while (ticker < cycles && Op.opModeIsActive()) {
-            ticker++;
-            double rotationPower = rotationPID.loop(targetAngle, rotation);
-            rotationPower = rotationPower / (360);//rotationSpeed * Math.abs(startAngle - targetAngle));
-            rotationPower += (0.01 * (rotationPower > 0 ? 1 : -1));
+        ElapsedTime deltaTime = new ElapsedTime();
+
+        while (Op.opModeIsActive()) {
+            rotationPower = rotationPID.loop(bMath.DeltaDegree(imu.imu_0.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle, targetAngle), 0);
+            rotationPower = (rotationPower / (360)) * rotationSpeed;
+            rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
+
             Op.telemetry.addData("Error ", rotationPID.error);
             Op.telemetry.addData("Last Error  ", rotationPID.lastError);
             Op.telemetry.addData("Derivative ", rotationPID.derivative);
             Op.telemetry.addData("Integral ", rotationPID.integral);
-
             Op.telemetry.addData("TD ", rotationPID.deltaTime.seconds());
-
             Op.telemetry.addData("Rotation ", rotation);
             Op.telemetry.addData("rotationPower ", rotationPower);
             Op.telemetry.addData("rotationSpeed ", rotationSpeed);
-            Op.telemetry.addData("yeets", directionChanges);
+            Op.telemetry.addData("time ", timer);
             Op.telemetry.update();
-            rotateSimple(rotationPower * rotationSpeed);
 
-            if (lastPositiveState != rotationPower > 0) {
-                directionChanges++;
-                lastPositiveState = rotationPower > 0;
-            }
+            rotateSimple(rotationPower);
 
-            if (directionChanges > 5) {
+            //Exit the PID loop if the bots not rotating or is withing 1.25 degrees of the target angle or if we hit the maxtime
+//            Math.abs(rotationPower) < 0.1 ||
+
+//            if (bMath.DeltaDegree(rotation, targetAngle) < 1.25 || timer >= maxTime) {
+            if (timer >= maxTime || Math.abs(rotationPID.error) < 0.75) {
                 break;
             }
 
+            timer += deltaTime.seconds();
+
+            deltaTime.reset();
         }
 
         setPowerDouble4(0, 0, 0, 0, 0);
     }
 
 
-    public void rotateSimple(double targetAngle, double rotationSpeed, double tolerance, double exitTime) {
+    public void rotateSimple(double targetAngle, double rotationSpeed, double tolerance,
+                             double exitTime) {
         double exitTimer = 0;
         ElapsedTime deltaTime = new ElapsedTime();
 
@@ -552,13 +595,25 @@ public class Robot extends Thread {
         while (Op.opModeIsActive()) {
             deltaTime.reset();
 
-            moveComplex(new Double2(0, 0), rotationSpeed, getRotation() - targetAngle, 0);
+            double rotation = ((getRotation() - targetAngle) / -180) * rotationSpeed;
+
+//            rotation = bMath.Clamp(1)
+
+            double clampedRotation = rotation + (rotation > 0 ? 0.2 : -0.2);
+
+            rotateSimple(clampedRotation);
+
+            Op.telemetry.addData("rotation delta ", getRotation() - targetAngle);
+            Op.telemetry.addData("cur rotation ", getRotation());
+            Op.telemetry.addData("goal rotation ", targetAngle);
+            Op.telemetry.addData("exit Timer", exitTime);
+            Op.telemetry.update();
 
             if (Math.abs(getRotation() - targetAngle) < tolerance) {
                 exitTimer += deltaTime.seconds();
             }
 
-            if (exitTimer < exitTime) {
+            if (exitTimer > exitTime) {
                 break;
             }
         }
@@ -622,7 +677,8 @@ public class Robot extends Thread {
         driveManager.backRight.setTargetPosition(driveManager.backRight.getCurrentPosition() + (int) delta);
     }
 
-    public void setRelativeEncoderPosition(double deltaX, double deltaY, double deltaZ, double deltaW) {
+    public void setRelativeEncoderPosition(double deltaX, double deltaY, double deltaZ,
+                                           double deltaW) {
 
         driveManager.frontLeft.setTargetPosition(driveManager.frontLeft.getCurrentPosition() + (int) deltaX);
         driveManager.backLeft.setTargetPosition(driveManager.backLeft.getCurrentPosition() + (int) deltaY);
@@ -686,8 +742,8 @@ public class Robot extends Thread {
         setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
         setPowerDouble4(1, 1, 1, 1, speed);
 
-        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
-        setPowerDouble4(a.x, a.y, a.z, a.w, speed);
+//        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
+//        setPowerDouble4(a.x, a.y, a.z, a.w, speed);
 
 
         setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -717,6 +773,128 @@ public class Robot extends Thread {
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+
+    public void driveByDistance(double angle, double speed, double distance, double maxTime) {
+
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
+
+        double runTime = 0;
+        ElapsedTime deltaTime = new ElapsedTime();
+
+        Double4 a = bMath.getMecMovement(angle, 0, 0);
+
+        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
+        setPowerDouble4(1, 1, 1, 1, speed);
+
+//        setRelativeEncoderPosition(a.x * distanceTicks, a.y * distanceTicks, a.z * distanceTicks, a.w * distanceTicks);
+//        setPowerDouble4(a.x, a.y, a.z, a.w, speed);
+
+
+        setDriveMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        Op.telemetry.addData("Driving by distance ", distance * ((RobotConfiguration.wheel_circumference * RobotConfiguration.wheel_ticksPerRotation)));
+        Op.telemetry.update();
+        deltaTime.reset();
+        while (Op.opModeIsActive() && wheelsBusy()) {
+            Op.telemetry.addData("Wheel Busy", "");
+            Op.telemetry.addData("Wheel Front Right Postion", driveManager.frontRight.getCurrentPosition());
+            Op.telemetry.addData("Wheel Front Right Target", driveManager.frontRight.motor.getTargetPosition());
+            Op.telemetry.update();
+
+            runTime += deltaTime.seconds();
+
+            if (!Op.opModeIsActive() || runTime > maxTime) {
+                break;
+            }
+
+            deltaTime.reset();
+        }
+
+        Op.telemetry.addData("Target Reached", "");
+        Op.telemetry.update();
+
+        //shutdown motors
+        setPowerDouble4(0, 0, 0, 0, 0);
+
+        //Set up for normal driving
+        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void experimentalDriveByDistance(double driveHeading, double driveSpeed,
+                                            double initalSpeed, double correctionAngle, double distance) {
+        driveManager.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveManager.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
+
+        double speedAdd = initalSpeed;
+
+        double percentComplete = 0;
+
+        while (driveManager.backRight.getCurrentPosition() < distanceTicks) {
+
+            percentComplete = driveManager.backRight.getCurrentPosition() / distanceTicks;
+
+            moveComplex(driveHeading, (Math.sin(percentComplete * Math.PI) * driveSpeed) + initalSpeed, getRotation() - correctionAngle, 0);
+//            moveComplex(driveHeading, driveSpeed, getRotation() - correctionAngle, 0);
+        }
+        stopDrive();
+    }
+
+    public void experimentalDriveByDistanceWithRotationYeahItsPrettyCo0o0oOo0OoO0Oool(double driveHeading,
+                                                                                      double driveSpeed, double initalSpeed, double initalAngle, double finalAngle,
+                                                                                      double distance) {
+        driveManager.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveManager.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
+
+        double speedAdd = initalSpeed;
+
+        double percentComplete = 0;
+
+        while (driveManager.backRight.getCurrentPosition() < distanceTicks) {
+
+            percentComplete = driveManager.backRight.getCurrentPosition() / distanceTicks;
+
+            moveComplex(getRotation() - driveHeading, (Math.sin(percentComplete * Math.PI) * driveSpeed) + initalSpeed, getRotation() - (percentComplete > 0.5 ? finalAngle : initalAngle), 0);
+//            moveComplex(driveHeading, driveSpeed, getRotation() - correctionAngle, 0);
+        }
+        stopDrive();
+    }
+
+    public void experimentalDriveByDistanceCurve(double driveHeading, double headingDrift, double driveSpeed,
+                                                 double initalSpeed, double correctionAngle, double distance) {
+        driveManager.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveManager.backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
+
+        double speedAdd = initalSpeed;
+
+        double percentComplete = 0;
+
+        ElapsedTime dTime = new ElapsedTime();
+        dTime.reset();
+        while (driveManager.backRight.getCurrentPosition() < distanceTicks) {
+
+            percentComplete = driveManager.backRight.getCurrentPosition() / distanceTicks;
+            headingDrift += dTime.seconds();
+            moveComplex(bMath.Loop(driveHeading + headingDrift, 180), (Math.sin(percentComplete * Math.PI) * driveSpeed) + initalSpeed, getRotation() - correctionAngle, 0);
+            dTime.reset();
+        }
+        stopDrive();
+    }
+
+    public void stopDrive() {
+        setPowerDouble4(0, 0, 0, 0, 0);
+    }
+
+
+    @Deprecated
     public enum simpleDirection {
         FORWARD,
         BACKWARD,
@@ -727,7 +905,8 @@ public class Robot extends Thread {
     // can go forward, backwards, or sideways
     //distance should be in cm
     @Deprecated
-    public void driveByDistancePoorly(double distance, simpleDirection direction, double speedMultiplier) {
+    public void driveByDistancePoorly(double distance, simpleDirection direction,
+                                      double speedMultiplier) {
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         int targetEncoders = (int) ((480.0 / RobotConfiguration.wheel_circumference) * distance);
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -835,14 +1014,52 @@ public class Robot extends Thread {
     }
 
     //grips the foundation, meant to be human readable (by judges)
+<<<<<<< HEAD
     public void gripFoundation(){
         foundationServo0.setPosition(1);
         foundationServo1.setPosition(0);
+=======
+    public void gripFoundation() {
+        setFoundationGripperState(0);
+>>>>>>> 0f1b00d1fd33af676cd0e38e9ac358dd612b70c1
     }
 
     //lets go of the foundation, meant to be human readable (by judges)
     public void releaseFoundation() {
+<<<<<<< HEAD
         foundationServo0.setPosition(0);
         foundationServo1.setPosition(1);
     }
+=======
+        setFoundationGripperState(0.9);
+    }
+
+    // Drive Helper Method
+    public void updateRobotDrive(double frontLeft, double frontRight, double backLeft,
+                                 double backRight) {
+        driveManager.frontLeft.setPower(frontLeft);
+        driveManager.frontRight.setPower(frontRight);
+        driveManager.backLeft.setPower(backLeft);
+        driveManager.backRight.setPower(backRight);
+    }
+
+    public Vector2 getMovementVector(Gamepad gamepad,
+                                     double rotationLockAngle,
+                                     double movementInput_x,
+                                     double movementInput_y) {
+        Vector2 result = new Vector2(0, 0);
+
+        double angle = Math.toRadians(getRotation() - rotationLockAngle);
+        double movementSpeed = (Math.sqrt(Math.pow(movementInput_x, 2) + Math.pow(movementInput_y, 2)));
+
+        double _newGamepadX = movementSpeed * Math.cos(angle + Math.atan(movementInput_y / movementInput_x));
+        double _newGamepadY = movementSpeed * Math.sin(angle + Math.atan(movementInput_y / movementInput_x));
+
+        result.x = (gamepad.left_stick_x <= 0) ? -_newGamepadX : _newGamepadX;
+        result.y = (gamepad.left_stick_x <= 0) ? -_newGamepadY : _newGamepadY; // **** IS `left_stick_x` a BUG **** shouldn't it be y ???
+        return result;
+    }
+
+
+>>>>>>> 0f1b00d1fd33af676cd0e38e9ac358dd612b70c1
 }

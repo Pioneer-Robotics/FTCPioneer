@@ -71,11 +71,11 @@ public class RobotDriveManager {
 
             opMode.telemetry.update();
 
-            try {
-                Thread.sleep((long) bMath.Clamp(100 - caibrationDeltaTime.milliseconds(), 0, 100));
-            } catch (InterruptedException ex) {
-                bTelemetry.print("Wheel calibration failed: InterruptedException on el sleep :(");
-            }
+//            try {
+//                Thread.sleep((long) bMath.Clamp(100 - caibrationDeltaTime.milliseconds(), 0, 100));
+//            } catch (InterruptedException ex) {
+//                bTelemetry.print("Wheel calibration failed: InterruptedException on el sleep :(");
+//            }
 
             caibrationDeltaTime.reset();
         }
@@ -92,6 +92,7 @@ public class RobotDriveManager {
             bTelemetry.print("Rerunning calibration.");
 
             //Might be good to offset the target values by 250 every time we rerun it
+            targetRatio = 1000000;
             PerformInitialCalibration();
         } else {
             bTelemetry.print("Calibration VALID!");

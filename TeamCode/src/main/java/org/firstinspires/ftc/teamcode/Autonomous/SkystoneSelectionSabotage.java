@@ -1,20 +1,13 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
+import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 
-@Autonomous(name = "Skystone Low Key Sabotage", group = "ftcPio")
+//@Autonomous(name = "Skystone Low Key Sabotage", group = "ftcPio")
 public class SkystoneSelectionSabotage extends Auto {
 
-    private  double startRotation;
-
-    private  ElapsedTime deltaTime = new ElapsedTime();
-
-    private double moveTime;
-
-    private final boolean lasers = true;
+    private double startRotation;
 
     @Override
     public void runOpMode() {
@@ -22,107 +15,78 @@ public class SkystoneSelectionSabotage extends Auto {
 
         startRotation = robot.getRotation();
 
+        speed_high = 0.5;
+        speed_med = 0.30;
+        speed_low = 0.1;
+
         waitForStart();
 
-//        robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
-//
-//        sleep(10000);
-//
-//        robot.arm.SetGripState(RobotArm.GripState.IDLE, 0.5);
-//        sleep(10000);
-//        robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
-//        sleep(10000);
+        //Deploy gripper
+        robot.arm.setGripState(RobotArm.GripState.CLOSED, 1);
 
-        /*
-        bTelemetry.print("Status: ", "Driving");
-        robot.driveByDistancePoorly(0.5, Robot.simpleDirection.FORWARD, 1);
+        //MIN IS .17
+//        robot.arm.setArmStateWait(0, 0, 1);
 
-        bTelemetry.print("Status: ", "Grabbing");
-        GrabArm(0.55, 0.35);
-        bTelemetry.print("Status: ", "Rotating");
+        robot.arm.setArmStateWait(0, 0.5);
 
-        if (side == FieldSide.SIDE_BLUE) {
-            //-90
-        } else {
-            //90
-        }
-        */
+        robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
 
-        robot.rotatePIDRelative(-90, speed_high, 350);
+        sleep(250);
 
-        bTelemetry.print("Status: ", "Depositing");
-        DepositeArm(0.55, 1);
+        robot.arm.setArmStateWait(0, 0.3 );
+        RunDeliveryCycle(93, 1000, 35, 24, 160, true);
+///
+        RunDeliveryCycle(45, 1000, 35, 1 * 24 + 24, 145 + 48, true);
 
+        RunDeliveryCycle(45, 1000, 35, 2 * 24 + 24, 145 + (3 * 24), false);
 
-        bTelemetry.print("Status: ", "Fixing Angle");
+//        robot.driveByDistance(180, 0.5, 15);
 
-        robot.rotatePID(0, speed_high, 350);
-
-
-// loop code for multiple skystones
-//        for (int i = 0; i <= 2; i++) {
-//            bTelemetry.print("loop: ", Integer.toString(i));
-//            bTelemetry.print("Status: ", "Grabbing");
-//            GrabArm(0.5, 0.2);
-//            bTelemetry.print("Status: ", "Rotating");
-//            robot.rotatePIDRelative(-90, 0.8, 10000000);
-//            bTelemetry.print("Status: ", "Fixing angle");
-//            if (lasers) {
-//                double distance = robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getDistanceAverage(DistanceUnit.CM);
-//                while (Math.abs(distance - 90) >= 3 && !isStopRequested()) {
-//                    robot.moveComplex(Math.copySign(90, -(distance - (90-i*20))), 0.4, 0, 0);
-//                    distance = robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getDistanceAverage(DistanceUnit.CM);
-//                }
-//            }
-//            robot.setPowerDouble4(0, 0, 0, 0, 0);
-//            bTelemetry.print("Status: ", "Depositing");
-//            DepositeArm(0.5, 0.2);
-//
-//
-//            bTelemetry.print("Status: ", "Fixing Angle");
-//            if (lasers) {
-//                double angle = robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getWallAngle();
-//                while (Math.abs(angle) >= 1 && !isStopRequested()) {
-//                    robot.rotateSimple(Math.copySign(0.2, angle));
-//                    angle = robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getWallAngle();
-//                }
-//            }
-//            robot.setPowerDouble4(0, 0, 0, 0, 0);
-//
-//            bTelemetry.print("Status: ", "Fixing Distance");
-//            if (lasers) {
-//                double distance = robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getDistanceAverage(DistanceUnit.CM);
-//                bTelemetry.print("Distance: ", Double.toString(distance));
-//                while (Math.abs(distance - 30) >= 3 && !isStopRequested()) {
-//                    robot.moveComplex(Math.copySign(90, -(distance - 30)), 0.4, 0, 0);
-//                    distance = robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getDistanceAverage(DistanceUnit.CM);
-//                }
-//            }
-//            robot.setPowerDouble4(0, 0, 0, 0, 0);
-//            bTelemetry.print("Status: ", "Rotating");
-//            robot.rotatePIDRelative(90, 0.8, 100000000);
-//            bTelemetry.print("Status: ", "Fixing angle");
-//            if (lasers) {
-//                double angle = robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getWallAngle();
-//                while (Math.abs(angle) >= 1 && !isStopRequested()) {
-//                    robot.rotateSimple(Math.copySign(0.2, angle));
-//                    angle = robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getWallAngle();
-//                }
-//                robot.setPowerDouble4(0, 0, 0, 0, 0);
-//            }
-//            bTelemetry.print("Status: ", "Fixing Distance");
-//            if (lasers) {
-//                double distance = robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getDistanceAverage(DistanceUnit.CM);
-//                while (Math.abs(distance - 90) >= 3 && !isStopRequested()) {
-//                    robot.moveComplex(Math.copySign(90, -(distance - (90-((i+1)*20)))), 0.4, 0, 0);
-//                    distance = robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).getDistanceAverage(DistanceUnit.CM);
-//                }
-//            }
-//            robot.setPowerDouble4(0, 0, 0, 0, 0);
-//
-//
-//        }
         StopMovement();
         StopRobot();
     }
+
+    private void RunDeliveryCycle(double fwdDistance, long servoDelayMS, double distanceFromStone, double endingOffset, double bridgeDistance, boolean moveBackToBridge) {
+
+
+        robot.driveByDistance(0, 0.35, fwdDistance);
+
+        sleep(500);
+
+        robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
+
+        sleep(servoDelayMS);
+
+        robot.driveByDistance(180, 0.5, distanceFromStone);
+
+//        robot.rotatePIDRelative(-90, 1, 3);
+        //Rotates to face foundation
+        robot.rotatePID(90, 1, 4);
+
+        //Drives to foundation
+        robot.driveByDistance(0, 1, bridgeDistance);
+
+//        robot.arm.setArmStateWait(0.2, 0.8, 1);
+        robot.rotatePID(90, 1, 4);
+
+        //Drop stone
+        robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
+
+        if (moveBackToBridge) {
+        sleep(servoDelayMS);
+
+
+            robot.driveByDistance(180, 1, bridgeDistance);
+
+            robot.rotatePID(90, 1, 4);
+
+            robot.driveByDistance(180, 0.35, endingOffset);
+
+            robot.rotatePID(0, 1, 3);
+        }
+//        robot.driveByDistance(180, 1, 90);
+
+//        robot.rotatePID(0, 1, 2);
+    }
+
 }

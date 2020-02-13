@@ -22,7 +22,7 @@ public class Auto extends LinearOpMode {
 
     //What side we are playing on, based on the bridge colors
 
-    public  FieldSide side;
+    public FieldSide side;
 
     public enum FieldSide {
         SIDE_BLUE,
@@ -39,10 +39,10 @@ public class Auto extends LinearOpMode {
         print("Status: Initiating robot.");
 
         //init the bot hardware! This sets up the static references for the bot as well so make sure to run this before any other code
-        robot.init(this, true);
+        robot.init(this, false);
 
         print("Status: Initiating all jobs.");
-
+//        Test Comment
 //        print("Status: Determining current play side");
 
         //If we are closest to the 90 degree side we know were playing on the BLUE side
@@ -51,7 +51,7 @@ public class Auto extends LinearOpMode {
 //        } else {
 //            side = FieldSide.SIDE_RED;
 //        }
-//        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
+//        robot.arm.setGripState(RobotArm.GripState.IDLE, 1);
 
 //        print("Status: Waiting for play side input. Please press the button thats color corresponds to the side your robot is on (see bridge). Press A to continue");
 
@@ -86,15 +86,19 @@ public class Auto extends LinearOpMode {
 //        }
 
 
-
-
 //        robot.arm.setArmStateWait(0, 1, 1);
-//        robot.arm.SetGripState(RobotArm.GripState.IDLE, 1);
+//        robot.arm.setGripState(RobotArm.GripState.IDLE, 1);
 //        robot.arm.setArmStateWait(0, 0, 1);
+        robot.arm.setGripState(RobotArm.GripState.CLOSED, 1);
+
+        //Sets up the threaded arm modes
+        robot.arm.extensionMode = RobotArm.ArmThreadMode.Enabled;
+        robot.arm.rotationMode = RobotArm.ArmThreadMode.Enabled;
 
         print("Status: Awaiting start. Running on side " + (side == FieldSide.SIDE_BLUE ? "BLU" : "RED"));
     }
 
+    //Stops the robot by setting power of all motors to 0
     public void StopRobot() {
         robot.setPowerDouble4(0, 0, 0, 0, 0);
         robot.shutdown();
@@ -107,7 +111,7 @@ public class Auto extends LinearOpMode {
      * @param lockTime              How long we must be within lockThreshold, should be less than one second
      * @param lockThreshold         How close the skystone needs to be to the center of the camera in order for us to stop (0.1 - 0.3)
      */
-    //This loop uses the rear sensors to line up with a skystone
+    //This loop uses the rear sensors to line up with a SkyStone
     public void SkystoneAlign(double moveSpeed, double wallDistance, double correctionCoefficient, double lockTime, double lockThreshold, double startRotation) {
         ResetWallPID();
         ElapsedTime deltaTime = new ElapsedTime();
@@ -178,7 +182,7 @@ public class Auto extends LinearOpMode {
         StopMovement();
     }
 
-    //Freezes the robots movement but continues to seek its correct rotation
+    //Freezes the robot's movement but continues to seek its correct rotation
     public void StopAndMaintainRotation(double rotation) {
         robot.moveComplex(new Double2(0, 0), 1, robot.getRotation() - rotation, 0);
     }
@@ -188,6 +192,7 @@ public class Auto extends LinearOpMode {
         robot.setPowerDouble4(0, 0, 0, 0, 0);
     }
 
+    //Reset Proportion-Integral-Derivative for Wall Tracking using pre-measured numbers
     public void ResetWallPID() {
 //        walltrackingController.start(15, 0.0, 0);
         walltrackingController.start(4.95, 0.0, 0.1);
@@ -198,41 +203,42 @@ public class Auto extends LinearOpMode {
     public void GrabArm(double extensionLength, double liftFactor) {
 
         //Open the gripper, raise the arm, and extend out
-        robot.arm.setArmStateWait(liftFactor, extensionLength, 1);
+        robot.arm.setArmStateWait(liftFactor, extensionLength);
 
-        robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
+        robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
 
         sleep(500);
 
         //Drop the arm
-        robot.arm.setArmStateWait(0, extensionLength, 0.75);
+        robot.arm.setArmStateWait(0, extensionLength);
 
         //Close the gripper
-        robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
+        robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
 
         sleep(500);
 
         //Raise the arm again
-        robot.arm.setArmStateWait(liftFactor, extensionLength, 1);
+        robot.arm.setArmStateWait(liftFactor, extensionLength);
 
     }
 
+    //Same as GrabArm, except this one operates based on the last length declared
     public void DepositeArm(double lastLength, double extensionLength) {
 
         //Open the gripper, raise the arm, and extend out
-        robot.arm.SetGripState(RobotArm.GripState.CLOSED, 0.5);
+        robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
 
-        robot.arm.setArmStateWait(0, lastLength, 1);
+        robot.arm.setArmStateWait(0, lastLength);
 
         //Extend the arm
-        robot.arm.setArmStateWait(0, extensionLength, 1);
+        robot.arm.setArmStateWait(0, extensionLength);
         sleep(1000);
 
         //Close the gripper
-        robot.arm.SetGripState(RobotArm.GripState.OPEN, 0.5);
+        robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
 
         //Retract the arm again
-        robot.arm.setArmStateWait(0, lastLength, 1);
+        robot.arm.setArmStateWait(0, lastLength);
     }
 
 
@@ -241,7 +247,7 @@ public class Auto extends LinearOpMode {
     }
 
     public void InitArm() {
-        robot.arm.setArmStateWait(0.2, 0, 1);
+        robot.arm.setArmStateWait(0.2, 0);
 
     }
 
@@ -260,6 +266,10 @@ public class Auto extends LinearOpMode {
     void print(String message) {
         telemetry.addData("", message);
         telemetry.update();
+    }
+
+    public void TransitionToTeleop() {
+        //wip wip wip
     }
 
 }

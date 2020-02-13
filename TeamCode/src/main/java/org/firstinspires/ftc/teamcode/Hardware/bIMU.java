@@ -15,8 +15,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 //Used in place of BNO055IMU, it takes the average of both IMU's for readings
 public class bIMU extends Thread {
 
-    private BNO055IMU imu_0;
-    private BNO055IMU imu_1;
+    //Exposed for debugging
+    public BNO055IMU imu_0;
+    public BNO055IMU imu_1;
+
+    private double imuRotation_0;
+    private double imuRotation_1;
 
     private BNO055IMU.Parameters IParameters = new BNO055IMU.Parameters();
 
@@ -82,8 +86,8 @@ public class bIMU extends Thread {
 //        op.telemetry.addData("IMU 0: ", imu_0.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, angleUnit).firstAngle);
 //        op.telemetry.addData("IMU 1: ", imu_1.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, angleUnit).firstAngle);
 
-        double imuRotation_0 = imu_0.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, angleUnit).firstAngle;
-        double imuRotation_1 = imu_1.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, angleUnit).firstAngle;
+        imuRotation_0 = imu_0.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, angleUnit).firstAngle;
+        imuRotation_1 = imu_1.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, angleUnit).firstAngle;
 
         if (imuRotation_0 - imuRotation_1 > 180) {
             imuRotation_1 += 360;
@@ -97,5 +101,9 @@ public class bIMU extends Thread {
         return ((imuRotation_0 + imuRotation_1) / 2) % 360;
     }
 
+    //Not wrapped
+    public double getSingleRotation(AngleUnit angleUnit) {
+        return imu_0.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, angleUnit).firstAngle;
+    }
 
 }

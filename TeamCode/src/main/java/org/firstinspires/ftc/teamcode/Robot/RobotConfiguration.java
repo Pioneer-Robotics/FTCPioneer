@@ -41,19 +41,22 @@ public class RobotConfiguration {
     public static final String arm_lengthMotor = "Arm Spool";
 
     //The encoder ticks required to extend the arm completely
-    public static final double arm_ticksMax = -2613;
+    public static final double arm_ticksMax = 5080;
 
     //The minimum length of the arm (measured from the tip of the extrusion)
-    public static final double arm_lengthMin = 40; //TODO determine this value
+    public static final double arm_lengthMin = 38.1; //Verified Jan 28 2020 -Gian
 
     //The motor that is responsible
     public static final String arm_rotationMotor = "Arm Rotation";
 
     //The encoder tick required to elevate the arm completely
-    public static final double arm_rotationMax = -5678;
+    public static final double arm_rotationMax = 5678 * 3;
+
+    //The initialization horizontal distance between the shuttle joint and the base joint
+    public static final double armQuadBaseMaxCm = 350; //TODO Determine
 
     //The offset to determine the interior angle between member k and L
-    public static final double pot_interiorOffset = 149.8;
+    public static final double pot_interiorOffset = 149.8; //
 
     //The servo responsible for controlling the grip state of the arm
     public static final String arm_gripServo = "Grip";
@@ -62,7 +65,7 @@ public class RobotConfiguration {
     public static final String arm_gripRotationServo = "Grip Rotation";
 
     //The Lunch.
-    public static final String lunchboxGrip = "Lunchbox";
+    public static final String capstoneServo = "Lunchbox";
 
     //The servos responsible for moving the foundation
     //Grip 0 position 1 is top
@@ -102,9 +105,6 @@ public class RobotConfiguration {
 
     //The max speed our wheel motors will ever rotate (in ticks per second), 3 rotations per second. Used in calibration.
     public static final int wheel_maxTicksPerSecond = 4320;
-
-    //How many times we need to spin the motor in order to rotate the wheel once
-    public static final double wheel_GearCoefficient = 2;
 
     //pi * diameter
     public static final double wheel_circumference = 32.2;

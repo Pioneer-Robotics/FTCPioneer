@@ -8,11 +8,12 @@ import org.firstinspires.ftc.teamcode.Helpers.Vector2;
 public class bGamepad {
 
     TriggerBoolean aTb, bTb, xTb, yTb;
-    public boolean aTrigger, bTrigger, xTrigger, yTrigger;
+    public boolean a, b, x, y;
+    public boolean aTriggered, bTriggered, xTriggered, yTriggered;
 
     Vector2 getJoystick_leftCache;
 
-    public Vector2 joystick_left() {
+    public Vector2 leftJoystick() {
         getJoystick_leftCache.x = gamepad.left_stick_x;
         getJoystick_leftCache.y = gamepad.left_stick_x;
         return getJoystick_leftCache;
@@ -21,7 +22,7 @@ public class bGamepad {
 
     Vector2 joystick_rightCache;
 
-    public Vector2 joystick_right() {
+    public Vector2 rightJoystick() {
         joystick_rightCache.x = gamepad.right_stick_x;
         joystick_rightCache.y = gamepad.right_stick_y;
         return joystick_rightCache;
@@ -36,13 +37,20 @@ public class bGamepad {
     public boolean guide;
     public boolean back;
 
+
+    public boolean rightBumper;
+    public float rightTrigger;
+
+    public boolean leftBumper;
+    public float leftTrigger;
+
     //Dead zone is set low to allow for more granular controls
     public float deadZone = 0.025f;
 
-    public Gamepad gamepad;
+    Gamepad gamepad;
 
-    public bGamepad() {
-
+    public bGamepad(Gamepad base) {
+        gamepad = base;
 
         aTb = new TriggerBoolean();
         bTb = new TriggerBoolean();
@@ -53,20 +61,35 @@ public class bGamepad {
     public void Update() {
         gamepad.setJoystickDeadzone(deadZone);
 
-        aTb.assign(gamepad.a);
-        bTb.assign(gamepad.b);
-        xTb.assign(gamepad.x);
-        yTb.assign(gamepad.y);
+        a = gamepad.a;
+        b = gamepad.b;
+        x = gamepad.x;
+        y = gamepad.y;
+
+        aTb.assign(a);
+        bTb.assign(b);
+        xTb.assign(x);
+        yTb.assign(y);
+
+        guide = gamepad.guide;
+        start = gamepad.start;
+        back = gamepad.back;
 
         dpad_down = gamepad.dpad_down;
         dpad_up = gamepad.dpad_up;
         dpad_right = gamepad.dpad_right;
         dpad_left = gamepad.dpad_left;
 
-        aTrigger = aTb.getTrigger();
-        bTrigger = bTb.getTrigger();
-        xTrigger = xTb.getTrigger();
-        yTrigger = yTb.getTrigger();
+        aTriggered = aTb.getTrigger();
+        bTriggered = bTb.getTrigger();
+        xTriggered = xTb.getTrigger();
+        yTriggered = yTb.getTrigger();
+
+        rightBumper = gamepad.right_bumper;
+        rightTrigger = gamepad.right_trigger;
+
+        leftBumper = gamepad.left_bumper;
+        leftTrigger = gamepad.left_trigger;
     }
 
 }

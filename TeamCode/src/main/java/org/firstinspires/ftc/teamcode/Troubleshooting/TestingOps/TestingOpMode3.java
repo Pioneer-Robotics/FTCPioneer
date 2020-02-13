@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 
-@Autonomous(name = "TestingOpMode3", group = "Debugging")
+@Autonomous(name = "TestingOpMode3", group = "Trouble Shooting")
 //Used to ensure that all wheels are set up correctly
 public class TestingOpMode3 extends LinearOpMode {
 

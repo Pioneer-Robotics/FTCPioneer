@@ -28,7 +28,7 @@ public class bMath {
         rightRotatePower = -rotationSpeed;
 
         delta.x = (leftMovementPower + leftRotatePower);
-        delta.y = (rightMovementPower +  rightRotatePower);
+        delta.y = (rightMovementPower + rightRotatePower);
         delta.z = (rightMovementPower + leftRotatePower);
         delta.w = (leftMovementPower + rightRotatePower);
 
@@ -157,6 +157,19 @@ public class bMath {
         return v;
     }
 
+    public static double Clamp(double value) { //Clamps between 1 and 0
+        double v = value;
+
+        if (value >= 1) {
+            v = 1;
+        }
+        if (value <= 0) {
+            v = 0;
+        }
+
+        return v;
+    }
+
     public static long Clamp(long value, long min, long max) {
         long v = value;
 
@@ -187,6 +200,11 @@ public class bMath {
 
     }
 
+    //Outputs between -180 and 180, signed
+    public static double DeltaDegree(double current, double target) {
+        return (target - current + 540) % 360 - 180;
+    }
+
     public static double MoveTowards(double current, double target, double maxDelta) {
         if (Math.abs(target - current) <= maxDelta) {
             return target;
@@ -207,6 +225,8 @@ public class bMath {
         return value * 57.2957;
     }
 
-    public static double squared (double val) { return val * val; }
+    public static double squared(double value) {
+        return (value * value);
+    }
 
 }

@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Helpers.PID;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 
-@Autonomous(name = "TestingOpMode1", group = "Sensor")
+@Autonomous(name = "TestingOpMode1", group = "Trouble Shooting")
 public class TestingOpMode1 extends LinearOpMode {
     private Robot robot = new Robot();
 
@@ -21,7 +21,7 @@ public class TestingOpMode1 extends LinearOpMode {
     private double a;
 
     @Override
-    public void runOpMode()   {
+    public void runOpMode() {
         robot.init(this, false);
 
         waitForStart();
@@ -30,7 +30,10 @@ public class TestingOpMode1 extends LinearOpMode {
         while (opModeIsActive()) {
             robot.setFoundationGripperState(a);
 
-            a += gamepad1.left_stick_x * deltaTime.seconds();
+            a += gamepad1.left_stick_x * deltaTime.seconds() * 100;
+
+//            robot.arm.setArmStateWait(1,);
+
             telemetry.addData("Power", a);
             telemetry.update();
             deltaTime.reset();

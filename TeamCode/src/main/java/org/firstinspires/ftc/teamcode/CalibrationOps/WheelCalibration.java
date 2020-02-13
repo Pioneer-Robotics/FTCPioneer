@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Troubleshooting;
+package org.firstinspires.ftc.teamcode.CalibrationOps;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 
-@Autonomous(name = "Wheel Calibration yay", group = "Calibration")
+@Autonomous(name = "Wheel Calibration", group = "Calibration")
 public class WheelCalibration extends LinearOpMode {
 
     private Robot robot = new Robot();
@@ -26,7 +26,6 @@ public class WheelCalibration extends LinearOpMode {
         while (opModeIsActive()) {
             telemetry.addData("Calibration completed in " + calTime + " seconds, please press start to exit.", "");
             telemetry.update();
-
         }
 
         robot.shutdown();
