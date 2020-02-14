@@ -19,10 +19,14 @@ public class TestingOpMode extends Auto {
 
         waitForStart();
 
+        int debug = 0;
+
         while (opModeIsActive()) {
             t.Update(this);
-//            telemetry.addData("yoink", "");
-//            telemetry.update();
+            telemetry.addData("yoink", debug);
+            telemetry.update();
+
+            debug++;
         }
     }
 

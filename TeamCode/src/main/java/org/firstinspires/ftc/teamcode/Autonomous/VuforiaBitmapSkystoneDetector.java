@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.renderscript.Int2;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.teamcode.Helpers.Vector2;
+import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
 import org.firstinspires.ftc.teamcode.Robot.RobotConfiguration;
 
 import java.util.ArrayList;
@@ -118,24 +120,34 @@ public class VuforiaBitmapSkystoneDetector {
 
     Bitmap image;
 
+    ElapsedTime elapsedTime = new ElapsedTime();
+
 
     public void Update(OpMode op) {
         try {
+            elapsedTime.reset();
             //Fetch the latest frame
             frame = vuforia.getFrameQueue().take();
+            op.telemetry.addData("a ", elapsedTime.milliseconds());
 
+            elapsedTime.reset();
             //Convert it to a bitmap
             image = vuforia.convertFrameToBitmap(frame);
+            op.telemetry.addData("b ", elapsedTime.milliseconds());
 
+            elapsedTime.reset();
 
 //            op.telemetry.addData("yeeet", "");
-            op.telemetry.addData("first third color ", getAlphaFromBitmap(image, 0, 1));
-//            op.telemetry.addData("second third color ", getColorFromBitmap(image, (1 / 3) * image.getWidth(), 1 / 3));
+            op.telemetry.addData("dead center", getBrightnessFromBitmapVerticalLine(op, image, 0.5, 0.1));
+            op.telemetry.addData("blob center", getBrightnessFromBitmapVerticalLine(op, image, 0.5, 0.5));
+            op.telemetry.addData("a a", getBrightnessFromBitmapVerticalLine(op, image, 0.5, 1));
+
+            op.telemetry.addData("c ", elapsedTime.milliseconds());
+
+            //            op.telemetry.addData("second third color ", getColorFromBitmap(image, (1 / 3) * image.getWidth(), 1 / 3));
 //            op.telemetry.addData("third third color ", getColorFromBitmap(image, 2 / 3 * image.getWidth(), 1 / 3));
             op.telemetry.addData("image x", image.getWidth());
             op.telemetry.addData("image y", image.getHeight());
-            op.telemetry.addData("image y", image.getHeight());
-            op.telemetry.update();
 
             frame.close();
         } catch (InterruptedException e) {
@@ -146,7 +158,34 @@ public class VuforiaBitmapSkystoneDetector {
 
     Int2 imageScale = new Int2(0, 0);
 
+    //
+    private long getBrightnessFromBitmapVerticalLine(OpMode op, Bitmap bitmap, double x_position, double center) {
+        imageScale.x = bitmap.getWidth();
+        imageScale.y = bitmap.getHeight();
+
+        int x = (int) (imageScale.x * x_position);
+
+        int color = 0;
+        long totalAlpha = 0L;
+
+        int imageCenterY = imageScale.y / 2;
+
+        op.telemetry.addData("START HEIGHT", imageCenterY - (int) (center * (imageCenterY / 2)));
+        op.telemetry.addData("END HEIGHT",(int) (center * imageCenterY));
+
+//        for (int y = imageCenterY - (int) (center * (imageCenterY / 2)); y < (int) (center * imageCenterY); y++) {
+            for (int y = 0  ; y < imageScale.y; y++) {
+            color = bitmap.getPixel(x, y);
+
+            totalAlpha += Color.red(color) + Color.blue(color) + Color.green(color);
+        }
+
+        return totalAlpha;
+    }
+
+
     //Returns an average color from a portion of a bitmap
+    //Very very slow!
     private long getAlphaFromBitmap(Bitmap bitmap, int xPixelOffset, double xRange) {
 
         imageScale.x = bitmap.getWidth();
