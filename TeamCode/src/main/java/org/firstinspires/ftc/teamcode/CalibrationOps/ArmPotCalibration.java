@@ -42,7 +42,8 @@ public class ArmPotCalibration extends Auto {
                 robot.armPotentiometer.calcRegression();
             }
 
-            telemetry.addData("3rd element:",robot.armPotentiometer.voltages[3]);
+            telemetry.addData("x[i]:",robot.armPotentiometer.voltages[i]);
+            telemetry.addData("y[i]:",robot.armPotentiometer.angles[i]);
             telemetry.addData("arrayPos",robot.armPotentiometer.arrayPos);
             telemetry.addData("D value (mm):",robot.arm.currentArmQuadBaseDistance());
             telemetry.addData("Derived angle:", bMath.toDegrees(robot.arm.derivedPotentiometerAngle(robot.arm.currentArmQuadBaseDistance())));
@@ -52,6 +53,8 @@ public class ArmPotCalibration extends Auto {
             telemetry.addData("Regression Intercept:",bMath.toDegrees(robot.armPotentiometer.regIntercept));
             telemetry.addData("x2Sum", robot.armPotentiometer.x2Sum);
             telemetry.addData("xSum",robot.armPotentiometer.xSum);
+            telemetry.addData("ySum", robot.armPotentiometer.ySum);
+            telemetry.addData("xySum",robot.armPotentiometer.xySum);
             telemetry.update();
 
         }

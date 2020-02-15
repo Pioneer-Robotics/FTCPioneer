@@ -20,7 +20,7 @@ public class Potentiometer {
 
     public final int datapoints = 10;
     public double[] voltages = new double[datapoints];
-    public double[] angles = new double [datapoints];
+    public double[] angles = new double[datapoints];
     public int arrayPos = 0;
 
     public double xSum=0; //angles
@@ -58,11 +58,13 @@ public class Potentiometer {
         x2Sum = 0; //x squared sum
         xySum = 0;
 
-        for (int i = 0; i < angles.length; i++) {
-            xSum += angles[i];
-            ySum += voltages[i];
-            x2Sum += angles[i] * angles[i];
-            xySum += angles[i] * voltages[i];
+
+
+        for (int i = 0; i < angles.length; i++ ) {
+            xSum += Double.isNaN(angles[i]) ? 0 : angles[i];
+            ySum += Double.isNaN( voltages[i]) ? 0: voltages[i];
+            x2Sum += Double.isNaN(angles[i] * angles[i]) ? 0: angles[i] * angles[i];
+            xySum += Double.isNaN(angles[i] * voltages[i]) ? 0: angles[i] * voltages[i];
         }
 
         regSlope = (arrayPos*xySum - xSum*ySum) / (arrayPos*x2Sum - xSum*xSum);
