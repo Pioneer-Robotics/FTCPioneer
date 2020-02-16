@@ -108,7 +108,7 @@ public class TeleopDriverControls {
             return bMath.Clamp(0.25 * (0.5 * (1 - gamePad.right_trigger) + (1 - gamePad.left_trigger) + 0.5), 0, 1);
         } else {
             //trigger makes robot faster
-            return bMath.Clamp(0.5 + gamePad.right_trigger / 2, 0, 1);
+            return 1.0-gamePad.right_trigger;
         }
     }
 
