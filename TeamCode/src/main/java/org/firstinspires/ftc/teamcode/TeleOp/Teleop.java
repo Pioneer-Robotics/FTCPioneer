@@ -50,7 +50,7 @@ public class Teleop extends TeleOpMode {
 
     private boolean gripFoundation = false;
     private boolean bButton1Check = false;
-
+    private double movespeedout = 0;
 
     // ************** Life Cycle Methods **************
     @Override
@@ -112,6 +112,7 @@ public class Teleop extends TeleOpMode {
 
         // Handle returned data values here
         double moveSpeed = driverTeleopData.moveSpeed;
+        movespeedout = moveSpeed;
 
         movementModeToggleCheck = driverTeleopData.movementModeToggleCheck;
         coordinateSystemLock = driverTeleopData.coordinateSystemLock;
@@ -223,6 +224,8 @@ public class Teleop extends TeleOpMode {
         telemetry.addData("RegSlope:", robot.armPotentiometer.regSlope);
         telemetry.addData("RegIntercept:", robot.armPotentiometer.regIntercept);
         telemetry.addData("thetaAngle:", bMath.toDegrees(robot.arm.thetaAngle()));
+        telemetry.addLine("-----WheelInfo-----");
+        telemetry.addData("moveSpeed,", movespeedout);
         telemetry.update();
     }
 }
