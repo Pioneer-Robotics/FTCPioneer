@@ -274,8 +274,9 @@ public class RobotArm extends Thread {
     public void SetArmStatePower(double _targetLength, double angleSpeed) {
         targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
-        if (targetLength < 0 && protectSpool)
+        if (_targetLength < 0 && protectSpool) {
             targetLength = 0; //don't extend the spool past it's starting point
+        }
 
         rotation.setPower(angleSpeed);
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

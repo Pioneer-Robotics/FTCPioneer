@@ -25,25 +25,22 @@ public class ArmPotCalibration extends Auto {
 
 
 
-        for (int i = 0; i < robot.armPotentiometer.datapoints; i++) {
+        for (int i = 2; i < robot.armPotentiometer.dataResolution; i++) {
 
-            robot.arm.setArmStateWait(((double) i) / ((double) robot.armPotentiometer.datapoints), 0);
+            robot.arm.setArmStateWait(((double) i) / ((double) robot.armPotentiometer.dataResolution), 0);
 
 
 
-            timer.reset();
-            while (timer.seconds() < 0.5) { }
+            sleep(500);
             robot.armPotentiometer.addData(robot.arm.derivedPotentiometerAngle(robot.arm.currentArmQuadBaseDistance()));
+            sleep(500);
 
-            timer.reset();
-            while (timer.seconds() < 0.5) { }
-
-            if (i>1){
+            if (i>3){
                 robot.armPotentiometer.calcRegression();
             }
 
-            telemetry.addData("x[i]:",robot.armPotentiometer.voltages[i]);
-            telemetry.addData("y[i]:",robot.armPotentiometer.angles[i]);
+            telemetry.addData("x[i]:",robot.armPotentiometer.voltages[i-2]);
+            telemetry.addData("y[i]:",robot.armPotentiometer.angles[i-2]);
             telemetry.addData("arrayPos",robot.armPotentiometer.arrayPos);
             telemetry.addData("D value (mm):",robot.arm.currentArmQuadBaseDistance());
             telemetry.addData("Derived angle:", bMath.toDegrees(robot.arm.derivedPotentiometerAngle(robot.arm.currentArmQuadBaseDistance())));

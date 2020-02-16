@@ -214,6 +214,9 @@ public class Teleop extends TeleOpMode {
         telemetry.addData("RectWanted?:", engiData.rectControls);
         telemetry.addData("spoolProtect", engiData.spoolProtect);
         telemetry.addData("Current Lunchbox", lunchboxRot);
+        telemetry.addLine("-----Pot-----");
+        telemetry.addData("potVoltage:", robot.armPotentiometer.getVoltage());
+        telemetry.addData("potAngle:", robot.armPotentiometer.getAngle());
         telemetry.update();
     }
 }
