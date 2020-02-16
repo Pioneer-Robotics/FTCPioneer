@@ -38,6 +38,9 @@ public class TeleopArmControls {
             result = updateArmForNonRecControls(gamePad, engiData, deltaTime, telemetry);
         }
 
+        telemetry.addData("Extension", result.extension);
+        telemetry.addData("EncoderPos", robot.arm.length.getCurrentPosition());
+
         return result;
     }
 
@@ -59,6 +62,9 @@ public class TeleopArmControls {
         result.extension = robot.arm.RectExtension(result.rectControls_goingUp, result.xExtConst, result.yExtConst);
         result.extension = bMath.Clamp(robot.arm.cmToTicks(result.extension) / RobotConfiguration.arm_ticksMax);
         result.raiseSpeed = result.rectControls_goingUp ? -0.5 * gamePad.right_stick_y : -0.5 * gamePad.right_stick_x;
+
+
+
 
         return result;
     }

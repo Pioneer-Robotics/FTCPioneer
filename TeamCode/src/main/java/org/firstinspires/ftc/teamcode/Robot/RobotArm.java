@@ -23,7 +23,7 @@ public class RobotArm extends Thread {
     public DcMotor rotation;
 
     //useful for knowing the position of the arm
-    double k = 177.0;
+    double k = 185.0;
     double h = 32.2; //Vertical Distance from bottom joint of arm to the axis made by the center of the lead screw
     double l = 134.0; //Distance from bottom joint of arm to middle joint on Xrail
 
@@ -93,7 +93,7 @@ public class RobotArm extends Thread {
     //I think "usePot" math is off by 90 radians, am subtracting 90 radians
 
     public double thetaAngle() {
-        double potentiometerMeasurement = bMath.toRadians(robot.armPotentiometer.getAngle());
+        double potentiometerMeasurement = robot.armPotentiometer.getAngle();
 
         potentiometerMeasurement = bMath.Clamp(potentiometerMeasurement, 0, 3.141);
         double C0 = bMath.squared(l) + bMath.squared(k) - (2 * k * l * Math.cos(potentiometerMeasurement));
@@ -331,11 +331,11 @@ public class RobotArm extends Thread {
     */
 
     public double ticksToCm(int ticks) {
-        return (double) ticks * (15.7 / 960) + RobotConfiguration.arm_lengthMin;
+        return (double) ticks * (-15.7 / 960) + RobotConfiguration.arm_lengthMin;
     }
 
     public int cmToTicks(double cm) {
-        return (int) ((cm - RobotConfiguration.arm_lengthMin) * (960 / 15.7));
+        return (int) ((cm - RobotConfiguration.arm_lengthMin) * (960 / -15.7));
     }
 
 /* Principle for rectangular control

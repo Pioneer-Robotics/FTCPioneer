@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Hardware.bMotor;
+import org.firstinspires.ftc.teamcode.Helpers.bMath;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 import org.firstinspires.ftc.teamcode.TeleOp.ArmControls.TeleopArmControls;
@@ -214,9 +215,14 @@ public class Teleop extends TeleOpMode {
         telemetry.addData("RectWanted?:", engiData.rectControls);
         telemetry.addData("spoolProtect", engiData.spoolProtect);
         telemetry.addData("Current Lunchbox", lunchboxRot);
+        telemetry.addData("xExtConst",engiData.xExtConst);
+        telemetry.addData("yExtConst",engiData.yExtConst);
         telemetry.addLine("-----Pot-----");
         telemetry.addData("potVoltage:", robot.armPotentiometer.getVoltage());
-        telemetry.addData("potAngle:", robot.armPotentiometer.getAngle());
+        telemetry.addData("potAngle:", bMath.toDegrees(robot.armPotentiometer.getAngle()));
+        telemetry.addData("RegSlope:", robot.armPotentiometer.regSlope);
+        telemetry.addData("RegIntercept:", robot.armPotentiometer.regIntercept);
+        telemetry.addData("thetaAngle:", bMath.toDegrees(robot.arm.thetaAngle()));
         telemetry.update();
     }
 }
