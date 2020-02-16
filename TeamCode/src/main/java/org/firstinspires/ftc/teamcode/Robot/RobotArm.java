@@ -331,11 +331,11 @@ public class RobotArm extends Thread {
     */
 
     public double ticksToCm(int ticks) {
-        return (double) ticks * (-15.7 / 960) + RobotConfiguration.arm_lengthMin;
+        return (double) ticks * (15.7 / 960) + RobotConfiguration.arm_lengthMin;
     }
 
     public int cmToTicks(double cm) {
-        return (int) ((cm - RobotConfiguration.arm_lengthMin) * (960 / -15.7));
+        return (int) ((cm - RobotConfiguration.arm_lengthMin) * (960 / 15.7));
     }
 
 /* Principle for rectangular control

@@ -178,9 +178,9 @@ public class Teleop extends TeleOpMode {
         bButton2Check = gamepad2.b;
 
 
-        gripAngle = TeleopServosControls.pointGripperDown(gamepad2, robot, gripAngle);
         gripAngle = TeleopServosControls.rotateGripperDown(gamepad2, gripAngle, deltaTime);
         gripAngle = TeleopServosControls.rotateGripperUp(gamepad2, gripAngle, deltaTime);
+        gripAngle = TeleopServosControls.pointGripperDown(gamepad2, robot, gripAngle);
 
 
         // TODO: - Refactor these 2 into TeleopServosControls

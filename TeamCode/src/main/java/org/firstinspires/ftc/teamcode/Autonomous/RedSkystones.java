@@ -51,7 +51,7 @@ public class RedSkystones extends Auto {
 
         runDeliveryCycle(100, 500, 35, 36, 150, true, 250);
 //        runDeliveryCycle(93, 1000, 50, 24, 130 + (24), true);
-        runDeliveryCycle(40, 500, 15, 48, 160, false, 250);
+        runDeliveryCycle(40, 500, 35, 48, 160, false, 250);
 
         robot.arm.setArmStateAsync(0.02248, -0.06);
 

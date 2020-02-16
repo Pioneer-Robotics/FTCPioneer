@@ -39,7 +39,7 @@ public class TeleopServosControls {
     public static double pointGripperDown(Gamepad gamepad, Robot robot, double gripAngle) {
         double result = gripAngle;
         if (gamepad.a) {
-            result = 90 - robot.arm.thetaAngle() - 10;
+            result = 90 + bMath.toDegrees(robot.arm.thetaAngle()) - 10;
         }
         return result;
     }
