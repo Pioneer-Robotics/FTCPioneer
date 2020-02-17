@@ -51,6 +51,7 @@ public class Teleop extends TeleOpMode {
     private boolean gripFoundation = false;
     private boolean bButton1Check = false;
     private double movespeedout = 0;
+    private double leftfrontpower = 0;
 
     // ************** Life Cycle Methods **************
     @Override
@@ -129,6 +130,7 @@ public class Teleop extends TeleOpMode {
 
         // Update Robot Drive
         double frontLeftWheelPower = moveSpeed * (leftDiagPower + leftRotatePower);
+        leftfrontpower = frontLeftWheelPower;
         double frontRightWheelPower = moveSpeed * (rightDiagPower + rightRotatePower);
         double backLeftWheelPower = moveSpeed * (rightDiagPower + leftRotatePower);
         double backRightWheelPower = moveSpeed * (leftDiagPower + rightRotatePower);
@@ -226,6 +228,7 @@ public class Teleop extends TeleOpMode {
         telemetry.addData("thetaAngle:", bMath.toDegrees(robot.arm.thetaAngle()));
         telemetry.addLine("-----WheelInfo-----");
         telemetry.addData("moveSpeed,", movespeedout);
+        telemetry.addData("leftFront:", leftfrontpower);
         telemetry.update();
     }
 }
