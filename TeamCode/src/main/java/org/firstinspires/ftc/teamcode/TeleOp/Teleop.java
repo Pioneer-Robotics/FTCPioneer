@@ -19,6 +19,9 @@ import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.TeleopDriverControls
 
 @TeleOp(name = "TeleOp", group = "Sensor")
 public class Teleop extends TeleOpMode {
+    public boolean tankControlsVeryFast = false; //TODO integrate with the rest of how these bools tend to work
+    public boolean xButton1Check = false; //TODO make like the above also
+    public boolean cycledQuestionMark = false; //this is the to help the tankControlls initialize properly
 
     private Robot robot = new Robot();
 
@@ -70,6 +73,7 @@ public class Teleop extends TeleOpMode {
             updateServoControls();
             doTelemetry(telemetry, deltaTime, coordinateSystemLock, engiData, lunchboxRot);
             deltaTime.reset(); // Update deltaTime
+            cycledQuestionMark = true;
         }
 
         robot.shutdown();
@@ -95,6 +99,7 @@ public class Teleop extends TeleOpMode {
     This method updates and applies any changes to the driver controls and handles movement
      */
     private void updateDriverControls() {
+
         ///DRIVER CONTROLS
 
         // Create driverTeleopData to get values to update robot state
@@ -120,6 +125,13 @@ public class Teleop extends TeleOpMode {
         leftRotateCoordCheck = driverTeleopData.rotationData.leftRotateCoordCheck;
         rightRotateCoordCheck = driverTeleopData.rotationData.rightRotateCoordCheck;
 
+
+
+        if(gamepad1.x && !xButton1Check){
+            tankControlsVeryFast = !tankControlsVeryFast;
+        }
+        xButton1Check = gamepad1.x;
+
         // Update Diag Power
         double leftDiagPower = TeleopDriverControls.getLeftDiagPower(gamepad1, robot, coordinateSystemLock, rotationLockAngle, telemetry);
         double rightDiagPower = TeleopDriverControls.getRightDiagPower(gamepad1, robot, coordinateSystemLock, rotationLockAngle, telemetry);
@@ -127,12 +139,108 @@ public class Teleop extends TeleOpMode {
         double leftRotatePower = gamepad1.right_stick_x;
         double rightRotatePower = -gamepad1.right_stick_x;
 
-        // Update Robot Drive
-        double frontLeftWheelPower = moveSpeed * (leftDiagPower + leftRotatePower);
-        double frontRightWheelPower = moveSpeed * (rightDiagPower + rightRotatePower);
-        double backLeftWheelPower = moveSpeed * (rightDiagPower + leftRotatePower);
-        double backRightWheelPower = moveSpeed * (leftDiagPower + rightRotatePower);
+        if (!cycledQuestionMark) {tankControlsVeryFast = false;}
+
+        if(tankControlsVeryFast){
+            if (shouldRotateInPlace(gamepad1.right_stick_x)) { rotateInPlace(moveSpeed); }
+            else{ doTankControlls(); }
+        }
+
+        else {
+            // Update Robot Drive
+            double frontLeftWheelPower = moveSpeed * (leftDiagPower + leftRotatePower);
+            double frontRightWheelPower = moveSpeed * (rightDiagPower + rightRotatePower);
+            double backLeftWheelPower = moveSpeed * (rightDiagPower + leftRotatePower);
+            double backRightWheelPower = moveSpeed * (leftDiagPower + rightRotatePower);
+            robot.updateRobotDrive(frontLeftWheelPower, frontRightWheelPower, backLeftWheelPower, backRightWheelPower);
+        }
+    }
+
+    private boolean shouldRotateInPlace(double rotatationControlValue){
+        double tolerance = 0.1;
+        if(Math.abs(rotatationControlValue) > tolerance) {return true;}
+        else{return false;}
+    }
+
+    private void rotateInPlace(double speed){
+        double leftRotatePower = gamepad1.right_stick_x;
+        double rightRotatePower = -gamepad1.right_stick_x;
+
+        double frontLeftWheelPower = speed * (leftRotatePower);
+        double frontRightWheelPower = speed * (rightRotatePower);
+        double backLeftWheelPower = speed * (leftRotatePower);
+        double backRightWheelPower = speed * (rightRotatePower);
         robot.updateRobotDrive(frontLeftWheelPower, frontRightWheelPower, backLeftWheelPower, backRightWheelPower);
+    }
+
+    private void doTankControlls(){
+        //find the angle the left joystick is pointing at (this joystick controls the direction of movement)
+        double movementAngle = findDesiredAngleInRadians(gamepad1.left_stick_x, gamepad1.left_stick_y);
+
+        //approxMovementAngle method might make it hard to move at 45°; you'll have to be precise with the controller
+        int approxMovementAngle = snapAngleToAMultipleOf45degreesAndPutOutputInDegrees(movementAngle);
+
+        //this block of if statements checks if the angle is snapped to a multiple of 90° and moves accordingly
+        if (approxMovementAngle == 0){
+            robot.setWheelPowersInAClockwiseOrder(1, -1, 1, -1); }
+        if(approxMovementAngle == 90){
+            robot.setWheelPowersInAClockwiseOrder(1, 1, 1, 1);
+        }
+        if(approxMovementAngle == 180){
+            robot.setWheelPowersInAClockwiseOrder(-1, 1, -1, 1);
+        }
+        if(approxMovementAngle == 270){
+            robot.setWheelPowersInAClockwiseOrder(-1, -1, -1, -1);
+        }
+
+
+        //this block of if statements handles it if it's snapped to a multiple of 45°
+        if(approxMovementAngle == 45){
+            robot.setWheelPowersInAClockwiseOrder(1, 0, 1, 0);
+        }
+        if(approxMovementAngle == 135){
+            robot.setWheelPowersInAClockwiseOrder(0, 1, 0, 1);
+        }
+        if(approxMovementAngle == 225){
+            robot.setWheelPowersInAClockwiseOrder(-1,0, -1, 0);
+        }
+        if(approxMovementAngle == 315){
+            robot.setWheelPowersInAClockwiseOrder(0, -1, 0, -1);
+        }
+
+    }
+
+    private double findDesiredAngleInRadians(double xComponent, double yComponent){
+        double angleTangent = Math.atan(yComponent / xComponent);
+        if(xComponent < 0) { angleTangent += Math.PI; }
+        return angleTangent;
+    }
+
+    private int snapAngleToAMultipleOf45degreesAndPutOutputInDegrees(double inputAngleInRadians){
+        double pi = Math.PI;
+        double cosine = Math.cos(inputAngleInRadians);
+        double sine = Math.sin(inputAngleInRadians);
+        //these 4 say that if it's close enough to a multiple of 90, go with that multiple
+        if (cosine >= Math.cos(pi / 6)) { return 0; }
+        if (sine >= Math.sin(pi / 3)) { return 90; }
+        if (cosine <= Math.cos(5 * pi / 6)) { return 180; }
+        if (sine < Math.sin(4 * pi / 3)) {return 270; }
+
+        //if it's not that close, keep the unit circle point the same but make the angle between 0 and 2pi
+        while (inputAngleInRadians < 0) { inputAngleInRadians += 2 * pi; }
+        while (inputAngleInRadians >= 2 * pi) {inputAngleInRadians -= 2 * pi; }
+
+        //then find the nearest multiple of 45° (pi / 4 radians)
+        if (pi / 6 < inputAngleInRadians && inputAngleInRadians < pi / 3) { return 45; }
+        if (2 * pi / 3 < inputAngleInRadians && inputAngleInRadians < 5 * pi / 6) {return 135; }
+        if (7 * pi / 6 < inputAngleInRadians && inputAngleInRadians < 4 * pi / 3) { return 225; }
+        if (5 * pi /3 < inputAngleInRadians && inputAngleInRadians < 11 * pi / 6) { return 315; }
+
+        //if none of that works, then something has gone horribly wrong
+        telemetry.addLine("something has gone horribly wrong with" +
+                "snapAngleToAMultipleOf45degreesAndPutOutputInDegrees");
+        telemetry.update();
+        return 6000;
     }
 
     // ************** Arm Methods **************

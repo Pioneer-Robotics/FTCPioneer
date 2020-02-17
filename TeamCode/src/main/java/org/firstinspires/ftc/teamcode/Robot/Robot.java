@@ -1032,6 +1032,15 @@ public class Robot extends Thread {
         driveManager.backRight.setPower(backRight);
     }
 
+    //Very similer to "updateRobotDrive" but the order of the variables makes more sense to some team members
+    public void setWheelPowersInAClockwiseOrder(double frontLeft, double frontRight, double backRight, double backLeft)
+    {
+        driveManager.frontLeft.setPower(frontLeft);
+        driveManager.frontRight.setPower(frontRight);
+        driveManager.backLeft.setPower(backLeft);
+        driveManager.backRight.setPower(backRight);
+    }
+
     public Vector2 getMovementVector(Gamepad gamepad,
                                      double rotationLockAngle,
                                      double movementInput_x,
