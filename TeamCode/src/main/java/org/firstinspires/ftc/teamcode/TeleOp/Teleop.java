@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Hardware.bMotor;
+import org.firstinspires.ftc.teamcode.Helpers.Vector2;
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
@@ -15,6 +16,8 @@ import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.DriverTeleopData;
 import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.EngineeringControlData;
 import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.RotationData;
 import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.TeleopDriverControls;
+
+import java.util.Vector;
 
 
 @TeleOp(name = "TeleOp", group = "Sensor")
@@ -133,34 +136,35 @@ public class Teleop extends TeleOpMode {
 
 
 
-        if(gamepad1.x && !xButton1Check){
-            tankControlsVeryFast = !tankControlsVeryFast;
+//        if(gamepad1.x && !xButton1Check){
+//            tankControlsVeryFast = !tankControlsVeryFast;
+//        }
+//        xButton1Check = gamepad1.x;
+
+        Vector2 gamepadVector = new Vector2(gamepad1.left_stick_x,gamepad1.left_stick_y);
+
+        if(gamepad1.left_bumper){
+            gamepadVector.changeAngle( bMath.roundAngle( gamepadVector.angle() ,8)) ;
         }
-        xButton1Check = gamepad1.x;
 
         // Update Diag Power
-        double leftDiagPower = TeleopDriverControls.getLeftDiagPower(gamepad1, robot, coordinateSystemLock, rotationLockAngle, telemetry);
-        double rightDiagPower = TeleopDriverControls.getRightDiagPower(gamepad1, robot, coordinateSystemLock, rotationLockAngle, telemetry);
+        double leftDiagPower = TeleopDriverControls.getLeftDiagPower(gamepadVector, robot, coordinateSystemLock, rotationLockAngle, telemetry);
+        double rightDiagPower = TeleopDriverControls.getRightDiagPower(gamepadVector, robot, coordinateSystemLock, rotationLockAngle, telemetry);
 
         double leftRotatePower = gamepad1.right_stick_x;
         double rightRotatePower = -gamepad1.right_stick_x;
 
         //if the program just started miliseconds ago, this should be false
-        if (!cycledQuestionMark) {tankControlsVeryFast = false;}
+        //if (!cycledQuestionMark) {tankControlsVeryFast = false;}
 
-        if(tankControlsVeryFast){
-            if (shouldRotateInPlace(gamepad1.right_stick_x)) { rotateInPlace(moveSpeed); }
-            else{ doTankControlls(); }
-        }
 
-        else {
             // Update Robot Drive
             double frontLeftWheelPower = moveSpeed * (leftDiagPower + leftRotatePower);
             double frontRightWheelPower = moveSpeed * (rightDiagPower + rightRotatePower);
             double backLeftWheelPower = moveSpeed * (rightDiagPower + leftRotatePower);
             double backRightWheelPower = moveSpeed * (leftDiagPower + rightRotatePower);
             robot.updateRobotDrive(frontLeftWheelPower, frontRightWheelPower, backLeftWheelPower, backRightWheelPower);
-        }
+
     }
 
     private boolean shouldRotateInPlace(double rotatationControlValue){
@@ -185,7 +189,7 @@ public class Teleop extends TeleOpMode {
         double movementAngle = findDesiredAngleInRadians(gamepad1.left_stick_x, gamepad1.left_stick_y);
 
         //approxMovementAngle method might make it hard to move at 45°; you'll have to be precise with the controller
-        int approxMovementAngle = snapAngleToAMultipleOf45degreesAndPutOutputInDegrees(movementAngle);
+        int approxMovementAngle = (int) bMath.toDegrees(bMath.roundAngle(movementAngle,8));
 
         //this block of if statements checks if the angle is snapped to a multiple of 90° and moves accordingly
         if (approxMovementAngle == 0){
