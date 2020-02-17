@@ -21,8 +21,12 @@ import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.TeleopDriverControls
 public class Teleop extends TeleOpMode {
     public boolean tankControlsVeryFast = false; //TODO integrate with the rest of how these bools tend to work
     public boolean xButton1Check = false; //TODO make like the above also
-    public boolean cycledQuestionMark = false; //this is the to help the tankControlls initialize properly
 
+    /*
+    this is the to help the tankControlls initialize properly
+    what it is here doesn't really matter, it's set to false as soon as you hit "play"
+     */
+    public boolean cycledQuestionMark = false; //TODO reformat this to the new way we format variables
     private Robot robot = new Robot();
 
     //Program State
@@ -139,6 +143,7 @@ public class Teleop extends TeleOpMode {
         double leftRotatePower = gamepad1.right_stick_x;
         double rightRotatePower = -gamepad1.right_stick_x;
 
+        //if the program just started miliseconds ago, this should be false
         if (!cycledQuestionMark) {tankControlsVeryFast = false;}
 
         if(tankControlsVeryFast){
