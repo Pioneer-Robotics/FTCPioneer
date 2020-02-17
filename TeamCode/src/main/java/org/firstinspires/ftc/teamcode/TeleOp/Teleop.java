@@ -19,14 +19,16 @@ import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.TeleopDriverControls
 
 @TeleOp(name = "TeleOp", group = "Sensor")
 public class Teleop extends TeleOpMode {
-    public boolean tankControlsVeryFast = false; //TODO integrate with the rest of how these bools tend to work
-    public boolean xButton1Check = false; //TODO make like the above also
+    private boolean tankControlsVeryFast = false; //TODO integrate with the rest of how these bools tend to work
+    private boolean xButton1Check = false; //TODO make like the above also
 
     /*
     this is the to help the tankControlls initialize properly
     what it is here doesn't really matter, it's set to false as soon as you hit "play"
      */
-    public boolean cycledQuestionMark = false; //TODO reformat this to the new way we format variables
+    private boolean cycledQuestionMark = false; //TODO reformat this to the new way we format variables
+    private boolean snapAngle_functionWentHorriblyWrong = false; //this boolean exists purely for debugging
+    //TODO delete the snapAngle_functionWentHorriblyWrong boolean before merging
     private Robot robot = new Robot();
 
     //Program State
@@ -75,9 +77,9 @@ public class Teleop extends TeleOpMode {
             updateDriverControls();
             updateArm();
             updateServoControls();
-            doTelemetry(telemetry, deltaTime, coordinateSystemLock, engiData, lunchboxRot);
+            doTelemetry(telemetry, deltaTime, coordinateSystemLock, engiData, lunchboxRot, snapAngle_functionWentHorriblyWrong);
             deltaTime.reset(); // Update deltaTime
-            cycledQuestionMark = true;
+            cycledQuestionMark = true; //this while loop has now ran at least once
         }
 
         robot.shutdown();
@@ -242,9 +244,7 @@ public class Teleop extends TeleOpMode {
         if (5 * pi /3 < inputAngleInRadians && inputAngleInRadians < 11 * pi / 6) { return 315; }
 
         //if none of that works, then something has gone horribly wrong
-        telemetry.addLine("something has gone horribly wrong with" +
-                "snapAngleToAMultipleOf45degreesAndPutOutputInDegrees");
-        telemetry.update();
+        snapAngle_functionWentHorriblyWrong = true;
         return 6000;
     }
 
@@ -323,7 +323,7 @@ public class Teleop extends TeleOpMode {
                                     ElapsedTime deltaTime,
                                     boolean coordinateSystemLock,
                                     EngineeringControlData engiData,
-                                    double lunchboxRot) {
+                                    double lunchboxRot, boolean horriblyWrong) {
         telemetry.addData("deltaTime", deltaTime.milliseconds());
         telemetry.addData("Rotation Locked ", coordinateSystemLock);
         telemetry.addData("RectWanted?:", engiData.rectControls);
@@ -339,6 +339,10 @@ public class Teleop extends TeleOpMode {
         telemetry.addData("thetaAngle:", bMath.toDegrees(robot.arm.thetaAngle()));
         telemetry.addLine("-----WheelInfo-----");
         telemetry.addData("moveSpeed,", movespeedout);
+        if(horriblyWrong){
+            telemetry.addLine("-------WARNING: PROBLEM DETECTED-------");
+            telemetry.addLine("something has gone horribly wrong with 'snapAngle' method");
+        }
         telemetry.update();
     }
 }
