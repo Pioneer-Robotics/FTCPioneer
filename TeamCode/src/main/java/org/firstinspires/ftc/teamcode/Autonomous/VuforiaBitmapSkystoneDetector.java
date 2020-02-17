@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.renderscript.Int2;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.teamcode.Helpers.Vector2;
 import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
 import org.firstinspires.ftc.teamcode.Robot.RobotConfiguration;
 
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +45,8 @@ public class VuforiaBitmapSkystoneDetector {
     public enum SkystoneState {
         PORT,
         CENTER,
-        STARBOARD
+        STARBOARD,
+        UNKNOWN
     }
 
     public void Start(OpMode op) {
@@ -97,14 +100,11 @@ public class VuforiaBitmapSkystoneDetector {
 
             elapsedTime.reset();
 
-//            op.telemetry.addData("yeeet", "");
-            op.telemetry.addData("dead center", getBrightnessFromBitmapVerticalLine(op, image, 0.5, 0.1));
-            op.telemetry.addData("blob center", getBrightnessFromBitmapVerticalLine(op, image, 0.5, 0.5));
-            op.telemetry.addData("a a", getBrightnessFromBitmapVerticalLine(op, image, 0.5, 1));
-
             op.telemetry.addData("deltaTime ", elapsedTime.milliseconds());
             op.telemetry.addData("image x", image.getWidth());
             op.telemetry.addData("image y", image.getHeight());
+
+            lastState = getSkystoneState(image);
 
             frame.close();
         } catch (InterruptedException e) {
@@ -117,13 +117,42 @@ public class VuforiaBitmapSkystoneDetector {
     long skyStoneColorCenter = 0;
     long skyStoneColorStarboard = 0;
 
+    int darkestColorIndex = 0;
+    long darkestColor = 100000;
+
+    long[] skyStoneColors = new long[3];
+
     private SkystoneState getSkystoneState(Bitmap image) {
+        darkestColor = 1000000000;
+
         skyStoneColorPort = getBrightnessFromBitmapVerticalLine(image, 0.3);
         skyStoneColorCenter = getBrightnessFromBitmapVerticalLine(image, 0.5);
         skyStoneColorStarboard = getBrightnessFromBitmapVerticalLine(image, 0.8);
 
+        skyStoneColors[0] = skyStoneColorPort;
+        skyStoneColors[1] = skyStoneColorCenter;
+        skyStoneColors[2] = skyStoneColorStarboard;
 
+        for (int i = 0; i < 2; i++) {
+
+            if (darkestColor > skyStoneColors[i]) {
+                darkestColorIndex = i;
+                darkestColor = skyStoneColors[i];
+            }
+        }
+
+        if (darkestColorIndex == 0) {
+            return SkystoneState.PORT;
+        }
+        if (darkestColorIndex == 1) {
+            return SkystoneState.CENTER;
+        }
+        if (darkestColorIndex == 2) {
+            return SkystoneState.STARBOARD;
+        }
+        return SkystoneState.UNKNOWN;
     }
+
 
     Int2 imageScale = new Int2(0, 0);
 
