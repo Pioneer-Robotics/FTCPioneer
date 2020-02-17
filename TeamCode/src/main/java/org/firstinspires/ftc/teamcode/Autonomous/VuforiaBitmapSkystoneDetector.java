@@ -113,6 +113,33 @@ public class VuforiaBitmapSkystoneDetector {
         }
     }
 
+    public void Update(OpMode op, double p, double c, double s) {
+        try {
+            elapsedTime.reset();
+            //Fetch the latest frame
+            frame = vuforia.getFrameQueue().take();
+            op.telemetry.addData("a ", elapsedTime.milliseconds());
+
+            elapsedTime.reset();
+            //Convert it to a bitmap
+            image = vuforia.convertFrameToBitmap(frame);
+            op.telemetry.addData("b ", elapsedTime.milliseconds());
+
+            elapsedTime.reset();
+
+            op.telemetry.addData("deltaTime ", elapsedTime.milliseconds());
+            op.telemetry.addData("image x", image.getWidth());
+            op.telemetry.addData("image y", image.getHeight());
+
+            lastState = getSkystoneState(image, p, c, s);
+
+            frame.close();
+        } catch (InterruptedException e) {
+            op.telemetry.addData("yoiiiiink", "");
+            op.telemetry.update();
+        }
+    }
+
     long skyStoneColorPort = 0;
     long skyStoneColorCenter = 0;
     long skyStoneColorStarboard = 0;
@@ -122,12 +149,43 @@ public class VuforiaBitmapSkystoneDetector {
 
     long[] skyStoneColors = new long[3];
 
+    private SkystoneState getSkystoneState(Bitmap image, double p, double c, double s) {
+        darkestColor = 1000000000;
+
+        skyStoneColorPort = getBrightnessFromBitmapVerticalLine(image, p);
+        skyStoneColorCenter = getBrightnessFromBitmapVerticalLine(image, c);
+        skyStoneColorStarboard = getBrightnessFromBitmapVerticalLine(image, s);
+
+        skyStoneColors[0] = skyStoneColorPort;
+        skyStoneColors[1] = skyStoneColorCenter;
+        skyStoneColors[2] = skyStoneColorStarboard;
+
+        for (int i = 0; i < 2; i++) {
+
+            if (darkestColor > skyStoneColors[i]) {
+                darkestColorIndex = i;
+                darkestColor = skyStoneColors[i];
+            }
+        }
+
+        if (darkestColorIndex == 0) {
+            return SkystoneState.PORT;
+        }
+        if (darkestColorIndex == 1) {
+            return SkystoneState.CENTER;
+        }
+        if (darkestColorIndex == 2) {
+            return SkystoneState.STARBOARD;
+        }
+        return SkystoneState.UNKNOWN;
+    }
+
     private SkystoneState getSkystoneState(Bitmap image) {
         darkestColor = 1000000000;
 
-        skyStoneColorPort = getBrightnessFromBitmapVerticalLine(image, 0.3);
+        skyStoneColorPort = getBrightnessFromBitmapVerticalLine(image, 0.2);
         skyStoneColorCenter = getBrightnessFromBitmapVerticalLine(image, 0.5);
-        skyStoneColorStarboard = getBrightnessFromBitmapVerticalLine(image, 0.8);
+        skyStoneColorStarboard = getBrightnessFromBitmapVerticalLine(image, 0.7);
 
         skyStoneColors[0] = skyStoneColorPort;
         skyStoneColors[1] = skyStoneColorCenter;
