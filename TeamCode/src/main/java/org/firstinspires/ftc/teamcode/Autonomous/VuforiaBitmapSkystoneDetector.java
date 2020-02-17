@@ -28,53 +28,13 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 
-/**
- * This 2019-2020 OpMode illustrates the basics of using the Vuforia localizer to determine
- * positioning and orientation of robot on the SKYSTONE FTC field.
- * The code is structured as a LinearOpMode
- * <p>
- * When images are located, Vuforia is able to determine the position and orientation of the
- * image relative to the camera.  This sample code then combines that information with a
- * knowledge of where the target images are on the field, to determine the location of the camera.
- * <p>
- * From the Audience perspective, the Red Alliance station is on the right and the
- * Blue Alliance Station is on the left.
- * <p>
- * Eight perimeter targets are distributed evenly around the four perimeter walls
- * Four Bridge targets are located on the bridge uprights.
- * Refer to the Field Setup manual for more specific location details
- * <p>
- * A final calculation then uses the location of the camera on the robot to determine the
- * robot's location and orientation on the field.
- *
- * @see VuforiaLocalizer
- * @see VuforiaTrackableDefaultListener
- * see  skystone/doc/tutorial/FTC_FieldCoordinateSystemDefinition.pdf
- * <p>
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
- * <p>
- * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
- * is explained below.
- */
-
 public class VuforiaBitmapSkystoneDetector {
+
     private static final String VUFORIA_KEY = "AQMfl/L/////AAABmTblKFiFfUXdnoB7Ocz4UQNgHjSNJaBwlaDm9EpX0UI5ISx2EH+5IoEmxxd/FG8c31He17kM5vtS0jyAoD2ev5mXBiITmx4N8AduU/iAw/XMC5MiEB1YBgw5oSO1qd4jvCOgbzy/HcOpN3KoVVnYqKhTLc8n6/IIFGy+qyF7b8WkzscJpybOSAT5wtaZumdBu0K3lHV6n+fqGJDMvkQ5xrCS6HiBtpZScAoekd7iP3IxUik2rMFq5hqMsOYW+qlxKp0cj+x4K9CIOYEP4xZsCBt66UxtDSiNqaiC1DyONtFz4oHJf/4J5aYRjMNwC2BpsVJ/R91WIcC0H0dpP9gtL/09J0bIMjm3plo+ac+OM0H3";
 
-    // Class Members
-    private OpenGLMatrix lastLocation = null;
     private VuforiaLocalizer vuforia = null;
 
-    /**
-     * This is the webcam we are to use. As with other hardware devices such as motors and
-     * servos, this device is identified using the robot configuration tool in the FTC application.
-     */
     WebcamName camera = null;
-
-    private boolean targetVisible = false;
-    private float phoneXRotate = 0;
-    private float phoneYRotate = 0;
-    private float phoneZRotate = 0;
 
     //Define the skystone state
     public SkystoneState lastState = SkystoneState.CENTER;
@@ -142,10 +102,7 @@ public class VuforiaBitmapSkystoneDetector {
             op.telemetry.addData("blob center", getBrightnessFromBitmapVerticalLine(op, image, 0.5, 0.5));
             op.telemetry.addData("a a", getBrightnessFromBitmapVerticalLine(op, image, 0.5, 1));
 
-            op.telemetry.addData("c ", elapsedTime.milliseconds());
-
-            //            op.telemetry.addData("second third color ", getColorFromBitmap(image, (1 / 3) * image.getWidth(), 1 / 3));
-//            op.telemetry.addData("third third color ", getColorFromBitmap(image, 2 / 3 * image.getWidth(), 1 / 3));
+            op.telemetry.addData("deltaTime ", elapsedTime.milliseconds());
             op.telemetry.addData("image x", image.getWidth());
             op.telemetry.addData("image y", image.getHeight());
 
@@ -156,10 +113,22 @@ public class VuforiaBitmapSkystoneDetector {
         }
     }
 
+    long skyStoneColorPort = 0;
+    long skyStoneColorCenter = 0;
+    long skyStoneColorStarboard = 0;
+
+    private SkystoneState getSkystoneState(Bitmap image) {
+        skyStoneColorPort = getBrightnessFromBitmapVerticalLine(image, 0.3);
+        skyStoneColorCenter = getBrightnessFromBitmapVerticalLine(image, 0.5);
+        skyStoneColorStarboard = getBrightnessFromBitmapVerticalLine(image, 0.8);
+
+
+    }
+
     Int2 imageScale = new Int2(0, 0);
 
-    //
-    private long getBrightnessFromBitmapVerticalLine(OpMode op, Bitmap bitmap, double x_position, double center) {
+
+    private long getBrightnessFromBitmapVerticalLine(Bitmap bitmap, double x_position) {
         imageScale.x = bitmap.getWidth();
         imageScale.y = bitmap.getHeight();
 
@@ -168,15 +137,8 @@ public class VuforiaBitmapSkystoneDetector {
         int color = 0;
         long totalAlpha = 0L;
 
-        int imageCenterY = imageScale.y / 2;
-
-        op.telemetry.addData("START HEIGHT", imageCenterY - (int) (center * (imageCenterY / 2)));
-        op.telemetry.addData("END HEIGHT",(int) (center * imageCenterY));
-
-//        for (int y = imageCenterY - (int) (center * (imageCenterY / 2)); y < (int) (center * imageCenterY); y++) {
-            for (int y = 0  ; y < imageScale.y; y++) {
+        for (int y = 0; y < imageScale.y; y++) {
             color = bitmap.getPixel(x, y);
-
             totalAlpha += Color.red(color) + Color.blue(color) + Color.green(color);
         }
 
