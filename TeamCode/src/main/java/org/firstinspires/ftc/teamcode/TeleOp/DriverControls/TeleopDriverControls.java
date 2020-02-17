@@ -105,7 +105,9 @@ public class TeleopDriverControls {
         //let left bumper toggle boost vs slow mode on the right trigger for fine control of the robot
         if (!gamePad.left_bumper) {
             //trigger makes robot slower
-            return bMath.Clamp(0.25 * (0.5 * (1 - gamePad.right_trigger) + (1 - gamePad.left_trigger) + 0.5), 0, 1);
+            double m = 0.7;
+            return m - (0.125 * m) * (gamePad.left_trigger + gamePad.right_trigger)
+                    - (0.125 * m) * bMath.squared(gamePad.left_trigger + gamePad.right_trigger);
         } else {
             //trigger makes robot faster
             return bMath.Clamp(0.5 + gamePad.right_trigger / 2.0, 0, 1);
