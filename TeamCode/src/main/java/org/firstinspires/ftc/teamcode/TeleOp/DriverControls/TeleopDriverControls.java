@@ -56,46 +56,47 @@ public class TeleopDriverControls {
     /*
     These methods determine the power levels for the wheels
      */
-    public static double getLeftDiagPower(Gamepad gamepad,
+    public static double getLeftDiagPower(Vector2 moveDirection,
                                            Robot robot,
                                            boolean useLockedRotation,
                                            double rotationLockAngle,
                                            Telemetry telemetry) {
 
-        double movementInput_x = gamepad.left_stick_x;
-        double movementInput_y = gamepad.left_stick_y;
+        double movementInput_x = moveDirection.x;
+        double movementInput_y = moveDirection.y;
 
         // drive code
         if (useLockedRotation) {
-            telemetry.addData("Drive System", "New");
-
-            Vector2 movementVectorCache_left = robot.getMovementVector(gamepad, rotationLockAngle, movementInput_x, movementInput_y);
-            return ((-movementVectorCache_left.y + movementVectorCache_left.x) / sq2);
+//            telemetry.addData("Drive System", "New");
+//
+//            Vector2 movementVectorCache_left = robot.getMovementVector(gamepad, rotationLockAngle, movementInput_x, movementInput_y);
+//            return ((-movementVectorCache_left.y + movementVectorCache_left.x) / sq2);
+            return 0;
         } else {
             telemetry.addData("Drive System", "Old");
 
-            return ((-gamepad.left_stick_y + gamepad.left_stick_x) / sq2);
+            return ((-movementInput_y + movementInput_x) / sq2);
         }
     }
 
-    public static double getRightDiagPower(Gamepad gamepad,
+    public static double getRightDiagPower(Vector2 moveDirection,
                                             Robot robot,
                                             boolean useLockedRotation,
                                             double rotationLockAngle,
                                             Telemetry telemetry) {
 
-        double movementInput_x = gamepad.left_stick_x;
-        double movementInput_y = gamepad.left_stick_y;
+        double movementInput_x = moveDirection.x;
+        double movementInput_y = moveDirection.y;
 
         if (useLockedRotation) {
-            telemetry.addData("Drive System", "New");
-
-            Vector2 movementVectorCache_right = robot.getMovementVector(gamepad, rotationLockAngle, movementInput_x, movementInput_y);
-            return ((-movementVectorCache_right.y - movementVectorCache_right.x) / sq2);
-
+//            telemetry.addData("Drive System", "New");
+//
+//            Vector2 movementVectorCache_right = robot.getMovementVector(gamepad, rotationLockAngle, movementInput_x, movementInput_y);
+//            return ((-movementVectorCache_right.y - movementVectorCache_right.x) / sq2);
+            return 0;
         } else {
             telemetry.addData("Drive System", "Old");
-            return ((-gamepad.left_stick_y - gamepad.left_stick_x) / sq2);
+            return ((-movementInput_y - movementInput_x) / sq2);
         }
     }
 
@@ -108,6 +109,7 @@ public class TeleopDriverControls {
             double m = 0.7;
             return m - (0.125 * m) * (gamePad.left_trigger + gamePad.right_trigger)
                     - (0.125 * m) * bMath.squared(gamePad.left_trigger + gamePad.right_trigger);
+
         } else {
             //trigger makes robot faster
             return bMath.Clamp(0.5 + gamePad.right_trigger / 2.0, 0, 1);
@@ -145,5 +147,7 @@ public class TeleopDriverControls {
         result.rightRotateCoordCheck = gamePad.dpad_right;
         return result;
     }
+
+
 
 }
