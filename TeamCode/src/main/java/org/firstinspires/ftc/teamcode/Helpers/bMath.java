@@ -170,6 +170,10 @@ public class bMath {
         return v;
     }
 
+    public static double roundAngle(double angle_in_radians, int sectors){
+        return Math.round(angle_in_radians/ ((Math.PI*2)/sectors) ) * ((Math.PI*2)/sectors);
+    }
+
     public static long Clamp(long value, long min, long max) {
         long v = value;
 
