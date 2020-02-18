@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Hardware.bMotor;
+import org.firstinspires.ftc.teamcode.Helpers.Vector2;
 import org.firstinspires.ftc.teamcode.Helpers.bMath;
 import org.firstinspires.ftc.teamcode.Robot.Robot;
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
@@ -132,23 +133,15 @@ public class Teleop extends TeleOpMode {
         leftRotateCoordCheck = driverTeleopData.rotationData.leftRotateCoordCheck;
         rightRotateCoordCheck = driverTeleopData.rotationData.rightRotateCoordCheck;
 
-
-
-        if(gamepad1.x && !xButton1Check){
-            tankControlsVeryFast = !tankControlsVeryFast;
-        }
-        xButton1Check = gamepad1.x;
-
         // Update Diag Power
-        double leftDiagPower = TeleopDriverControls.getLeftDiagPower(gamepad1, robot, coordinateSystemLock, rotationLockAngle, telemetry);
-        double rightDiagPower = TeleopDriverControls.getRightDiagPower(gamepad1, robot, coordinateSystemLock, rotationLockAngle, telemetry);
+        Vector2 left_stick = new Vector2(gamepad1.left_stick_x, gamepad1.left_stick_y);
+        double leftDiagPower = TeleopDriverControls.getLeftDiagPower(left_stick, robot, coordinateSystemLock, rotationLockAngle, telemetry);
+        double rightDiagPower = TeleopDriverControls.getRightDiagPower(left_stick, robot, coordinateSystemLock, rotationLockAngle, telemetry);
 
         double leftRotatePower = gamepad1.right_stick_x;
         double rightRotatePower = -gamepad1.right_stick_x;
 
-
-        //if the program just started miliseconds ago, this should be false
-        if (!cycledQuestionMark) {tankControlsVeryFast = false;}
+        tankControlsVeryFast = gamepad1.right_bumper;
 
         if(tankControlsVeryFast){
             if (shouldRotateInPlace(gamepad1.right_stick_x)){
@@ -244,10 +237,17 @@ public class Teleop extends TeleOpMode {
         double cosine = Math.cos(inputAngleInRadians);
         double sine = Math.sin(inputAngleInRadians);
         //these 4 say that if it's close enough to a multiple of 90, go with that multiple
-        if (cosine >= Math.cos(pi / 6)) { return 0; }
-        if (sine >= Math.sin(pi / 3)) { return 90; }
-        if (cosine <= Math.cos(5 * pi / 6)) { return 180; }
-        if (sine < Math.sin(4 * pi / 3)) {return 270; }
+        if (cosine >= Math.cos(pi / 4)) { return 0; }
+        if (sine >= Math.sin(pi / 4)) { return 90; }
+        if (cosine <= Math.cos(3 * pi / 4)) { return 180; }
+        if (sine < Math.sin(-1 * pi / 4)) {return 270; }
+
+        /*
+        UPDATE: the program should now never get below this point
+            Explanation:
+                The drivers said they never were going to use the option to go at 45°
+                so now it shouldn't anymore
+         */
 
         //if it's not that close, keep the unit circle point the same but make the angle between 0 and 2pi
         while (inputAngleInRadians < 0) { inputAngleInRadians += 2 * pi; }
