@@ -4,14 +4,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 
-@Autonomous(name = "BLUE STONES", group = "ftcPio")
+@Autonomous(name = "BLUE STONE SELECTION", group = "ftcPio")
 public class BlueSkystoneWithSelection extends Auto {
 
     public boolean endOnWall = false;
-   // public final VuforiaBitmapSkystoneDetector.SkystoneState = VuforiaBitmapSkystoneDetector.SkystoneState.
+    public int skystoneState = 0;
+    //0 = PORT, 1 = CEN, 2=STBD
 
-//    public double armGrabLength;
-//    public double armGrabLength;
 
     @Override
     public void runOpMode() {
@@ -39,9 +38,13 @@ public class BlueSkystoneWithSelection extends Auto {
 
         waitForStart();
 
+
+
         //0.035 == lift
         deployGripper(true, 0.0117999);
 
+        robot.experimentalDriveByDistance(90,speed_med,1508346,9837,
+                243562,25*skystoneState,9853); //TODO, Unplaceholder these values
 
 //        int cycles = 2;
 //
@@ -124,7 +127,7 @@ public class BlueSkystoneWithSelection extends Auto {
             robot.arm.setArmStateAsync(0.0117999, 0.3);
 
             //Rolls back to the skystone side quickly
-            robot.driveByDistance(180, 1, bridgeDistance + endingOffset, 2.7);
+            robot.driveByDistance(180, 1, bridgeDistance + endingOffset, 2.7); //TODO update to new
             //Rotates to face the next stone
             rotateFast(0);
 
@@ -163,7 +166,7 @@ public class BlueSkystoneWithSelection extends Auto {
         rotateAccurate(90);
 
         //Drives to foundation at a high speed
-        robot.driveByDistance(0, 1, bridgeDistance, 2.1);
+        robot.driveByDistance(0, 1, bridgeDistance, 2.1); //TODO update to new
     }
 
     public void driveToSkystone(double distanceFoward) {
