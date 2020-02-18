@@ -507,6 +507,12 @@ public class Robot extends Thread {
         ElapsedTime deltaTime = new ElapsedTime();
 
         while (Op.opModeIsActive()) {
+            while (!rotationRecent.get()) {
+
+            }
+            //Marks input
+            rotationRecent.set(false);
+
             rotationPower = rotationPID.loop(bMath.DeltaDegree(imu.imu_0.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle, targetAngle), 0);
             rotationPower = (rotationPower / (360)) * rotationSpeed;
             rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
@@ -552,6 +558,12 @@ public class Robot extends Thread {
         ElapsedTime deltaTime = new ElapsedTime();
 
         while (Op.opModeIsActive()) {
+            while (!rotationRecent.get()) {
+
+            }
+            //Marks input
+            rotationRecent.set(false);
+
             rotationPower = rotationPID.loop(bMath.DeltaDegree(imu.imu_0.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle, targetAngle), 0);
             rotationPower = (rotationPower / (360)) * rotationSpeed;
             rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
@@ -824,7 +836,7 @@ public class Robot extends Thread {
     }
 
     public void experimentalDriveByDistance(double driveHeading, double driveSpeed,
-                                            double attackSpeed, double decaySpeed, double correctionAngle, double distance,int distanceExitThreshold) {
+                                            double attackSpeed, double decaySpeed, double correctionAngle, double distance, int distanceExitThreshold) {
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
 

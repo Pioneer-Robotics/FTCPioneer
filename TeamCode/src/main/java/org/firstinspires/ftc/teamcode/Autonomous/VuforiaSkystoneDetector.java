@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import android.graphics.Path;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -103,6 +104,7 @@ public class VuforiaSkystoneDetector {
          */
         int cameraMonitorViewId = op.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", op.hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
         op.telemetry.addData("Camera ID Found.", "");
 

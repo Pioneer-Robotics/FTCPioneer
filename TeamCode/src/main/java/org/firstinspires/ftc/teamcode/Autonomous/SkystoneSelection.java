@@ -20,7 +20,10 @@ public class SkystoneSelection extends Auto {
 
         while (!opModeIsActive()) {
             vuforiaBitmapSkystoneDetector.Update(this);
+            telemetry.addData("TEST ", vuforiaBitmapSkystoneDetector.lastState.name());
+            telemetry.update();
         }
+
 
         //vuforiaBitmapSkystoneDetector.lastState;
 

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.hardware.camera2.CameraDevice;
 import android.renderscript.Int2;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -61,12 +62,14 @@ public class VuforiaBitmapSkystoneDetector {
         int cameraMonitorViewId = op.hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", op.hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
+
         op.telemetry.addData("Camera ID Found.", "");
 
         /**
          * We also indicate which camera on the RC we wish to use.
          */
         parameters.cameraName = camera;
+
         op.telemetry.addData("Camera assigned.", "");
 
 
@@ -183,9 +186,12 @@ public class VuforiaBitmapSkystoneDetector {
     private SkystoneState getSkystoneState(Bitmap image) {
         darkestColor = 1000000000;
 
-        skyStoneColorPort = getBrightnessFromBitmapVerticalLine(image, 0.2);
-        skyStoneColorCenter = getBrightnessFromBitmapVerticalLine(image, 0.5);
-        skyStoneColorStarboard = getBrightnessFromBitmapVerticalLine(image, 0.7);
+        skyStoneColorPort = getBrightnessFromBitmapVerticalLine(image, (859 / 1920));
+
+
+
+        skyStoneColorCenter = getBrightnessFromBitmapVerticalLine(image, (1237 / 1920));
+        skyStoneColorStarboard = getBrightnessFromBitmapVerticalLine(image, (1620 / 1920));
 
         skyStoneColors[0] = skyStoneColorPort;
         skyStoneColors[1] = skyStoneColorCenter;
