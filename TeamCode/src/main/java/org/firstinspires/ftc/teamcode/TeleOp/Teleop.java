@@ -149,8 +149,10 @@ public class Teleop extends TeleOpMode {
         if (!cycledQuestionMark) {tankControlsVeryFast = false;}
 
         if(tankControlsVeryFast){
-            if (shouldRotateInPlace(gamepad1.right_stick_x)) { rotateInPlace(moveSpeed); }
-            else{ doTankControlls(); }
+            if (shouldRotateInPlace(gamepad1.right_stick_x)){
+                rotateInPlace(moveSpeed);}
+            else{
+                doTankControlls();}
         }
 
         else {
@@ -181,22 +183,33 @@ public class Teleop extends TeleOpMode {
     }
 
     private void doTankControlls(){
+
+        //if you're not pointing in a direction, stop
+        if(Math.abs(gamepad1.left_stick_x) < 0.1 && Math.abs(gamepad1.left_stick_y) < 0.1) {
+            robot.setWheelPowersInAClockwiseOrder(0, 0, 0, 0);
+            return;
+        }
+
         //find the angle the left joystick is pointing at (this joystick controls the direction of movement)
         double movementAngle = findDesiredAngleInRadians(gamepad1.left_stick_x, gamepad1.left_stick_y);
 
         //approxMovementAngle method might make it hard to move at 45°; you'll have to be precise with the controller
         int approxMovementAngle = snapAngleToAMultipleOf45degreesAndPutOutputInDegrees(movementAngle);
 
-        //this block of if statements checks if the angle is snapped to a multiple of 90° and moves accordingly
+        //TODO understand why this is essentially right even though it doesn't make sense
         if (approxMovementAngle == 0){
             robot.setWheelPowersInAClockwiseOrder(1, -1, 1, -1); }
-        if(approxMovementAngle == 90){
+
+        //these values look like they should make it go forwards, but that's not how it was behaving
+        if(approxMovementAngle == 270){
             robot.setWheelPowersInAClockwiseOrder(1, 1, 1, 1);
         }
         if(approxMovementAngle == 180){
             robot.setWheelPowersInAClockwiseOrder(-1, 1, -1, 1);
         }
-        if(approxMovementAngle == 270){
+
+        //TODO fix this and make both it and 270 make sense
+        if(approxMovementAngle == 90){
             robot.setWheelPowersInAClockwiseOrder(-1, -1, -1, -1);
         }
 
@@ -214,6 +227,7 @@ public class Teleop extends TeleOpMode {
         if(approxMovementAngle == 315){
             robot.setWheelPowersInAClockwiseOrder(0, -1, 0, -1);
         }
+
 
     }
 
