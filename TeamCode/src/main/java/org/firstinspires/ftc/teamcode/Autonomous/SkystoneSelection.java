@@ -4,23 +4,23 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 
-@Autonomous(name = "Skystone Selection But For Actaully", group = "ftcPio")
+//@Autonomous(name = "Skystone Selection But For Actaully", group = "ftcPio")
 public class SkystoneSelection extends Auto {
 
     private double startRotation;
 
-    VuforiaBitmapSkystoneDetector vuforiaBitmapSkystoneDetector = new VuforiaBitmapSkystoneDetector();
+    //VuforiaBitmapSkystoneDetector vuforiaBitmapSkystoneDetector = new VuforiaBitmapSkystoneDetector();
 
     @Override
     public void runOpMode() {
         startRobot();
 
         startRotation = robot.getRotation();
-        vuforiaBitmapSkystoneDetector.Start(this);
+        //vuforiaBitmapSkystoneDetector.Start(this);
 
         while (!opModeIsActive()) {
-            vuforiaBitmapSkystoneDetector.Update(this);
-            telemetry.addData("TEST ", vuforiaBitmapSkystoneDetector.lastState.name());
+            //vuforiaBitmapSkystoneDetector.Update(this);
+            //telemetry.addData("TEST ", vuforiaBitmapSkystoneDetector.lastState.name());
             telemetry.update();
         }
 
