@@ -37,6 +37,8 @@ public class VuforiaBitmapSkystoneDetector {
 
     private VuforiaLocalizer vuforia = null;
 
+    private OpMode opMode;
+
     WebcamName camera = null;
 
     //Define the skystone state
@@ -51,6 +53,7 @@ public class VuforiaBitmapSkystoneDetector {
     }
 
     public void Start(OpMode op) {
+        opMode = op;
         //Find the camera
         camera = op.hardwareMap.get(WebcamName.class, RobotConfiguration.camera);
         op.telemetry.addData("Camera Found.", "");
@@ -78,6 +81,8 @@ public class VuforiaBitmapSkystoneDetector {
 
         op.telemetry.addData("Vuforia instansiated.", "");
 
+        opMode.telemetry.update();
+
         vuforia.setFrameQueueCapacity(1);
         vuforia.enableConvertFrameToBitmap();
     }
@@ -89,7 +94,7 @@ public class VuforiaBitmapSkystoneDetector {
     ElapsedTime elapsedTime = new ElapsedTime();
 
 
-    public void Update(OpMode op) {
+    public void Update(OpMode op, boolean onBlueSide) {
         try {
             elapsedTime.reset();
             //Fetch the latest frame
@@ -107,7 +112,8 @@ public class VuforiaBitmapSkystoneDetector {
             op.telemetry.addData("image x", image.getWidth());
             op.telemetry.addData("image y", image.getHeight());
 
-            lastState = getSkystoneState(image);
+            lastState = getSkystoneState(image, onBlueSide);
+            opMode.telemetry.update();
 
             frame.close();
         } catch (InterruptedException e) {
@@ -163,6 +169,7 @@ public class VuforiaBitmapSkystoneDetector {
         skyStoneColors[1] = skyStoneColorCenter;
         skyStoneColors[2] = skyStoneColorStarboard;
 
+
         for (int i = 0; i < 2; i++) {
 
             if (darkestColor > skyStoneColors[i]) {
@@ -183,19 +190,27 @@ public class VuforiaBitmapSkystoneDetector {
         return SkystoneState.UNKNOWN;
     }
 
-    private SkystoneState getSkystoneState(Bitmap image) {
+    private SkystoneState getSkystoneState(Bitmap image, boolean sideIsBlue) {
         darkestColor = 1000000000;
+        darkestColorIndex = -1;
 
-        skyStoneColorPort = getBrightnessFromBitmapVerticalLine(image, (859 / 1920));
-
-
-
-        skyStoneColorCenter = getBrightnessFromBitmapVerticalLine(image, (1237 / 1920));
-        skyStoneColorStarboard = getBrightnessFromBitmapVerticalLine(image, (1620 / 1920));
-
+        if (sideIsBlue) {
+            skyStoneColorPort = getBrightnessFromBitmapVerticalLine(image, ((double) 859 / (double) 1920));
+            skyStoneColorCenter = getBrightnessFromBitmapVerticalLine(image, ((double) 1237 / (double) 1920));
+            skyStoneColorStarboard = getBrightnessFromBitmapVerticalLine(image, ((double) 1620 / (double) 1920));
+        } else {
+            skyStoneColorPort = getBrightnessFromBitmapVerticalLine(image, ((double) 78 / (double) 1920));
+            skyStoneColorCenter = getBrightnessFromBitmapVerticalLine(image, ((double) 424 / (double) 1920));
+            skyStoneColorStarboard = getBrightnessFromBitmapVerticalLine(image, ((double) 788 / (double) 1920));
+        }
         skyStoneColors[0] = skyStoneColorPort;
         skyStoneColors[1] = skyStoneColorCenter;
         skyStoneColors[2] = skyStoneColorStarboard;
+
+
+        opMode.telemetry.addData("skystone Color Port: ", skyStoneColors[0]);
+        opMode.telemetry.addData("skystone Color Center: ", skyStoneColors[1]);
+        opMode.telemetry.addData("skystone Color Starboard: ", skyStoneColors[2]);
 
         for (int i = 0; i < 2; i++) {
 
@@ -206,12 +221,15 @@ public class VuforiaBitmapSkystoneDetector {
         }
 
         if (darkestColorIndex == 0) {
+            opMode.telemetry.addData("seection == ", "PORT");
             return SkystoneState.PORT;
         }
         if (darkestColorIndex == 1) {
+            opMode.telemetry.addData("seection == ", "CENTER");
             return SkystoneState.CENTER;
         }
         if (darkestColorIndex == 2) {
+            opMode.telemetry.addData("seection == ", "STAR BOARD");
             return SkystoneState.STARBOARD;
         }
         return SkystoneState.UNKNOWN;
