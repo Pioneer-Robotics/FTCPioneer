@@ -12,39 +12,41 @@ public class BlueSkystoneWithSelection extends Auto {
     //0 = PORT, 1 = CEN, 2=STBD
 
 
+    VuforiaBitmapSkystoneDetector skystoneDetector = new VuforiaBitmapSkystoneDetector();
+
+
     @Override
     public void runOpMode() {
         startRobot();
+
+        skystoneDetector.Start(this);
 
         speed_high = 0.5;
         speed_med = 0.50; //0.3
         speed_low = 0.3; //0.1
 
+
         while (!opModeIsActive()) {
-
-            if (true) {
-                break;
-            }
-
-            if (gamepad1.a) {
-                endOnWall = !endOnWall;
-                sleep(500);
-            }
-
-            telemetry.addData("End state: ", endOnWall ? "Ending on WALL" : "Ending on BRIDGE");
-            telemetry.addData("Press X to continue... ", "Press A to toggle wall state");
-            telemetry.update();
+            skystoneDetector.Update(this, true);
         }
 
+        if (skystoneDetector.lastState == VuforiaBitmapSkystoneDetector.SkystoneState.CENTER) {
+            skystoneState = 1;
+        }
+        if (skystoneDetector.lastState == VuforiaBitmapSkystoneDetector.SkystoneState.PORT) {
+            skystoneState = 0;
+        }
+        if (skystoneDetector.lastState == VuforiaBitmapSkystoneDetector.SkystoneState.STARBOARD) {
+            skystoneState = 2;
+        }
         waitForStart();
-
 
 
         //0.035 == lift
         deployGripper(true, 0.0117999);
 
-        robot.experimentalDriveByDistance(90,speed_med,1508346,9837,
-                243562,25*skystoneState,9853); //TODO, Unplaceholder these values
+        robot.experimentalDriveByDistance(90, speed_med, 0.3, 0.1,
+                243562, 25 * skystoneState, 10); //TODO, Unplaceholder these values
 
 //        int cycles = 2;
 //
@@ -54,7 +56,7 @@ public class BlueSkystoneWithSelection extends Auto {
 
         runDeliveryCycle(93, 500, 20, 36, 120 + 24, true, 250);
 //        runDeliveryCycle(93, 1000, 50, 24, 130 + (24), true);
-        runDeliveryCycle(10, 500, 30, 48, 120 + (48), false,250);
+        runDeliveryCycle(10, 500, 30, 48, 120 + (48), false, 250);
 
         robot.arm.setArmStateAsync(0.02248, -0.06);
 
@@ -149,7 +151,7 @@ public class BlueSkystoneWithSelection extends Auto {
         //Closes the gripper on the stone
         robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
 
-        robot.arm.setArmStateAsync((0.02148+0.0117999)/2, 0.3);
+        robot.arm.setArmStateAsync((0.02148 + 0.0117999) / 2, 0.3);
         //        robot.arm.setArmStateAsync(0.02148, 0.3);
 
 //        robot.arm.setArmStateAsync(0.02248, 0.3);
@@ -178,8 +180,8 @@ public class BlueSkystoneWithSelection extends Auto {
 //        robot.rotateSimple(angle, 2, 2, 0.5); //This one is a fail safe that will mostly work.
     }
 
-    public void adjustHeading(double angle){
-        robot.rotatePID(angle, 1,0.5,1);
+    public void adjustHeading(double angle) {
+        robot.rotatePID(angle, 1, 0.5, 1);
     }
 
 
