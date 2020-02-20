@@ -1024,10 +1024,10 @@ public class Robot extends Thread {
     // Drive Helper Method
     public void updateRobotDrive(double frontLeft, double frontRight, double backLeft,
                                  double backRight) {
-        driveManager.frontLeft.setPower(frontLeft);
-        driveManager.frontRight.setPower(frontRight);
-        driveManager.backLeft.setPower(backLeft);
-        driveManager.backRight.setPower(backRight);
+        driveManager.frontLeft.setPower(bMath.Clamp(frontLeft,-1,1));
+        driveManager.frontRight.setPower(bMath.Clamp(frontRight,-1,1));
+        driveManager.backLeft.setPower(bMath.Clamp(backLeft,-1,1));
+        driveManager.backRight.setPower(bMath.Clamp(backRight,-1,1));
     }
 
     //Very similer to "updateRobotDrive" but the order of the variables makes more sense to some team members

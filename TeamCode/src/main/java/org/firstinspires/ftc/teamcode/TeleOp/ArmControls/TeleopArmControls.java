@@ -61,7 +61,7 @@ public class TeleopArmControls {
         //set power and distance to the Arm.
         result.extension = robot.arm.RectExtension(result.rectControls_goingUp, result.xExtConst, result.yExtConst);
         result.extension = bMath.Clamp(robot.arm.cmToTicks(result.extension) / RobotConfiguration.arm_ticksMax);
-        result.raiseSpeed = result.rectControls_goingUp ? -0.5 * gamePad.right_stick_y : -0.5 * gamePad.right_stick_x;
+        result.raiseSpeed = result.rectControls_goingUp ? -1 * gamePad.right_stick_y : -1 * gamePad.right_stick_x;
 
 
 
