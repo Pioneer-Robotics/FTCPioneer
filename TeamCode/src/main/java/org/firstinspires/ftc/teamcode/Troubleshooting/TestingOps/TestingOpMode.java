@@ -23,8 +23,8 @@ public class TestingOpMode extends Auto {
 
         while (opModeIsActive()) {
             t.Update(this, true);
-            telemetry.addData("yoink", debug);
-            telemetry.update();
+//            telemetry.addData("yoink", debug);
+//            telemetry.update();
 
             debug++;
         }

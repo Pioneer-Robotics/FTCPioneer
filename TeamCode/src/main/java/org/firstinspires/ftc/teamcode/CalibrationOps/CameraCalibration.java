@@ -18,6 +18,8 @@ public class CameraCalibration extends LinearOpMode {
 
     VuforiaBitmapSkystoneDetector.SkystoneState currentEdit = VuforiaBitmapSkystoneDetector.SkystoneState.CENTER;
 
+    ElapsedTime timeDelta = new ElapsedTime();
+
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(this, false);
@@ -34,9 +36,9 @@ public class CameraCalibration extends LinearOpMode {
 
             telemetry.addData("Editing ", currentEdit.name());
 
-            telemetry.addData("Port", port);
-            telemetry.addData("Center", center);
-            telemetry.addData("Starboard", starboard);
+            telemetry.addData("B Port", port);
+            telemetry.addData("A Center", center);
+            telemetry.addData("X Starboard", starboard);
 
             if (gamepad1.a) {
                 currentEdit = VuforiaBitmapSkystoneDetector.SkystoneState.CENTER;
@@ -48,14 +50,20 @@ public class CameraCalibration extends LinearOpMode {
                 currentEdit = VuforiaBitmapSkystoneDetector.SkystoneState.STARBOARD;
             }
 
+            if (currentEdit == VuforiaBitmapSkystoneDetector.SkystoneState.PORT) {
+                port += gamepad1.right_stick_x * timeDelta.seconds() * 0.1;
+            }
+
+            if (currentEdit == VuforiaBitmapSkystoneDetector.SkystoneState.CENTER) {
+                center += gamepad1.right_stick_x * timeDelta.seconds() * 0.1;
+            }
+
+            if (currentEdit == VuforiaBitmapSkystoneDetector.SkystoneState.STARBOARD) {
+                starboard += gamepad1.right_stick_x * timeDelta.seconds() * 0.1;
+            }
             port = bMath.Clamp(port, 0, 1);
             center = bMath.Clamp(center, 0, 1);
             starboard = bMath.Clamp(starboard, 0, 1);
-
-            port += gamepad1.left_stick_x;
-            center += gamepad1.right_stick_y;
-            starboard += gamepad1.left_stick_y;
-
 
             vuforiaBitmapSkystoneDetector.Update(this, port, center, starboard);
 
@@ -63,6 +71,7 @@ public class CameraCalibration extends LinearOpMode {
 
             telemetry.update();
 
+            timeDelta.reset();
         }
 
         robot.shutdown();

@@ -165,12 +165,11 @@ public class VuforiaBitmapSkystoneDetector {
         skyStoneColorCenter = getBrightnessFromBitmapVerticalLine(image, c);
         skyStoneColorStarboard = getBrightnessFromBitmapVerticalLine(image, s);
 
-        skyStoneColors[0] = skyStoneColorPort;
-        skyStoneColors[1] = skyStoneColorCenter;
-        skyStoneColors[2] = skyStoneColorStarboard;
+        opMode.telemetry.addData("skystone Color Port: ", skyStoneColors[0]);
+        opMode.telemetry.addData("skystone Color Center: ", skyStoneColors[1]);
+        opMode.telemetry.addData("skystone Color Starboard: ", skyStoneColors[2]);
 
-
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 3; i++) {
 
             if (darkestColor > skyStoneColors[i]) {
                 darkestColorIndex = i;
@@ -179,12 +178,15 @@ public class VuforiaBitmapSkystoneDetector {
         }
 
         if (darkestColorIndex == 0) {
+            opMode.telemetry.addData("seection == ", "PORT");
             return SkystoneState.PORT;
         }
         if (darkestColorIndex == 1) {
+            opMode.telemetry.addData("seection == ", "CENTER");
             return SkystoneState.CENTER;
         }
         if (darkestColorIndex == 2) {
+            opMode.telemetry.addData("seection == ", "STAR BOARD");
             return SkystoneState.STARBOARD;
         }
         return SkystoneState.UNKNOWN;
@@ -212,7 +214,7 @@ public class VuforiaBitmapSkystoneDetector {
         opMode.telemetry.addData("skystone Color Center: ", skyStoneColors[1]);
         opMode.telemetry.addData("skystone Color Starboard: ", skyStoneColors[2]);
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 3; i++) {
 
             if (darkestColor > skyStoneColors[i]) {
                 darkestColorIndex = i;

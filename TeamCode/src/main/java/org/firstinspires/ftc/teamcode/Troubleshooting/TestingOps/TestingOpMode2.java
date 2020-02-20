@@ -17,30 +17,12 @@ public class TestingOpMode2 extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.init(this, false);
-
         waitForStart();
 
-        robot.arm.rotationMode = RobotArm.ArmThreadMode.Enabled;
-//        robot.arm.rotationMode = RobotArm.ArmRotationMode.Disabled;
-
-//        robot.arm.rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        robot.arm.rotation.setPower(1);
-//        sleep(2500);
-//        robot.arm.rotation.setPower(0);
-
-//        robot.arm.setArmStateAsync(0.45, 0);
-//        sleep(10000);
-
-//        robot.arm.setArmStateAsync(0.03, 0);
-//        sleep(10000);
-//
-//        robot.arm.setArmStateAsync(0.035, 0);
-//        sleep(10000);
-
-//        robot.arm.setArmStateWait(0.02, 0.65);
-//        robot.arm.setArmStateWait(0.01, 0.65);
-//        robot.arm.setArmStateWait(0.03, 0.65);
-//        robot.arm.setArmStateWait(0.03, 0.65);
+        robot.experimentalDriveByDistance(0, 0.5, 0.2, 0.1, 0, 50, 10);
+        robot.experimentalDriveByDistance(90, 0.5, 0.2, 0.1, 0, 50, 10);
+        robot.experimentalDriveByDistance(-180, 0.5, 0.2, 0.1, 0, 50, 10);
+        robot.experimentalDriveByDistance(-90, 0.5, 0.2, 0.1, 0, 50, 10);
 
         robot.shutdown();
 
