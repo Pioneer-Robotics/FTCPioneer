@@ -148,7 +148,9 @@ public class Teleop extends TeleOpMode {
                 rotateInPlace(moveSpeed);}
             else{
                 doTankControlls();}
-        } else {
+        }
+        else
+        {
             // Update Robot Drive
             double frontLeftWheelPower = moveSpeed * (leftDiagPower + leftRotatePower);
             double frontRightWheelPower = moveSpeed * (rightDiagPower + rightRotatePower);

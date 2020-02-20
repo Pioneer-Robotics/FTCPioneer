@@ -4,16 +4,23 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 
-@Autonomous(name = "BLUE STONE SELECTION", group = "ftcPio")
+@Autonomous(name = "BLUE Computer Vision Stones", group = "ftcPio")
 public class BlueSkystoneWithSelection extends Auto {
 
     public boolean endOnWall = false;
     public int skystoneState = 0;
-    public double lengthOf3Stones = 60;
+    public double lengthOf3Stones = 100;
 
     private boolean stonePositionedLeft = false;
     private boolean stonePositionedCenter = false;
     private boolean stonePositionedRight = false;
+
+    private double leftStoneBonus = 0;
+    private double rightStoneBonus = 60;
+    private double centerStoneBonus = 30;
+    private double stoneBonusDistance;
+
+    private double bridgeDistance = 144;
 
     //0 = PORT, 1 = CEN, 2=STBD
 
@@ -49,61 +56,123 @@ public class BlueSkystoneWithSelection extends Auto {
         waitForStart();
 
         //find the set up we're working with
-//        if(skystoneState == 0) {stonePositionedLeft = true;}
-//        if(skystoneState == 1) {stonePositionedCenter = true;}
-//        if(skystoneState == 2) {stonePositionedRight = true;}
-
-        stonePositionedLeft = true;
+        if(skystoneState == 0) {stonePositionedLeft = true;}
+        if(skystoneState == 1) {stonePositionedCenter = true;}
+        if(skystoneState == 2) {stonePositionedRight = true;}
 
         deployGripper(true, 0.0117999);
 
         alignWithSkystone();
 
-        collectStoneFoward(93, 200, 30);
+        collectFirstSkystone();
 
-        driveToFoundationSide(140);
+        driveToFoundationSideFirstTime(bridgeDistance + stoneBonusDistance);
 
-        //Release the stone
-        robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
-        //wait for the servo to finish
-        sleep(200);
+        releaseStone();
 
-        robot.arm.setArmStateAsync(0.0117999, 0.3);
-
-        //Rolls back to the skystone side quickly
-        robot.driveByDistance(180, 1, 80 + lengthOf3Stones, 2.7);
+        //grabs the next stone
+        if(stonePositionedLeft){
+        //Rolls back to the Skystone side quickly
+        robot.driveByDistance(170, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones);
 
         //turns to face the front
-        rotateFast(0);
+        robot.rotatePID(0,0.5,1.0,5);
+        collectStoneFoward(20, 200,20);
+        }
 
-        //drives forward to get the other stone
-        robot.driveByDistance(0.5, 15);
+        if(stonePositionedCenter){
+            //Rolls back to the Skystone side quickly
+            robot.driveByDistance(170, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones);
+
+            //turns to face the front
+            robot.rotatePID(0,0.5,1.0,5);
+
+            //go a little further right first
+            robot.driveByDistance(90,0.5,25);
+            collectStoneFoward(20, 200,30);
+        }
+
+        if(stonePositionedRight){
+            //Rolls back to the Skystone side quickly
+            robot.driveByDistance(170, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones - 20);
+
+            //turns to face the front
+            robot.rotatePID(0,0.5,1.0,5);
+
+            //go a little further right first
+            robot.driveByDistance(90,0.5,55);
+            collectStoneFoward(20, 200,20);
+        }
 
         //go back across the bridge
-        driveToFoundationSide(lengthOf3Stones + 20);
+        driveToFoundationSideSecondTime(bridgeDistance + lengthOf3Stones + stoneBonusDistance);
 
-        //back up into it's parking spot
-        robot.driveByDistance(180,0.5, 20);
+        releaseStone();
+
+        park();
 
         StopMovement();
         StopRobot();
     }
-
-    private void alignWithSkystone(){ //TODO make this work for all possibilites
-        //move forward off the wall
-        robot.driveByDistance(0.25, 10);
-        //check where the skystone is and adjust left and right
+    private void collectFirstSkystone(){
         if(stonePositionedLeft){
-            robot.driveByDistance(-90,1.0, 0); //starts basically lined up
+            collectStoneFoward(80, 100, 25);
         }
         if(stonePositionedCenter){
-            robot.driveByDistance(0,0, 0); //should already be lined up with center
+            collectStoneFoward(80, 100, 20);
         }
         if(stonePositionedRight){
-            robot.driveByDistance(90,1.0,30);
+            collectStoneFoward(80, 100, 25);
         }
+    }
 
+    private void releaseStone(){
+        //Release the stone
+        robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
+        //wait for the servo to finish
+        sleep(100);
+        //position the arm for another stone the arm
+        robot.arm.setArmStateAsync(0.0117999, 0.3);
+    }
+    private void park(){
+        if(stonePositionedLeft) {
+            //back up into it's parking spot
+            robot.driveByDistance(180, 0.5, 60);
+            //really make sure we're there
+            robot.driveByDistance(90, 0.5, 40);
+        }
+        if(stonePositionedCenter){
+            //back up into it's parking spot
+            robot.driveByDistance(180, 0.5, 80);
+            //really make sure we're there
+            robot.driveByDistance(90, 0.5, 60);
+        }
+        if(stonePositionedRight) {
+            //back up into it's parking spot
+            robot.driveByDistance(180, 0.5, 100);
+            //really make sure we're there
+            robot.driveByDistance(90, 0.5, 80);
+        }
+        resetArm();
+    }
 
+    private void alignWithSkystone(){ //TODO make this work for all possibilites
+        //check where the skystone is and adjust left and right
+        if(stonePositionedLeft){
+            //move forward off the wall
+            robot.driveByDistance(0.25, 10);
+            stoneBonusDistance = leftStoneBonus;
+            robot.driveByDistance(90,1.0,stoneBonusDistance);
+        }
+        if(stonePositionedCenter){
+            stoneBonusDistance = centerStoneBonus;
+            robot.driveByDistance(90,1.0,stoneBonusDistance);
+        }
+        if(stonePositionedRight){
+            stoneBonusDistance = rightStoneBonus;
+            robot.driveByDistance(90,1.0,stoneBonusDistance + 8);
+            adjustHeading(0);
+        }
     }
 
     //Deploys the gripper, enabling async will have the arm movement happen in the background without pausing the main thread.
@@ -130,41 +199,6 @@ public class BlueSkystoneWithSelection extends Auto {
         }
     }
 
-    private void runDeliveryCycle(double fwdDistance, long servoDelayMS, double distanceFromStone, double endingOffset, double bridgeDistance, boolean prepForAnotherStone, long servoDelayShortMS) {
-
-        collectStoneFoward(fwdDistance, servoDelayMS, distanceFromStone);
-
-
-        driveToFoundationSide(bridgeDistance);
-
-        //Releases the stone
-        robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
-
-
-        //Waits to ensure the stone is completely detached
-        sleep(servoDelayShortMS);
-
-        //Resets rotation after speedyness
-        adjustHeading(90);
-
-        if (prepForAnotherStone) {
-            robot.arm.setArmStateAsync(0.0117999, 0.3);
-
-            //Rolls back to the skystone side quickly
-            robot.driveByDistance(180, 1, bridgeDistance + endingOffset, 2.7); //TODO update to new
-            //Rotates to face the next stone
-            rotateFast(0);
-
-            //Resets rotation
-            //adjustHeading(90); see above rotation
-
-            //Rolls back again so the bot is aligned with the next stone
-            //robot.driveByDistance(180, 0.35, endingOffset); Because added to skystone side
-        }
-
-
-    }
-
     //Collects the stone 'distanceToStone' away and then rolls back 'backwardDistance'
     private void collectStoneFoward(double distanceToStone, long servoDelayMS, double backwardsDistance) {
         //Drives forward so the arm is making contact with the stone
@@ -173,10 +207,7 @@ public class BlueSkystoneWithSelection extends Auto {
         //Closes the gripper on the stone
         robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
 
-        robot.arm.setArmStateAsync((0.02148 + 0.0117999) / 2, 0.3);
-        //        robot.arm.setArmStateAsync(0.02148, 0.3);
-
-//        robot.arm.setArmStateAsync(0.02248, 0.3);
+        robot.arm.setArmStateAsync((/*target angle*/0.02148 + 0.0117999), 0.3);
 
         //Wait to ensure the gripper is closed
         sleep(servoDelayMS);
@@ -185,16 +216,49 @@ public class BlueSkystoneWithSelection extends Auto {
         robot.driveByDistance(180, 0.5, backwardsDistance, 2);
     }
 
-    private void driveToFoundationSide(double bridgeDistance) {
-        //Rotates to face the foundation
-        rotateAccurate(90);
+    private void driveToFoundationSideFirstTime(double bridgeDistance) {
+        if(stonePositionedLeft || stonePositionedCenter) {
+            //Rotates to face the foundation
+            rotateAccurate(90);
 
-        //Drives to foundation at a high speed
-        robot.driveByDistance(0, 1, bridgeDistance, 2.1); //TODO update to new
+            //Drives to foundation at a high speed
+            robot.driveByDistance(0, 1, bridgeDistance, 2.1);
+        }
+        if(stonePositionedRight){
+            //Rotates to face the foundation
+            rotateAccurate(90);
+
+            //Drives to foundation at a high speed
+            robot.driveByDistance(5, 1, bridgeDistance);
+        }
     }
+    private void driveToFoundationSideSecondTime(double bridgeDistance) {
+        if(stonePositionedLeft){
+            driveToFoundationSideFirstTime(bridgeDistance);
+        }
+        if(stonePositionedCenter) {
+            //Rotates to face the foundation
+            rotateAccurate(90);
 
+            //Drives to foundation at a high speed
+            robot.driveByDistance(10, 1, bridgeDistance, 2.1);
+        }
+        if(stonePositionedRight){
+            //Rotates to face the foundation
+            rotateAccurate(90);
+
+            //Drives to foundation at a high speed
+            robot.driveByDistance(10, 1, bridgeDistance);
+        }
+    }
     public void driveToSkystone(double distanceFoward) {
         robot.driveByDistance(0, 0.35, distanceFoward, 2.6);
+    }
+
+
+    public void resetArm(){
+        robot.arm.setGripState(RobotArm.GripState.IDLE, 0);
+        robot.arm.setArmStateWait(0.03,0);
     }
 
     public void rotateFast(double angle) {
@@ -208,7 +272,6 @@ public class BlueSkystoneWithSelection extends Auto {
 
 
     public void rotateAccurate(double angle) {
-        robot.rotatePID(angle, 1, 3, 0.6);
-        //robot.rotateSimple(angle, 1, 0.5, 0.25); //This one is a fail safe that will mostly work.
+        robot.rotatePID(angle, 0.7, 3, 0.6);
     }
 }
