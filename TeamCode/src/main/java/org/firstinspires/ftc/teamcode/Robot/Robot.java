@@ -507,9 +507,10 @@ public class Robot extends Thread {
         ElapsedTime deltaTime = new ElapsedTime();
 
         while (Op.opModeIsActive()) {
-            while (!rotationRecent.get()) {
 
-            }
+            //wait for this to be true
+            while (!rotationRecent.get()) { }
+
             //Marks input
             rotationRecent.set(false);
 
@@ -834,6 +835,14 @@ public class Robot extends Thread {
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+
+    /*
+    keep driveSpeed ~ 1 for max speed (high is good)
+    attackSpeed ~ 0.3 and definitly smaller than driveSpeed (high is good)
+    decaySpeed ~ 0.1 and definitly smaller than attackSpeed (high is good
+    correctionAngle = the angle you want the robot to be at, should be what it's current rotation of the robot
+    distanceExitThreshold is in encoder ticks = inaccuracy allowed
+     */
 
     public void experimentalDriveByDistance(double driveHeading, double driveSpeed,
                                             double attackSpeed, double decaySpeed, double correctionAngle, double distance, int distanceExitThreshold) {

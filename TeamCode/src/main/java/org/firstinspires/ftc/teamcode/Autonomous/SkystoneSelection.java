@@ -58,24 +58,30 @@ public class SkystoneSelection extends Auto {
         StopRobot();
     }
 
-    private void RunDeliveryCycle(double fwdDistance, long servoDelayMS, double distanceFromStone, double endingOffset, double bridgeDistance, boolean moveBackToBridge) {
+    private void RunDeliveryCycle(double fwdDistance, long servoDelayMS, double distanceFromStone, double endingOffset, double bridgeDistance, boolean prepForAnotherStone) {
 
-
+        //go forward to get gripper to touch stone
         robot.driveByDistance(0, 0.35, fwdDistance);
 
+        //wait it to get there
         sleep(500);
 
+        //Grab the stone
         robot.arm.setGripState(RobotArm.GripState.CLOSED, 0.5);
 
+        //wait for the gripper to finish closing
         sleep(servoDelayMS);
 
+        //back up from the row of stones
         robot.driveByDistance(180, 0.5, distanceFromStone);
 
 //        robot.rotatePIDRelative(-90, 1, 3);
         //Rotates to face foundation
+
+        //turn to face the bridge
         robot.rotatePID(90, 1, 4);
 
-        //Drives to foundation
+        //Drives across bridge
         robot.driveByDistance(0, 1, bridgeDistance);
 
 //        robot.arm.setArmStateWait(0.2, 0.8, 1);
@@ -84,7 +90,7 @@ public class SkystoneSelection extends Auto {
         //Drop stone
         robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
 
-        if (moveBackToBridge) {
+        if (prepForAnotherStone) {
             sleep(servoDelayMS);
 
 

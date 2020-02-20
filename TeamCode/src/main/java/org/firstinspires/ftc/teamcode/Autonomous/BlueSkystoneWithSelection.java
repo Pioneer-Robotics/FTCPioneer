@@ -9,8 +9,13 @@ public class BlueSkystoneWithSelection extends Auto {
 
     public boolean endOnWall = false;
     public int skystoneState = 0;
-    //0 = PORT, 1 = CEN, 2=STBD
+    public double lengthOf3Stones = 60;
 
+    private boolean stonePositionedLeft = false;
+    private boolean stonePositionedCenter = false;
+    private boolean stonePositionedRight = false;
+
+    //0 = PORT, 1 = CEN, 2=STBD
 
     VuforiaBitmapSkystoneDetector skystoneDetector = new VuforiaBitmapSkystoneDetector();
 
@@ -30,58 +35,75 @@ public class BlueSkystoneWithSelection extends Auto {
             skystoneDetector.Update(this, true);
         }
 
-        if (skystoneDetector.lastState == VuforiaBitmapSkystoneDetector.SkystoneState.CENTER) {
-            skystoneState = 1;
-        }
         if (skystoneDetector.lastState == VuforiaBitmapSkystoneDetector.SkystoneState.PORT) {
             skystoneState = 0;
+        }
+        if (skystoneDetector.lastState == VuforiaBitmapSkystoneDetector.SkystoneState.CENTER) {
+            skystoneState = 1;
         }
         if (skystoneDetector.lastState == VuforiaBitmapSkystoneDetector.SkystoneState.STARBOARD) {
             skystoneState = 2;
         }
+
+        //start the real program
         waitForStart();
 
+        //find the set up we're working with
+//        if(skystoneState == 0) {stonePositionedLeft = true;}
+//        if(skystoneState == 1) {stonePositionedCenter = true;}
+//        if(skystoneState == 2) {stonePositionedRight = true;}
 
-        //0.035 == lift
+        stonePositionedLeft = true;
+
         deployGripper(true, 0.0117999);
 
-        robot.experimentalDriveByDistance(90, speed_med, 0.3, 0.1,
-                243562, 25 * skystoneState, 10); //TODO, Unplaceholder these values
+        alignWithSkystone();
 
-//        int cycles = 2;
-//
-////        for (int stone = 1; stone <= cycles; stone++) {
-////            runDeliveryCycle(stone == 1 ? 93 : 30, 1000, 35, stone * 24, 130 + (stone * 30), stone != cycles);
-////        }
+        collectStoneFoward(93, 200, 30);
 
-        runDeliveryCycle(93, 500, 20, 36, 120 + 24, true, 250);
-//        runDeliveryCycle(93, 1000, 50, 24, 130 + (24), true);
-        runDeliveryCycle(10, 500, 30, 48, 120 + (48), false, 250);
+        driveToFoundationSide(140);
 
-        robot.arm.setArmStateAsync(0.02248, -0.06);
+        //Release the stone
+        robot.arm.setGripState(RobotArm.GripState.OPEN, 0.5);
+        //wait for the servo to finish
+        sleep(200);
 
-        robot.driveByDistance(180, 0.75, 35);
+        robot.arm.setArmStateAsync(0.0117999, 0.3);
 
-        robot.arm.setGripState(RobotArm.GripState.IDLE, 0);
+        //Rolls back to the skystone side quickly
+        robot.driveByDistance(180, 1, 80 + lengthOf3Stones, 2.7);
 
-        if (endOnWall) {
-            robot.driveByDistance(-90, 0.8, 80);
-        } else {
-            robot.driveByDistance(90, 0.8, 20);
-            //robot.driveByDistance(180, 0.5, 20);
-        }
-//        160
-//        193
-//        217
-//
-//        runDeliveryCycle(93, 1000, 35, 24, 160, true);
-//
-//        runDeliveryCycle(45, 1000, 35, 1 * 24 + 24, 145 + 48, true);
-//
-//        runDeliveryCycle(45, 1000, 35, 2 * 24 + 24, 145 + (3 * 24), false);
+        //turns to face the front
+        rotateFast(0);
+
+        //drives forward to get the other stone
+        robot.driveByDistance(0.5, 15);
+
+        //go back across the bridge
+        driveToFoundationSide(lengthOf3Stones + 20);
+
+        //back up into it's parking spot
+        robot.driveByDistance(180,0.5, 20);
 
         StopMovement();
         StopRobot();
+    }
+
+    private void alignWithSkystone(){ //TODO make this work for all possibilites
+        //move forward off the wall
+        robot.driveByDistance(0.25, 10);
+        //check where the skystone is and adjust left and right
+        if(stonePositionedLeft){
+            robot.driveByDistance(-90,1.0, 0); //starts basically lined up
+        }
+        if(stonePositionedCenter){
+            robot.driveByDistance(0,0, 0); //should already be lined up with center
+        }
+        if(stonePositionedRight){
+            robot.driveByDistance(90,1.0,30);
+        }
+
+
     }
 
     //Deploys the gripper, enabling async will have the arm movement happen in the background without pausing the main thread.
@@ -108,7 +130,7 @@ public class BlueSkystoneWithSelection extends Auto {
         }
     }
 
-    private void runDeliveryCycle(double fwdDistance, long servoDelayMS, double distanceFromStone, double endingOffset, double bridgeDistance, boolean moveBackToBridge, long servoDelayShortMS) {
+    private void runDeliveryCycle(double fwdDistance, long servoDelayMS, double distanceFromStone, double endingOffset, double bridgeDistance, boolean prepForAnotherStone, long servoDelayShortMS) {
 
         collectStoneFoward(fwdDistance, servoDelayMS, distanceFromStone);
 
@@ -125,7 +147,7 @@ public class BlueSkystoneWithSelection extends Auto {
         //Resets rotation after speedyness
         adjustHeading(90);
 
-        if (moveBackToBridge) {
+        if (prepForAnotherStone) {
             robot.arm.setArmStateAsync(0.0117999, 0.3);
 
             //Rolls back to the skystone side quickly

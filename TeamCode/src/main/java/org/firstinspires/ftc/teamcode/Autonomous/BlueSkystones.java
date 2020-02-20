@@ -48,7 +48,7 @@ public class BlueSkystones extends Auto {
 ////            runDeliveryCycle(stone == 1 ? 93 : 30, 1000, 35, stone * 24, 130 + (stone * 30), stone != cycles);
 ////        }
 
-        runDeliveryCycle(93, 500, 20, 36, 120 + 24, true, 250);
+        runDeliveryCycle(93, 500, 23, 36, 120 + 24, true, 250);
 //        runDeliveryCycle(93, 1000, 50, 24, 130 + (24), true);
         runDeliveryCycle(10, 500, 30, 48, 120 + (48), false,250);
 

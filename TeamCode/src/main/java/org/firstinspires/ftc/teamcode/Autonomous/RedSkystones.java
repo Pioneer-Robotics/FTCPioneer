@@ -103,7 +103,7 @@ public class RedSkystones extends Auto {
         }
     }
 
-    private void runDeliveryCycle(double fwdDistance, long servoDelayMS, double distanceFromStone, double endingOffset, double bridgeDistance, boolean moveBackToBridge, long servoDelayShortMS) {
+    private void runDeliveryCycle(double fwdDistance, long servoDelayMS, double distanceFromStone, double endingOffset, double bridgeDistance, boolean prepForAnotherStone, long servoDelayShortMS) {
 
         collectStoneFoward(fwdDistance, servoDelayMS, distanceFromStone);
 
@@ -120,7 +120,7 @@ public class RedSkystones extends Auto {
         //Resets rotation after speedyness
         adjustHeading(-90);
 
-        if (moveBackToBridge) {
+        if (prepForAnotherStone) {
             robot.arm.setArmStateAsync(0.0117999, 0.3);
 
             //Rolls back to the skystone side quickly
