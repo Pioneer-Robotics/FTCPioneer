@@ -39,6 +39,12 @@ public class VuforiaBitmapSkystoneDetector {
 
     private OpMode opMode;
 
+    //not pretty but it;ll do for now
+    private final double min = (378 / 1080);
+    private final double max = (687 / 1080);
+    //^^^ those are percents 0 == 0% 1 == 100%
+
+
     WebcamName camera = null;
 
     //Define the skystone state
@@ -250,7 +256,11 @@ public class VuforiaBitmapSkystoneDetector {
         int color = 0;
         long totalAlpha = 0L;
 
-        for (int y = 0; y < imageScale.y; y++) {
+        int minY = (int) (min * (double) imageScale.y);
+        int maxY = imageScale.y - (int) (max * (double) imageScale.y);
+
+
+        for (int y = minY; y < maxY; y++) {
             color = bitmap.getPixel(x, y);
             totalAlpha += Color.red(color) + Color.blue(color) + Color.green(color);
         }
