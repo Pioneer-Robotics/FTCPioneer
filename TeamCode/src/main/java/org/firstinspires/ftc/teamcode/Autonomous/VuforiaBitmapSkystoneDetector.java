@@ -128,17 +128,17 @@ public class VuforiaBitmapSkystoneDetector {
         }
     }
 
-    public void Update(OpMode op, double p, double c, double s) {
+    public void Update(OpMode op, double port, double center, double stbd) {
         try {
             elapsedTime.reset();
             //Fetch the latest frame
             frame = vuforia.getFrameQueue().take();
-            op.telemetry.addData("a ", elapsedTime.milliseconds());
+            op.telemetry.addData("get frame time: ", elapsedTime.milliseconds());
 
             elapsedTime.reset();
             //Convert it to a bitmap
             image = vuforia.convertFrameToBitmap(frame);
-            op.telemetry.addData("b ", elapsedTime.milliseconds());
+            op.telemetry.addData("convert to bitmap object ", elapsedTime.milliseconds());
 
             elapsedTime.reset();
 
@@ -146,7 +146,7 @@ public class VuforiaBitmapSkystoneDetector {
             op.telemetry.addData("image x", image.getWidth());
             op.telemetry.addData("image y", image.getHeight());
 
-            lastState = getSkystoneState(image, p, c, s);
+            lastState = getSkystoneState(image, port, center, stbd);
 
             frame.close();
         } catch (InterruptedException e) {
@@ -164,12 +164,12 @@ public class VuforiaBitmapSkystoneDetector {
 
     long[] skyStoneColors = new long[3];
 
-    private SkystoneState getSkystoneState(Bitmap image, double p, double c, double s) {
-        darkestColor = 1000000000;
+    private SkystoneState getSkystoneState(Bitmap image, double port, double center, double stbd) {
+        darkestColor = 100000000;
 
-        skyStoneColorPort = getBrightnessFromBitmapVerticalLine(image, p);
-        skyStoneColorCenter = getBrightnessFromBitmapVerticalLine(image, c);
-        skyStoneColorStarboard = getBrightnessFromBitmapVerticalLine(image, s);
+        skyStoneColorPort = getBrightnessFromBitmapVerticalLine(image, port);
+        skyStoneColorCenter = getBrightnessFromBitmapVerticalLine(image, center);
+        skyStoneColorStarboard = getBrightnessFromBitmapVerticalLine(image, stbd);
 
         opMode.telemetry.addData("skystone Color Port: ", skyStoneColors[0]);
         opMode.telemetry.addData("skystone Color Center: ", skyStoneColors[1]);
@@ -257,7 +257,8 @@ public class VuforiaBitmapSkystoneDetector {
         long totalAlpha = 0L;
 
         int minY = (int) (min * (double) imageScale.y);
-        int maxY = imageScale.y - (int) (max * (double) imageScale.y);
+        int maxY = (int) (max * (double) imageScale.y);
+
 
 
         for (int y = minY; y < maxY; y++) {

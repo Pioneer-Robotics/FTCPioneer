@@ -31,6 +31,7 @@ public class CameraCalibration extends LinearOpMode {
         double port = 0.3;
         double center = 0.5;
         double starboard = 0.6;
+        boolean side_is_blue = true;
 
         while (opModeIsActive()) {
 
@@ -65,7 +66,9 @@ public class CameraCalibration extends LinearOpMode {
             center = bMath.Clamp(center, 0, 1);
             starboard = bMath.Clamp(starboard, 0, 1);
 
-            vuforiaBitmapSkystoneDetector.Update(this, port, center, starboard);
+            vuforiaBitmapSkystoneDetector.Update(this, side_is_blue);
+
+            telemetry.addData("side:", side_is_blue ? "blue" : "red");
 
             telemetry.addData("State ", vuforiaBitmapSkystoneDetector.lastState.toString());
 
