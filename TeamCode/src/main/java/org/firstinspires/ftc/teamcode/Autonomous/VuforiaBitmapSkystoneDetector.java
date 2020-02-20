@@ -40,8 +40,8 @@ public class VuforiaBitmapSkystoneDetector {
     private OpMode opMode;
 
     //not pretty but it;ll do for now
-    private final double min = (378 / 1080);
-    private final double max = (687 / 1080);
+    private final double min = ((double)378 / (double)1080);
+    private final double max = ((double)687 / (double)1080);
     //^^^ those are percents 0 == 0% 1 == 100%
 
 
