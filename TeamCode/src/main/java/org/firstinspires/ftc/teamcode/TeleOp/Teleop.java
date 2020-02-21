@@ -66,10 +66,13 @@ public class Teleop extends TeleOpMode {
     // ************** Life Cycle Methods **************
     @Override
     public void runOpMode() throws InterruptedException {
+
+        robot.updateRobotDrive(0,0,0,0);
         preStartSetup();
 
         waitForStart();
 
+        robot.updateRobotDrive(0,0,0,0);
         lunchboxRot = 1;
         robot.arm.setGripState(RobotArm.GripState.IDLE, 0);
 //        robot.arm.setGripState(RobotArm.GripState.IDLE, 60);

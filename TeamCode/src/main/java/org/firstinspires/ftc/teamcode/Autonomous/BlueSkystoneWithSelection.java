@@ -15,6 +15,7 @@ public class BlueSkystoneWithSelection extends Auto {
     private boolean stonePositionedCenter = false;
     private boolean stonePositionedRight = false;
 
+    //TODO switch leftStoneBonus and rightStoneBonus
     private double leftStoneBonus = 0;
     private double rightStoneBonus = 60;
     private double centerStoneBonus = 30;
@@ -73,6 +74,7 @@ public class BlueSkystoneWithSelection extends Auto {
         //grabs the next stone
         if(stonePositionedLeft){
         //Rolls back to the Skystone side quickly
+        //TODO change 170 to about -170
         robot.driveByDistance(170, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones);
 
         //turns to face the front
@@ -82,24 +84,28 @@ public class BlueSkystoneWithSelection extends Auto {
 
         if(stonePositionedCenter){
             //Rolls back to the Skystone side quickly
+            //TODO change 170 to about -170
             robot.driveByDistance(170, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones);
 
             //turns to face the front
             robot.rotatePID(0,0.5,1.0,5);
 
             //go a little further right first
+            //TODO change 90 to -90 so it goes left instead of right
             robot.driveByDistance(90,0.5,25);
             collectStoneFoward(20, 200,30);
         }
 
         if(stonePositionedRight){
             //Rolls back to the Skystone side quickly
+            //TODO change 170 to about -170
             robot.driveByDistance(170, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones - 20);
 
             //turns to face the front
             robot.rotatePID(0,0.5,1.0,5);
 
             //go a little further right first
+            //TODO change 90 to -90 so it goes left instead of right
             robot.driveByDistance(90,0.5,55);
             collectStoneFoward(20, 200,20);
         }
@@ -139,38 +145,46 @@ public class BlueSkystoneWithSelection extends Auto {
             //back up into it's parking spot
             robot.driveByDistance(180, 0.5, 60);
             //really make sure we're there
+            //TODO make -90
             robot.driveByDistance(90, 0.5, 40);
         }
         if(stonePositionedCenter){
             //back up into it's parking spot
             robot.driveByDistance(180, 0.5, 80);
             //really make sure we're there
+            //TODO make -90
             robot.driveByDistance(90, 0.5, 60);
         }
         if(stonePositionedRight) {
             //back up into it's parking spot
             robot.driveByDistance(180, 0.5, 100);
             //really make sure we're there
+            //TODO make -90
             robot.driveByDistance(90, 0.5, 80);
         }
         resetArm();
     }
 
-    private void alignWithSkystone(){ //TODO make this work for all possibilites
+    private void alignWithSkystone(){
         //check where the skystone is and adjust left and right
         if(stonePositionedLeft){
             //move forward off the wall
             robot.driveByDistance(0.25, 10);
+
             stoneBonusDistance = leftStoneBonus;
+
+            //TODO reverse this angle for red side
             robot.driveByDistance(90,1.0,stoneBonusDistance);
         }
         if(stonePositionedCenter){
             stoneBonusDistance = centerStoneBonus;
+            //TODO reverse this angle for red side
             robot.driveByDistance(90,1.0,stoneBonusDistance);
         }
         if(stonePositionedRight){
             stoneBonusDistance = rightStoneBonus;
-            robot.driveByDistance(90,1.0,stoneBonusDistance + 8);
+            //TODO reverse this angle for red side
+            robot.driveByDistance(90,1.0,stoneBonusDistance + 15);
             adjustHeading(0);
         }
     }
@@ -219,6 +233,7 @@ public class BlueSkystoneWithSelection extends Auto {
     private void driveToFoundationSideFirstTime(double bridgeDistance) {
         if(stonePositionedLeft || stonePositionedCenter) {
             //Rotates to face the foundation
+            //TODO reverse this angle
             rotateAccurate(90);
 
             //Drives to foundation at a high speed
@@ -226,6 +241,7 @@ public class BlueSkystoneWithSelection extends Auto {
         }
         if(stonePositionedRight){
             //Rotates to face the foundation
+            //TODO reverse this angle
             rotateAccurate(90);
 
             //Drives to foundation at a high speed
@@ -238,9 +254,11 @@ public class BlueSkystoneWithSelection extends Auto {
         }
         if(stonePositionedCenter) {
             //Rotates to face the foundation
+            //TODO change this to -90
             rotateAccurate(90);
 
             //Drives to foundation at a high speed
+            //TODO make this about -10 ish
             robot.driveByDistance(10, 1, bridgeDistance, 2.1);
         }
         if(stonePositionedRight){
@@ -248,6 +266,7 @@ public class BlueSkystoneWithSelection extends Auto {
             rotateAccurate(90);
 
             //Drives to foundation at a high speed
+            //TODO make this about -10 ish
             robot.driveByDistance(10, 1, bridgeDistance);
         }
     }
