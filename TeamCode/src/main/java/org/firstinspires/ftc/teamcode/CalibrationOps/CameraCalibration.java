@@ -31,7 +31,7 @@ public class CameraCalibration extends LinearOpMode {
         double port = 0.3;
         double center = 0.5;
         double starboard = 0.6;
-        boolean side_is_blue = true;
+        boolean side_is_blue = false;
 
         while (opModeIsActive()) {
 
