@@ -41,24 +41,25 @@ public class RedSkystoneWithSelection extends Auto {
 
         while (!opModeIsActive()) {
             skystoneDetector.Update(this, false);
-            if (skystoneDetector.lastState == VuforiaBitmapSkystoneDetector.SkystoneState.PORT) {
-                skystoneState = 0;
-            }
-            if (skystoneDetector.lastState == VuforiaBitmapSkystoneDetector.SkystoneState.CENTER) {
-                skystoneState = 1;
-            }
-            if (skystoneDetector.lastState == VuforiaBitmapSkystoneDetector.SkystoneState.STARBOARD) {
-                skystoneState = 2;
-            }
-            //find the set up we're working with
-            if(skystoneState == 0) {stonePositionedLeft = true;}
-            if(skystoneState == 1) {stonePositionedCenter = true;}
-            if(skystoneState == 2) {stonePositionedRight = true;}
-            telemetry.addLine(stonePositionedLeft ? "PROGRAM: Left" : "");
-            telemetry.addLine(stonePositionedCenter ? "PROGRAM: Center" : "");
-            telemetry.addLine(stonePositionedRight ? "PROGRAM: Right" : "");
-            telemetry.update();
+
         }
+        if (skystoneDetector.lastState == VuforiaBitmapSkystoneDetector.SkystoneState.PORT) {
+            skystoneState = 0;
+        }
+        if (skystoneDetector.lastState == VuforiaBitmapSkystoneDetector.SkystoneState.CENTER) {
+            skystoneState = 1;
+        }
+        if (skystoneDetector.lastState == VuforiaBitmapSkystoneDetector.SkystoneState.STARBOARD) {
+            skystoneState = 2;
+        }
+        //find the set up we're working with
+        if(skystoneState == 0) {stonePositionedLeft = true;}
+        if(skystoneState == 1) {stonePositionedCenter = true;}
+        if(skystoneState == 2) {stonePositionedRight = true;}
+//        telemetry.addLine(stonePositionedLeft ? "PROGRAM: Left" : "");
+//        telemetry.addLine(stonePositionedCenter ? "PROGRAM: Center" : "");
+//        telemetry.addLine(stonePositionedRight ? "PROGRAM: Right" : "");
+//        telemetry.update();
 
 
 
@@ -77,44 +78,7 @@ public class RedSkystoneWithSelection extends Auto {
 
         releaseStone();
 
-        //grabs the next stone
-        if(stonePositionedLeft){
-        //Rolls back to the Skystone side quickly
-        //TODO change 170 to about -170 (DONE)
-        robot.driveByDistance(-170, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones);
-
-        //turns to face the front
-        robot.rotatePID(0,0.5,1.0,5);
-        collectStoneFoward(20, 200,20);
-        }
-
-        if(stonePositionedCenter){
-            //Rolls back to the Skystone side quickly
-            //TODO change 170 to about -170 (DONE)
-            robot.driveByDistance(170, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones);
-
-            //turns to face the front
-            robot.rotatePID(0,0.5,1.0,5);
-
-            //go a little further right first
-            //TODO change 90 to -90 so it goes left instead of right (DONE)
-            robot.driveByDistance(-90,0.5,25);
-            collectStoneFoward(20, 200,30);
-        }
-
-        if(stonePositionedRight){
-            //Rolls back to the Skystone side quickly
-            //TODO change 170 to about -170 (DONE)
-            robot.driveByDistance(170, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones - 20);
-
-            //turns to face the front
-            robot.rotatePID(0,0.5,1.0,5);
-
-            //go a little further right first
-            //TODO change 90 to -90 so it goes left instead of right (DONE)
-            robot.driveByDistance(-90,0.5,lengthOf3Stones/3);
-            collectStoneFoward(20, 200,20);
-        }
+        rollBacktoSkystone();
 
         //go back across the bridge
         driveToFoundationSideSecondTime(bridgeDistance + lengthOf3Stones + stoneBonusDistance);
@@ -134,7 +98,7 @@ public class RedSkystoneWithSelection extends Auto {
             collectStoneFoward(80, 100, 20);
         }
         if(stonePositionedRight){
-            collectStoneFoward(80, 100, 25);
+            collectStoneFoward(90, 100, 25);
         }
     }
 
@@ -158,14 +122,14 @@ public class RedSkystoneWithSelection extends Auto {
             //back up into it's parking spot
             robot.driveByDistance(180, 0.5, 80);
             //really make sure we're there
-            //TODO make -90 (DONE)
+
             robot.driveByDistance(-90, 0.5, 60);
         }
         if(stonePositionedRight) {
             //back up into it's parking spot
-            robot.driveByDistance(180, 0.5, 100);
+            robot.driveByDistance(180, 0.5, 60); //TODO Too far Back
             //really make sure we're there
-            //TODO make -90 (DONE)
+
             robot.driveByDistance(-90, 0.5, 80);
         }
         resetArm();
@@ -175,21 +139,21 @@ public class RedSkystoneWithSelection extends Auto {
         //check where the skystone is and adjust left and right
         if(stonePositionedLeft){
             //move forward off the wall
-            robot.driveByDistance(0.25, 10);
+            robot.driveByDistance(0.25, 20);
 
             stoneBonusDistance = leftStoneBonus;
 
-            //TODO reverse this angle for red side (DONE)
+
             robot.driveByDistance(-90,1.0,stoneBonusDistance);
         }
         if(stonePositionedCenter){
             stoneBonusDistance = centerStoneBonus;
-            //TODO reverse this angle for red side (DONE)
+
             robot.driveByDistance(-90,1.0,stoneBonusDistance);
         }
         if(stonePositionedRight){
             stoneBonusDistance = rightStoneBonus;
-            //TODO reverse this angle for red side (DONE)
+
             robot.driveByDistance(-90,1.0,stoneBonusDistance + 15);
             adjustHeading(0);
         }
@@ -262,10 +226,9 @@ public class RedSkystoneWithSelection extends Auto {
             //Rotates to face the foundation
             //TODO change this to -90 (DONE)
             rotateAccurate(-90);
-
             //Drives to foundation at a high speed
             //TODO make this about -10 ish (DONE)
-            robot.driveByDistance(-10, 1, bridgeDistance, 2.1);
+            robot.driveByDistance(-20, 1, bridgeDistance, 2.1);
         }
         if(stonePositionedRight){
             //Rotates to face the foundation
@@ -281,6 +244,48 @@ public class RedSkystoneWithSelection extends Auto {
         robot.driveByDistance(0, 0.35, distanceFoward, 2.6);
     }
 
+
+    public void rollBacktoSkystone(){
+        //grabs the next stone
+        if(stonePositionedLeft){
+            //Rolls back to the Skystone side quickly
+            //TODO change 170 to about -170 (DONE)
+            robot.driveByDistance(180, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones);
+
+            //turns to face the front
+            robot.rotatePID(0,0.5,1.0,5);
+            collectStoneFoward(20, 200,20);
+        }
+
+        if(stonePositionedCenter){
+            //Rolls back to the Skystone side quickly
+            //TODO change 170 to about -170 (DONE)
+            robot.driveByDistance(180, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones);
+
+            //turns to face the front
+            robot.rotatePID(0,0.5,1.0,5);
+
+            //go a little further right first
+            //TODO change 90 to -90 so it goes left instead of right (DONE)
+            robot.driveByDistance(-90,0.5,25);
+            collectStoneFoward(20, 200,30);
+        }
+
+        if(stonePositionedRight){
+            //adjustHeading(90);
+            //Rolls back to the Skystone side quickly
+            //TODO change 170 to about -170 (DONE)
+            robot.driveByDistance(170, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones - 20);
+
+            //turns to face the front
+            robot.rotatePID(0,0.5,1.0,5);
+
+            //go a little further right first
+            //TODO change 90 to -90 so it goes left instead of right (DONE)
+            robot.driveByDistance(-90,0.5,lengthOf3Stones/3);
+            collectStoneFoward(20, 200,20);
+        }
+    }
 
     public void resetArm(){
         robot.arm.setGripState(RobotArm.GripState.IDLE, 0);

@@ -414,7 +414,7 @@ public class Robot extends Thread {
     }
 
 
-    //
+    @Deprecated
     public void rotatePID(double targetAngle, double rotationSpeed, double maxTime) {
 
         //P of 3 and 0 for other gains seems to work really well
@@ -484,6 +484,7 @@ public class Robot extends Thread {
 
     }
 
+
     public void rotatePID(double targetAngle, double rotationSpeed, double maxTime,
                           double overrideExitThreshold) {
         //P of 3 and 0 for other gains seems to work really well
@@ -509,12 +510,15 @@ public class Robot extends Thread {
         while (Op.opModeIsActive()) {
 
             //wait for this to be true
-            while (!rotationRecent.get()) { }
+//            while (!rotationRecent.get()) {
+//            }
+//
+//            //Marks input
+//            rotationRecent.set(false);
 
-            //Marks input
-            rotationRecent.set(false);
-
+//            rotationPower = rotationPID.loop(bMath.DeltaDegree(rotation, targetAngle), 0);
             rotationPower = rotationPID.loop(bMath.DeltaDegree(imu.imu_0.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle, targetAngle), 0);
+
             rotationPower = (rotationPower / (360)) * rotationSpeed;
             rotationPower += (0.03 * (rotationPower > 0 ? 1 : -1));
 
@@ -852,7 +856,7 @@ public class Robot extends Thread {
         double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
         double percentComplete = 0;
 
-        while (Math.abs((totalWheelEncoderTicks() / 4) - distanceTicks) < distanceExitThreshold) {
+        while (Math.abs(((double) totalWheelEncoderTicks() / 4) - distanceTicks) > distanceExitThreshold && Op.opModeIsActive()) {
             percentComplete = driveManager.backRight.getCurrentPosition() / distanceTicks;
 
             moveComplex(driveHeading, (Math.sin(percentComplete * Math.PI) * driveSpeed) + bMath.Lerp(attackSpeed, decaySpeed, percentComplete), getRotation() - correctionAngle, 0);
@@ -1024,15 +1028,14 @@ public class Robot extends Thread {
     // Drive Helper Method
     public void updateRobotDrive(double frontLeft, double frontRight, double backLeft,
                                  double backRight) {
-        driveManager.frontLeft.setPower(bMath.Clamp(frontLeft,-1,1));
-        driveManager.frontRight.setPower(bMath.Clamp(frontRight,-1,1));
-        driveManager.backLeft.setPower(bMath.Clamp(backLeft,-1,1));
-        driveManager.backRight.setPower(bMath.Clamp(backRight,-1,1));
+        driveManager.frontLeft.setPower(bMath.Clamp(frontLeft, -1, 1));
+        driveManager.frontRight.setPower(bMath.Clamp(frontRight, -1, 1));
+        driveManager.backLeft.setPower(bMath.Clamp(backLeft, -1, 1));
+        driveManager.backRight.setPower(bMath.Clamp(backRight, -1, 1));
     }
 
     //Very similer to "updateRobotDrive" but the order of the variables makes more sense to some team members
-    public void setWheelPowersInAClockwiseOrder(double frontLeft, double frontRight, double backRight, double backLeft)
-    {
+    public void setWheelPowersInAClockwiseOrder(double frontLeft, double frontRight, double backRight, double backLeft) {
         driveManager.frontLeft.setPower(frontLeft);
         driveManager.frontRight.setPower(frontRight);
         driveManager.backLeft.setPower(backLeft);

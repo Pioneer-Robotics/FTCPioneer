@@ -18,11 +18,13 @@ public class TestingOpMode2 extends LinearOpMode {
     public void runOpMode() {
         robot.init(this, false);
         waitForStart();
+        while (opModeIsActive()) {
+            robot.experimentalDriveByDistance(0, 1, 0.3, 0.1, 0, 50, 10);
+            robot.experimentalDriveByDistance(90, 1, 0.3, 0.1, 0, 50, 10);
+            robot.experimentalDriveByDistance(180, 1, 0.3, 0.1, 0, 50, 10);
+            robot.experimentalDriveByDistance(-90, 1, 0.3, 0.1, 0, 50, 10);
 
-        robot.experimentalDriveByDistance(0, 0.5, 0.2, 0.1, 0, 50, 10);
-        robot.experimentalDriveByDistance(90, 0.5, 0.2, 0.1, 0, 50, 10);
-        robot.experimentalDriveByDistance(-180, 0.5, 0.2, 0.1, 0, 50, 10);
-        robot.experimentalDriveByDistance(-90, 0.5, 0.2, 0.1, 0, 50, 10);
+        }
 
         robot.shutdown();
 
