@@ -848,7 +848,7 @@ public class Robot extends Thread {
     distanceExitThreshold is in encoder ticks = inaccuracy allowed
      */
 
-    public void experimentalDriveByDistance(double driveHeading, double driveSpeed,
+    public void  experimentalDriveByDistance(double driveHeading, double driveSpeed,
                                             double attackSpeed, double decaySpeed, double correctionAngle, double distance, int distanceExitThreshold) {
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -856,8 +856,13 @@ public class Robot extends Thread {
         double distanceTicks = (480 / RobotConfiguration.wheel_circumference) * distance;
         double percentComplete = 0;
 
-        while (Math.abs(((double) totalWheelEncoderTicks() / 4) - distanceTicks) > distanceExitThreshold && Op.opModeIsActive()) {
-            percentComplete = driveManager.backRight.getCurrentPosition() / distanceTicks;
+        while (Op.opModeIsActive()) {
+
+            if (Math.abs(((double) totalWheelEncoderTicks() / 4) - distanceTicks) < distanceExitThreshold) {
+                break;
+            }
+
+            percentComplete = ((double) totalWheelEncoderTicks() / 4) / distanceTicks;
 
             moveComplex(driveHeading, (Math.sin(percentComplete * Math.PI) * driveSpeed) + bMath.Lerp(attackSpeed, decaySpeed, percentComplete), getRotation() - correctionAngle, 0);
         }

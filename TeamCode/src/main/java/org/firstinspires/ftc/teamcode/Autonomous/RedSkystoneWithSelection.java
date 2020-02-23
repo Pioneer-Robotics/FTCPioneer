@@ -18,7 +18,7 @@ public class RedSkystoneWithSelection extends Auto {
     //TODO switch leftStoneBonus and rightStoneBonus (DONE)
     private double leftStoneBonus = 60;
     private double rightStoneBonus = 0;
-    private double centerStoneBonus = 30;
+    private double centerStoneBonus = 40;
     private double stoneBonusDistance;
 
     private double bridgeDistance = 144;
@@ -74,14 +74,13 @@ public class RedSkystoneWithSelection extends Auto {
 
         collectFirstSkystone();
 
-        driveToFoundationSideFirstTime(bridgeDistance + stoneBonusDistance);
+        driveToFoundationSideFirstTime(bridgeDistance + stoneBonusDistance + 10);
 
         releaseStone();
 
         rollBacktoSkystone();
 
-        //go back across the bridge
-        driveToFoundationSideSecondTime(bridgeDistance + lengthOf3Stones + stoneBonusDistance);
+        driveToFoundationSideSecondTime(bridgeDistance + lengthOf3Stones + stoneBonusDistance + 20);
 
         releaseStone();
 
@@ -95,10 +94,10 @@ public class RedSkystoneWithSelection extends Auto {
             collectStoneFoward(80, 100, 25);
         }
         if(stonePositionedCenter){
-            collectStoneFoward(80, 100, 20);
+            collectStoneFoward(80+20, 100, 20+10);
         }
         if(stonePositionedRight){
-            collectStoneFoward(90, 100, 25);
+            collectStoneFoward(90+20, 100, 15+20);
         }
     }
 
@@ -115,7 +114,6 @@ public class RedSkystoneWithSelection extends Auto {
             //back up into it's parking spot
             robot.driveByDistance(180, 0.5, 60);
             //really make sure we're there
-            //TODO make -90 (DONE)
             robot.driveByDistance(-90, 0.5, 40);
         }
         if(stonePositionedCenter){
@@ -127,9 +125,9 @@ public class RedSkystoneWithSelection extends Auto {
         }
         if(stonePositionedRight) {
             //back up into it's parking spot
-            robot.driveByDistance(180, 0.5, 60); //TODO Too far Back
+            robot.driveByDistance(180, 0.5, 25);
             //really make sure we're there
-
+            //adjustHeading(-90);
             robot.driveByDistance(-90, 0.5, 80);
         }
         resetArm();
@@ -201,13 +199,25 @@ public class RedSkystoneWithSelection extends Auto {
     }
 
     private void driveToFoundationSideFirstTime(double bridgeDistance) {
-        if(stonePositionedLeft || stonePositionedCenter) {
+        if(stonePositionedLeft) {
             //Rotates to face the foundation
             //TODO reverse this angle
             rotateAccurate(-90);
 
             //Drives to foundation at a high speed
             robot.driveByDistance(0, 1, bridgeDistance, 2.1);
+
+            adjustHeading(-90);
+        }
+        if(stonePositionedCenter){
+            //Rotates to face the foundation
+            //TODO reverse this angle
+            rotateAccurate(-90);
+
+            //Drives to foundation at a high speed
+            robot.driveByDistance(0, 1, bridgeDistance - 10, 2.1);
+
+            adjustHeading(-90);
         }
         if(stonePositionedRight){
             //Rotates to face the foundation
@@ -215,7 +225,10 @@ public class RedSkystoneWithSelection extends Auto {
             rotateAccurate(-90);
 
             //Drives to foundation at a high speed
-            robot.driveByDistance(5, 1, bridgeDistance);
+            robot.driveByDistance(5, 1, bridgeDistance,2.1);
+
+            adjustHeading(-90);
+            robot.driveByDistance(-90,0.5,10,1);
         }
     }
     private void driveToFoundationSideSecondTime(double bridgeDistance) {
@@ -228,7 +241,8 @@ public class RedSkystoneWithSelection extends Auto {
             rotateAccurate(-90);
             //Drives to foundation at a high speed
             //TODO make this about -10 ish (DONE)
-            robot.driveByDistance(-20, 1, bridgeDistance, 2.1);
+            robot.driveByDistance(0, 1, bridgeDistance - 10, 2.1);
+            adjustHeading(-90);
         }
         if(stonePositionedRight){
             //Rotates to face the foundation
@@ -248,42 +262,42 @@ public class RedSkystoneWithSelection extends Auto {
     public void rollBacktoSkystone(){
         //grabs the next stone
         if(stonePositionedLeft){
-            //Rolls back to the Skystone side quickly
-            //TODO change 170 to about -170 (DONE)
-            robot.driveByDistance(180, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones);
-
-            //turns to face the front
-            robot.rotatePID(0,0.5,1.0,5);
-            collectStoneFoward(20, 200,20);
+//            //Rolls back to the Skystone side quickly
+//            //TODO change 170 to about -170 (DONE)
+//            robot.driveByDistance(180, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones);
+//
+//            //turns to face the front
+//            robot.rotatePID(0,0.5,1.0,5);
+//            collectStoneFoward(20, 200,20);
         }
 
         if(stonePositionedCenter){
             //Rolls back to the Skystone side quickly
             //TODO change 170 to about -170 (DONE)
-            robot.driveByDistance(180, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones);
+            robot.driveByDistance(180, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones - 40);
 
             //turns to face the front
             robot.rotatePID(0,0.5,1.0,5);
 
             //go a little further right first
             //TODO change 90 to -90 so it goes left instead of right (DONE)
-            robot.driveByDistance(-90,0.5,25);
-            collectStoneFoward(20, 200,30);
+            robot.driveByDistance(-90,0.5,40);
+            collectStoneFoward(40, 200,20);
         }
 
         if(stonePositionedRight){
             //adjustHeading(90);
             //Rolls back to the Skystone side quickly
             //TODO change 170 to about -170 (DONE)
-            robot.driveByDistance(170, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones - 20);
+            robot.driveByDistance(170, 1, bridgeDistance + stoneBonusDistance + lengthOf3Stones - 20+10);
 
             //turns to face the front
             robot.rotatePID(0,0.5,1.0,5);
 
             //go a little further right first
             //TODO change 90 to -90 so it goes left instead of right (DONE)
-            robot.driveByDistance(-90,0.5,lengthOf3Stones/3);
-            collectStoneFoward(20, 200,20);
+            robot.driveByDistance(-90,0.5,23);
+            collectStoneFoward(20+20, 200,15+20);
         }
     }
 

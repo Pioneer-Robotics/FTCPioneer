@@ -8,6 +8,7 @@ import android.renderscript.Int2;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.vuforia.Vuforia;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -40,8 +41,8 @@ public class VuforiaBitmapSkystoneDetector {
     private OpMode opMode;
 
     //not pretty but it;ll do for now
-    private final double min = ((double)378 / (double)1080);
-    private final double max = ((double)687 / (double)1080);
+    private final double min = ((double) 378 / (double) 1080);
+    private final double max = ((double) 687 / (double) 1080);
     //^^^ those are percents 0 == 0% 1 == 100%
 
 
@@ -260,7 +261,6 @@ public class VuforiaBitmapSkystoneDetector {
         int maxY = (int) (max * (double) imageScale.y);
 
 
-
         for (int y = minY; y < maxY; y++) {
             color = bitmap.getPixel(x, y);
             totalAlpha += Color.red(color) + Color.blue(color) + Color.green(color);
@@ -310,5 +310,9 @@ public class VuforiaBitmapSkystoneDetector {
         rgb = (rgb << 8) + b;
         return rgb;
     }
+
+//    public void Stop() {
+//
+//    }
 
 }
