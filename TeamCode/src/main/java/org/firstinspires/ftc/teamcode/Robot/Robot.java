@@ -34,26 +34,17 @@ public class Robot extends Thread {
     //Static instance. Only have one robot at a time and access it from here (THERE CAN BE ONLY ONE)
     public static Robot instance;
 
-    //The linear slide arm, controls length and angle
-    public RobotArm arm;
-
     //WIP WIP WIP, should let us have really responsive sensor data (right now IMU and distance)
     public RobotInputThread experimentalInput = new RobotInputThread();
-
-    //The wall tracker, lets you track along a wall using a sensor group and other data
-    public RobotWallTrack wallTrack = new RobotWallTrack();
-
-    public Potentiometer armPotentiometer = null;
 
     public Servo capstoneServo;
     public Servo foundationServo0;
     public Servo foundationServo1;
 
+    private bIMU imu = new bIMU();
+
     //The current IMU rotation, assigned by a thread
     static double rotation;
-
-    //The IMU reader, takes the average of 2 IMU's to give a fancy (and likely less preferment) reading!
-    public bIMU imu = new bIMU();
 
     //The wheel drive manager, makes sure all wheels are moving at the same speed at all times
     public RobotDriveManager driveManager;
@@ -63,8 +54,6 @@ public class Robot extends Thread {
 
     //The data manager serves to store data locally on the phone, used in calibration and PID tuning.
     public bDataManager dataManger = new bDataManager();
-
-    double desiredArmRotationPower;
 
     public LinearOpMode Op;
 
@@ -118,12 +107,6 @@ public class Robot extends Thread {
         driveManager.backRight.powerCoefficent = dataManger.readData("wheel_back_right_powerCo", -1);
         bTelemetry.print("      Back Right  : " + driveManager.backRight.powerCoefficent);
 
-        //armPotentiometer.regSlope = dataManger.readData("pot_reg_slope", bMath.toRadians(133));
-        //armPotentiometer.regIntercept = dataManger.readData("pot_reg_intercept", bMath.toRadians(-4.62));
-
-
-        bTelemetry.print("      Arm Regression Slope    : " + armPotentiometer.regSlope);
-        bTelemetry.print("      Arm Regression Int      : " + armPotentiometer.regIntercept);
 
         //Adds the motors and distance sensors to the expInput manager to allow for faster reads
         //DISABLED BUT WORKS
@@ -136,11 +119,11 @@ public class Robot extends Thread {
 //            experimentalInput.AddSensor(sensor);
 //        }
 
-        arm.setGripState(RobotArm.GripState.IDLE, 0.8);
-        setFoundationGripperState(0);
 
         bTelemetry.print("Wheel boot successful. Ready to operate!");
     }
+
+
 
     public void getHardware(LinearOpMode opmode, boolean useWallTracking) {
 
@@ -157,25 +140,15 @@ public class Robot extends Thread {
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
-        //Sets up the arms hardware
-        bTelemetry.print("Configuring arm motors...");
-        armPotentiometer = new Potentiometer(opmode, RobotConfiguration.armPotentiometer);
-        arm = new RobotArm(opmode, RobotConfiguration.arm_rotationMotor, RobotConfiguration.arm_lengthMotor, RobotConfiguration.arm_gripServo, RobotConfiguration.arm_gripRotationServo, new Double2(0, 1), new Double2(0, 1));
-
-        capstoneServo = opmode.hardwareMap.get(Servo.class, RobotConfiguration.capstoneServo);
-
         bTelemetry.print("Configuring IMU...");
         imu.Start(opmode);
 
         if (useWallTracking) {
             bTelemetry.print("Configuring wall tracking...");
-            wallTrack.Start(opmode);
         }
         foundationServo0 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip0);
         foundationServo1 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip1);
 
-        setFoundationGripperState(1);
-        arm.setGripState(RobotArm.GripState.IDLE, 1);
 
 
         while (imu.initStatus.get() < 2) {
@@ -183,12 +156,6 @@ public class Robot extends Thread {
         }
 
         bTelemetry.print("Completed IMU start up.");
-
-        while (useWallTracking && !wallTrack.startUpComplete.get()) {
-
-        }
-
-        bTelemetry.print("Completed walltrack start up.");
 
         bTelemetry.print("Hardware configuration complete.");
     }
@@ -208,7 +175,6 @@ public class Robot extends Thread {
         Op = opmode;
 
         getHardware(opmode, false);
-        setFoundationGripperState(0);
 
 //        //Find the motors
 //        driveManager = new RobotDriveManager(opmode, RobotConfiguration.wheel_frontLeft, RobotConfiguration.wheel_frontRight, RobotConfiguration.wheel_backLeft, RobotConfiguration.wheel_backRight);
@@ -252,8 +218,6 @@ public class Robot extends Thread {
 
         bTelemetry.print("Robot start up successful. Running initial wheel calibration...");
 
-        setFoundationGripperState(0);
-
         driveManager.PerformInitialCalibration();
 
         bTelemetry.print("Wheel boot successful. Writing results...");
@@ -294,42 +258,8 @@ public class Robot extends Thread {
                 threadRunning.set(false);
             }
 
-            if (arm.extensionMode == RobotArm.ArmThreadMode.Enabled) {
-                arm.length.setPower(arm.targetLengthSpeed);
-                arm.length.setTargetPosition((int) arm.targetLength);
-            }
-
-            if (arm.rotationMode == RobotArm.ArmThreadMode.Enabled) {
-
-                if (arm.targetRotation != lastTargetPosition) {
-                    lastTargetPosition = arm.targetRotation;
-//                    bTelemetry.print("Arm State Changed");
-                    threadArmTime = 0;
-                }
-
-//                bTelemetry.print("Arm Time", threadArmTime);
-//                bTelemetry.print("Target Arm Position", desiredArmRotationPower);
 
 
-                desiredArmRotationPower = (arm.targetRotation - arm.rotation.getCurrentPosition()) / RobotConfiguration.arm_rotationMax * 5;
-
-//                arm.rotation.setPower(Math.copySign(0.3, desiredArmRotationPower));
-
-                if (Math.abs(desiredArmRotationPower / 5) > 0.0005) {
-
-                    arm.rotation.setPower(Math.copySign(bMath.Clamp(Math.abs(desiredArmRotationPower), 0.15, 1), desiredArmRotationPower));
-                } else {
-                    arm.rotation.setPower(0);
-                }
-//                arm.rotation.setPower(bMath.Clamp(desiredArmRotationPower, Math.copySign(0.025, desiredArmRotationPower), Math.copySign(1, desiredArmRotationPower)));
-//                    if (threadArmTime < 1) {
-////                        arm.rotation.setPower(1);
-//                        arm.rotation.setPower(Math.copySign(1, desiredArmRotationPower));
-//                    } else {
-//                        arm.rotation.setPower(bMath.Clamp(desiredArmRotationPower, Math.copySign(0.025, desiredArmRotationPower), Math.copySign(1, desiredArmRotationPower)));
-//                    }
-//                }
-            }
         }
 
 
@@ -1006,41 +936,6 @@ public class Robot extends Thread {
 //        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
 //    }
 
-    //Returns the distance using a sensor group
-    public double getDistance(RobotWallTrack.groupID group, DistanceUnit unit) {
-        return wallTrack.sensorIDGroupPairs.get(group).getDistanceAverage(unit);
-    }
-
-    //Sets the position of the foundation 'arm' servos,
-    //Setting this value to 0 will raise the arms all of the way
-    //Setting this value to 0.73 will lower the arms without impacting wheels
-    //Setting this value to 1 will lower the arms and strain on the wheels, should only be used when dragging the foundation
-    public void setFoundationGripperState(double value) {
-        foundationServo0.setPosition(1 - value);
-        foundationServo1.setPosition(value);
-    }
-
-    //grips the foundation, meant to be human readable (by judges)
-<<<<<<< HEAD
-    public void gripFoundation(){
-        foundationServo0.setPosition(1);
-        foundationServo1.setPosition(0);
-=======
-    public void gripFoundation() {
-        setFoundationGripperState(0);
->>>>>>> 0f1b00d1fd33af676cd0e38e9ac358dd612b70c1
-    }
-
-    //lets go of the foundation, meant to be human readable (by judges)
-    public void releaseFoundation() {
-<<<<<<< HEAD
-        foundationServo0.setPosition(0);
-        foundationServo1.setPosition(1);
-    }
-=======
-        setFoundationGripperState(0.9);
-    }
-
     // Drive Helper Method
     public void updateRobotDrive(double frontLeft, double frontRight, double backLeft,
                                  double backRight) {
@@ -1076,5 +971,4 @@ public class Robot extends Thread {
     }
 
 
->>>>>>> 0f1b00d1fd33af676cd0e38e9ac358dd612b70c1
 }
