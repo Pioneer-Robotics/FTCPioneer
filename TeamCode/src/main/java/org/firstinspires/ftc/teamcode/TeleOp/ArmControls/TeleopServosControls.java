@@ -9,6 +9,8 @@ import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.EngineeringControlData;
 
 public class TeleopServosControls {
+    static boolean pointDown = false;
+    static boolean aButtonCheck = false;
 
     public static double moveServosAndGetGripAngle(Robot robot,
                                             double lunchboxRot,
@@ -38,8 +40,14 @@ public class TeleopServosControls {
      */
     public static double pointGripperDown(Gamepad gamepad, Robot robot, double gripAngle) {
         double result = gripAngle;
-        if (gamepad.a) {
-            result = 90 - robot.arm.thetaAngle() - 10;
+
+        if (gamepad.a && !aButtonCheck) {
+            pointDown = !pointDown;
+        }
+        aButtonCheck = gamepad.a;
+
+        if(pointDown){
+            result = 90 + bMath.toDegrees(robot.arm.thetaAngle()) - 10;
         }
         return result;
     }

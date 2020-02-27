@@ -25,24 +25,22 @@ public class ArmPotCalibration extends Auto {
 
 
 
-        for (int i = 0; i < robot.armPotentiometer.datapoints; i++) {
+        for (int i = 2; i < robot.armPotentiometer.dataResolution; i++) {
 
-            robot.arm.setArmStateWait(((double) i) / ((double) robot.armPotentiometer.datapoints), 0);
+            robot.arm.setArmStateWait(((double) i) / ((double) robot.armPotentiometer.dataResolution), 0);
 
 
 
-            timer.reset();
-            while (timer.seconds() < 0.5) { }
+            sleep(500);
             robot.armPotentiometer.addData(robot.arm.derivedPotentiometerAngle(robot.arm.currentArmQuadBaseDistance()));
+            sleep(500);
 
-            timer.reset();
-            while (timer.seconds() < 0.5) { }
-
-            if (i>1){
+            if (i>3){
                 robot.armPotentiometer.calcRegression();
             }
 
-            telemetry.addData("3rd element:",robot.armPotentiometer.voltages[3]);
+            telemetry.addData("x[i]:",robot.armPotentiometer.voltages[i-2]);
+            telemetry.addData("y[i]:",robot.armPotentiometer.angles[i-2]);
             telemetry.addData("arrayPos",robot.armPotentiometer.arrayPos);
             telemetry.addData("D value (mm):",robot.arm.currentArmQuadBaseDistance());
             telemetry.addData("Derived angle:", bMath.toDegrees(robot.arm.derivedPotentiometerAngle(robot.arm.currentArmQuadBaseDistance())));
@@ -52,6 +50,8 @@ public class ArmPotCalibration extends Auto {
             telemetry.addData("Regression Intercept:",bMath.toDegrees(robot.armPotentiometer.regIntercept));
             telemetry.addData("x2Sum", robot.armPotentiometer.x2Sum);
             telemetry.addData("xSum",robot.armPotentiometer.xSum);
+            telemetry.addData("ySum", robot.armPotentiometer.ySum);
+            telemetry.addData("xySum",robot.armPotentiometer.xySum);
             telemetry.update();
 
         }

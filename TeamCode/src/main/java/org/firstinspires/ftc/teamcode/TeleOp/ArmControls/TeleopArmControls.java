@@ -38,6 +38,9 @@ public class TeleopArmControls {
             result = updateArmForNonRecControls(gamePad, engiData, deltaTime, telemetry);
         }
 
+        telemetry.addData("Extension", result.extension);
+        telemetry.addData("EncoderPos", robot.arm.length.getCurrentPosition());
+
         return result;
     }
 
@@ -53,12 +56,15 @@ public class TeleopArmControls {
         EngineeringControlData result = engiData;
 
         //Switch mode to position based extension
-        result.powerExtension = false; // QUESTION - Should this be set to false in both Rec & non Rec ???
+        result.powerExtension = false;
 
         //set power and distance to the Arm.
         result.extension = robot.arm.RectExtension(result.rectControls_goingUp, result.xExtConst, result.yExtConst);
         result.extension = bMath.Clamp(robot.arm.cmToTicks(result.extension) / RobotConfiguration.arm_ticksMax);
-        result.raiseSpeed = result.rectControls_goingUp ? -0.5 * gamePad.right_stick_y : -0.5 * gamePad.right_stick_x;
+        result.raiseSpeed = result.rectControls_goingUp ? -1 * gamePad.right_stick_y : -1 * gamePad.right_stick_x;
+
+
+
 
         return result;
     }
@@ -74,15 +80,10 @@ public class TeleopArmControls {
         //Switch mode to position based extension
         result.powerExtension = true;
 
-        //
+
         result.extendSpeed = gamePad.right_trigger - gamePad.left_trigger;
 
 
-        // This is the previous code without {} - I left it here for reference. I believe this one isn't a bug, but the one below in updateRectControls was
-//        if (!result.spoolProtect) result.extension = bMath.Clamp(result.extension, 0, 1);
-//        result.raiseSpeed = bMath.Clamp(-gamePad.left_stick_y, -1, 1); //set raise
-
-        // See NOTE below - I'm assuming that raiseSpeed should always be set
         if (!result.spoolProtect) {
             result.extension = bMath.Clamp(result.extension, 0, 1);
         }
@@ -111,12 +112,7 @@ public class TeleopArmControls {
 
         //get new extension constants if rectControls changes or if direction changes
 
-        // ******** NOTE - generally not using {} after an if statement is frowned upon because it's a huge source of bugs (I added here)
-        //          I also assumed that both `xExtConst` & `yExtConst` should be set if the if statement is true.
-        //          As the computer read it before, it was `xExtConst` if the if statement was tru, but ALWAYS setting the `yExtConst`
-        //          If you don't include {} the compiler only includes the immediate next line in the if statement.
-        //          I'm almost positive this is true for Java. We can check it, or just use the {} to be certain.
-        //          Many more modern languages than Java require that coders use {} after if statement just for this specific bug.
+        //recalculates the extension constants
         if ((result.rectControls != result.rectControlsCheck) || (result.rectControls_goingUp != result.rectControls_goingUpCheck)) {
             result.xExtConst = robot.arm.xExtConst();
             result.yExtConst = robot.arm.yExtConst();

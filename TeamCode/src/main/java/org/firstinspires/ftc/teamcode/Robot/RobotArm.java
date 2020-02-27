@@ -23,7 +23,7 @@ public class RobotArm extends Thread {
     public DcMotor rotation;
 
     //useful for knowing the position of the arm
-    double k = 177.0;
+    double k = 185.0;
     double h = 32.2; //Vertical Distance from bottom joint of arm to the axis made by the center of the lead screw
     double l = 134.0; //Distance from bottom joint of arm to middle joint on Xrail
 
@@ -93,7 +93,7 @@ public class RobotArm extends Thread {
     //I think "usePot" math is off by 90 radians, am subtracting 90 radians
 
     public double thetaAngle() {
-        double potentiometerMeasurement = bMath.toRadians(robot.armPotentiometer.getAngle());
+        double potentiometerMeasurement = robot.armPotentiometer.getAngle();
 
         potentiometerMeasurement = bMath.Clamp(potentiometerMeasurement, 0, 3.141);
         double C0 = bMath.squared(l) + bMath.squared(k) - (2 * k * l * Math.cos(potentiometerMeasurement));
@@ -274,8 +274,9 @@ public class RobotArm extends Thread {
     public void SetArmStatePower(double _targetLength, double angleSpeed) {
         targetLengthSpeed = 1;
         targetLength = (RobotConfiguration.arm_ticksMax * _targetLength);
-        if (targetLength < 0 && protectSpool)
+        if (_targetLength < 0 && protectSpool) {
             targetLength = 0; //don't extend the spool past it's starting point
+        }
 
         rotation.setPower(angleSpeed);
         rotation.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

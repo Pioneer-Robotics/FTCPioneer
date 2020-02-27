@@ -89,6 +89,7 @@ public class bIMU extends Thread {
         imuRotation_0 = imu_0.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, angleUnit).firstAngle;
         imuRotation_1 = imu_1.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, angleUnit).firstAngle;
 
+
         if (imuRotation_0 - imuRotation_1 > 180) {
             imuRotation_1 += 360;
         } else if (imuRotation_1 - imuRotation_0 > 180) {
