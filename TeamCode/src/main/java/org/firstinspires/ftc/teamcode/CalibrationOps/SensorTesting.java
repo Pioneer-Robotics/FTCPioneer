@@ -22,49 +22,14 @@ public class SensorTesting extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         robot.init(this, true);
 
-        robot.arm.rotation.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.arm.length.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         waitForStart();
 
 
         //Loopy loop loop that loops
         while (opModeIsActive()) {
             deltaTime.reset();
-            telemetry.addData("90", robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group90).distanceSensors[0].getDistance(DistanceUnit.CM));
-            telemetry.addData("Time (MS) ", deltaTime.milliseconds());
-            deltaTime.reset();
-
-
-            telemetry.addData("180", robot.experimentalInput.getDistance(robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group90).distanceSensors[0]));
-            telemetry.addData("Time (MS) ", deltaTime.milliseconds());
-            deltaTime.reset();
-
-            telemetry.addData("270", robot.experimentalInput.getDistance(robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group90).distanceSensors[0]));
-            telemetry.addData("Time (MS) ", deltaTime.milliseconds());
-            deltaTime.reset();
-
-            telemetry.addData("90 fast ", robot.experimentalInput.getDistance(robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group90).distanceSensors[0]));
-            telemetry.addData("Time (MS) ", deltaTime.milliseconds());
-            deltaTime.reset();
-
-
-            telemetry.addData("180 fast ", robot.experimentalInput.getDistance(robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group180).distanceSensors[0]));
-            telemetry.addData("Time (MS) ", deltaTime.milliseconds());
-            deltaTime.reset();
-
-            telemetry.addData("270 fast ", robot.experimentalInput.getDistance(robot.wallTrack.sensorIDGroupPairs.get(RobotWallTrack.groupID.Group270).distanceSensors[0]));
-            telemetry.addData("Time (MS) ", deltaTime.milliseconds());
-            deltaTime.reset();
 
             telemetry.addData("Active threads", Thread.activeCount());
-
-
-            telemetry.addData("Grip Position", robot.arm.grip.getPosition());
-            telemetry.addData("Grip Rotation Position", robot.arm.gripRotation.getPosition());
-
-            telemetry.addData("Arm Position", robot.arm.rotation.getCurrentPosition());
-            telemetry.addData("Spool Position", robot.arm.length.getCurrentPosition());
 
             deltaTime.reset();
             telemetry.addData("Front Left", robot.driveManager.frontLeft.getCurrentPosition());

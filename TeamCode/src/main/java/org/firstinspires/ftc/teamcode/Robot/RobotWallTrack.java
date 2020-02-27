@@ -356,7 +356,7 @@ public class RobotWallTrack extends Thread {
         Robot.instance.Op.telemetry.addData("Correction Number", correctionAngle);
         Robot.instance.Op.telemetry.addData("Corrected to ", correctedDriveAngle);
         Robot.instance.Op.telemetry.addData("Corrected by ", driveAngle - correctedDriveAngle);
-        Robot.instance.Op.telemetry.addData("Current Distnace ", robot.getDistance(groupID.Group180, DistanceUnit.CM));
+//        Robot.instance.Op.telemetry.addData("Current Distnace ", robot.getDistance(groupID.Group180, DistanceUnit.CM));
         Robot.instance.Op.telemetry.addData("Current Angle ", wallAngle);
         Robot.instance.Op.telemetry.addData("Current Distnace Goal ", distance);
 

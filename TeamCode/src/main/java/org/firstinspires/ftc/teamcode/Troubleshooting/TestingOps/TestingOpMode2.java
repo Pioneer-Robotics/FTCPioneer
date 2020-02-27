@@ -3,10 +3,8 @@ package org.firstinspires.ftc.teamcode.Troubleshooting.TestingOps;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Robot.Robot;
-import org.firstinspires.ftc.teamcode.Robot.RobotArm;
 
 @Autonomous(name = "TestingOpMode2", group = "Trouble Shooting")
 public class TestingOpMode2 extends LinearOpMode {

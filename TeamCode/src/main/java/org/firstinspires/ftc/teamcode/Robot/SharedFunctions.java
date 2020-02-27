@@ -16,12 +16,6 @@ public class SharedFunctions {
     public static Map<Function, Action> functionRunnableDictionary = new HashMap<Function, Action>();
 
     public static void start(final Robot inputRobot) {
-        functionRunnableDictionary.put(Function.openArmGripper, new Action() {
-            @Override
-            public void run(double value) {
-                inputRobot.arm.setGripState(RobotArm.GripState.OPEN, value);
-            }
-        });
     }
 
     public static void execute(Function function) {
