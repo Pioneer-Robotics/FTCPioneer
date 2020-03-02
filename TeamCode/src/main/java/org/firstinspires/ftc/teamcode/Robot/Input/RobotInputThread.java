@@ -1,12 +1,9 @@
 package org.firstinspires.ftc.teamcode.Robot.Input;
 
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorREV2mDistance;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.bMotor;
-import org.firstinspires.ftc.teamcode.Robot.RobotWallTrack;
 
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;

@@ -9,7 +9,13 @@ import org.firstinspires.ftc.teamcode.Helpers.bTelemetry;
 
 import java.util.HashSet;
 
-//The idea here is that we have encoders that are able to assign a specific speed to a motor. But the encoder never guarantees that ALL motors are able to move at the same speeds (ei if one motors weaker than all of the others we need to adjust the stronger motors max speeds to work within the bounds of the weakest motor)
+/*
+    The idea here is that we have encoders that are able to assign a specific speed to a motor.
+    But the encoder never guarantees that ALL motors are able to move at the same speeds (ie if one
+    motors weaker than all of the others we need to adjust the stronger motors max speeds to work
+    within the bounds of the weakest motor)
+*/
+
 //This class takes the weakest motor and sets other motors power relative to that one
 public class RobotDriveManager {
 

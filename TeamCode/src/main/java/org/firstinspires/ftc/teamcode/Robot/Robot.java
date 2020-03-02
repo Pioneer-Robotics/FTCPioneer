@@ -37,10 +37,6 @@ public class Robot extends Thread {
     //WIP WIP WIP, should let us have really responsive sensor data (right now IMU and distance)
     public RobotInputThread experimentalInput = new RobotInputThread();
 
-    public Servo capstoneServo;
-    public Servo foundationServo0;
-    public Servo foundationServo1;
-
     private bIMU imu = new bIMU();
 
     //The current IMU rotation, assigned by a thread
@@ -83,7 +79,7 @@ public class Robot extends Thread {
 
         getHardware(opmode, useWalltrack);
 
-        capstoneServo.setPosition(0.733);
+
 
         //Starts the 'run' thread
         start();
@@ -146,9 +142,6 @@ public class Robot extends Thread {
         if (useWallTracking) {
             bTelemetry.print("Configuring wall tracking...");
         }
-        foundationServo0 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip0);
-        foundationServo1 = opmode.hardwareMap.get(Servo.class, RobotConfiguration.foundationGrip1);
-
 
 
         while (imu.initStatus.get() < 2) {
