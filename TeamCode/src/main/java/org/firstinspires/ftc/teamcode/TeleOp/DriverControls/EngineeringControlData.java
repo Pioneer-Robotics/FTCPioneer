@@ -17,5 +17,9 @@ public class EngineeringControlData {
     //rect control constants
     public double xExtConst = 1;
     public double yExtConst = 1;
+    //odometery info
+    //TODO find these actual values, rn they are all placeholders
+    public static double gapWidth = 10.0; //gap between the 2 front/back wheels
+    public static double ticsToCM = 23.2; //the ratio between cm the wheel has travelled and the ticks counted by encoder
 
 }
