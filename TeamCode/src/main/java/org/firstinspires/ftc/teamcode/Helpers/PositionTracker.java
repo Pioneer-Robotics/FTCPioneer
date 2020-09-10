@@ -90,7 +90,7 @@ public class PositionTracker {
 
     private void findPosChangeBasedOnFrontWheels(double deltaFL, double deltaFR, double radiansTurned){
         boolean counterClockwise;
-        if(deltaFR > deltaFR){
+        if(deltaFR > deltaFL){
             counterClockwise = true;
         }
         else{
