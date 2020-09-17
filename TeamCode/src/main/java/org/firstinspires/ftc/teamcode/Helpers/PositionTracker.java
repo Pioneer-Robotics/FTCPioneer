@@ -79,9 +79,9 @@ public class PositionTracker {
         else{ //that means it turned, and finding the position then becomes much more complicated
 
             findPosChangeBasedOnFrontWheels(deltaFL / 2, deltaFR / 2, radiansTurned / 2);
-            findPosChangeBasedOnBackWheel(deltaBack);
+            findPosChangeBasedOnBackWheel(deltaBack, radiansTurned);
             findPosChangeBasedOnFrontWheels(deltaFL / 2, deltaFR / 2, radiansTurned / 2);
-            /*because I don't yet know how to consider both the "front" wheels (the two that roll front to back)
+            /* because I don't yet know how to consider both the "front" wheels (the two that roll front to back)
             and the "back" wheel (which rolls side to side) at the same time, I'm first doing half the front wheels,
             then all the back wheel, then the other half of the front wheels
              */
@@ -123,9 +123,13 @@ public class PositionTracker {
         yPos += relYChange;
     }
 
-    private void findPosChangeBasedOnBackWheel(double deltaBack){
+    private void findPosChangeBasedOnBackWheel(double deltaBack, double radiansTurned){
+        //adjust for the amount the back wheel spins just from rotation
+        deltaBack -= EngineeringControlData.yOffSet * radiansTurned;
+
+        //find effect of "sideways" motion on our total position
         double relXChange = deltaBack * Math.cos(orientation); //relative to current position and absolute rotation
-        double relYChange = deltaBack * Math.sin(orientation);
+        double relYChange = deltaBack * Math.sin(orientation); //same
         xPos += relXChange;
         yPos += relYChange;
     }

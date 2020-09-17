@@ -21,5 +21,7 @@ public class EngineeringControlData {
     //TODO find these actual values, rn they are all placeholders
     public static double gapWidth = 10.0; //gap between the 2 front/back wheels
     public static double ticsToCM = 23.2; //the ratio between cm the wheel has travelled and the ticks counted by encoder
+    // yOffSet = the distance from the wheel that moves left/right to the axle connecting the other wheels
+    public static double yOffSet = 5.6;
 
 }
