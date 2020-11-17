@@ -221,6 +221,20 @@ public class bMath {
         return result;
     }
 
+    //cis(theta) = cos(theta) + i * sin(theta)
+    public static ComplexNum cis(double angle){
+        ComplexNum Ans = new ComplexNum();
+        Ans.real = Math.cos(angle);
+        Ans.imag = Math.sin(angle);
+        return Ans;
+    }
+    public static double sign(double input){
+        if(input == 0){
+            return 0.0;
+        }
+       return (input > 0 ? 1.0: -1.0);
+    }
+
     public static double toRadians(double value) {
         return value * 0.0174;
     }

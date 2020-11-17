@@ -18,10 +18,13 @@ public class EngineeringControlData {
     public double xExtConst = 1;
     public double yExtConst = 1;
     //odometery info
-    //TODO find these actual values, rn they are all placeholders
+    //TODO find the actual gapWidth, rn it's a placeholder
     public static double gapWidth = 10.0; //gap between the 2 front/back wheels
-    public static double ticsToCM = 23.2; //the ratio between cm the wheel has travelled and the ticks counted by encoder
+    public static double wheelDiameter = 5.08; //that's cm
+    public static int ticksPerRotation = 8192;
+    public static double ticsToCM = wheelDiameter * Math.PI / ticksPerRotation;
+
     // yOffSet = the distance from the wheel that moves left/right to the axle connecting the other wheels
-    public static double yOffSet = 5.6;
+    public static double yOffSet = 0.0;
 
 }

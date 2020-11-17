@@ -1,155 +1,103 @@
 package org.firstinspires.ftc.teamcode.Helpers;
 
-import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.teamcode.TeleOp.DriverControls.EngineeringControlData;
 
+//the purpose of objects of this class is to track the position of the point exactly between
+//the two forward facing odometry wheels relative to the "starting" position and orientation
+//"starting" refrence point can be anywhere on the mat, probably will not be where the robot starts
 public class PositionTracker {
-    double waitInterval;
-    //waitInterval is the time (in seconds) you want the computer to wait between getting data from the odometry wheels
-    //the program probably works best when it's set close to 0, but the exact best number should be found through testing
-    //the value of this will introduce some of the error
-    //TODO find the optimal value
-    double timeWaited; //used to track time passed since values were pulled from the odometry wheels
+    private double rotation; //the robot's rotation (in radians)
 
-    double xPos; //the robot's x coordinate
-    double yPos; //the robot's y coordinate
-    double orientation; //the robot's rotation (in radians)
+    private ComplexNum position; //real part is like x, imag part is like y
 
-    double frontLeftLast;
-    double frontRightLast;
-    double backLast;
+    private double leftLast;
+    private double rightLast;
+    private double middleLast;
+    private double rotationLast;
 
-    ElapsedTime deltaTime = new ElapsedTime();
+    private double deltaLeft;
+    private double deltaRight;
+    private double deltaMiddle;
+    private double deltaRotation;
 
-    public PositionTracker(double waitInterval){
-        this.waitInterval = waitInterval;
-        double xPos = 0;
-        double yPos = 0;
-        double orientation = 0;
+    public PositionTracker(double x, double y){
+        rotation = 0;
+        position = new ComplexNum(x,y);
+    }
+    public PositionTracker(double x, double y, double theta){
+        rotation = theta;
+        position = new ComplexNum(x,y);
     }
 
-    //calculatePosition updates the variables in the PositionTracker object
-    private void calculatePosition (){
-        timeWaited += deltaTime.seconds();
-
-        if(timeWaited >= waitInterval){ //if you've waited long enough
-            timeWaited = 0; //we pull the values, so start tracking time till next cycle
-            double deltafrontLeft = getFLOdometer() - frontLeftLast;
-            double deltafrontRight = getFROdometer() - frontRightLast;
-            double deltaBack = getRearOdometer() - backLast;
-
-            setLastValuesToCurrent(); //sets frontLeftLast, frontRightLast, and backLast to the current odometer values
-
-            /*
-            calculateNewPosition takes the change in odometer values and
-            calculates the change in the robot's position & orientation
-             */
-            calculateNewPosition(deltafrontLeft, deltafrontRight, deltaBack);
-        }
-        //otherwise, just keep waiting
+    public void update(){ //order matters here, don't change em round
+        calculateDeltas();
+        adjustPosition();
+        calculateRotation();
+        setLastValuesToCurrent();
+    }
+    public ComplexNum getPosition(){
+        return position.clone();
+    }
+    public double getRotation(){
+        return rotation; //we do not calculateRotation() first ON PURPOSE
+    }
+    private void calculateRotation(){
+        rotation = ( getRightOdometer() - getLeftOdometer() ) / EngineeringControlData.gapWidth;
     }
 
-    //getPosition creates a Position object with current info
-    Position getPosition(){
-        Position pos = new Position(xPos,yPos,orientation);
-        return pos;
+    private void calculateDeltas(){ //finds the change in all the odometry readings, and calculates rotation change
+        deltaLeft = getLeftOdometer() - leftLast;
+        deltaRight = getRightOdometer() - rightLast;
+        deltaMiddle = getMiddleOdometer() - middleLast;
+        deltaRotation = (deltaRight - deltaLeft) / EngineeringControlData.gapWidth;
     }
 
-    //showPosition prints what getPosition thinks the position is to the control phone's screen so we can test it
-    void showPosition(){
-
+    private void adjustPosition(){
+        // find displacement without worrying about needing to correct for rotation
+        ComplexNum displacement = calculateDisplacement();
+        // rotate displcement to match up with the starting axis
+        rotateComplexNum(displacement, rotationLast);
+        // add rotated displacement to the previous position value, that is your new position
+        position.plusEquals(displacement);
     }
 
-    void calculateNewPosition(double deltaFL, double deltaFR, double deltaBack){
-        double radiansTurned = (deltaFL - deltaFR) / EngineeringControlData.gapWidth;
-        //if the robot turns exactly about the centerpoint, this won't work
-        //if the robot rotates about a point not on the centerline, this won't work (hint: need 3rd wheel to find)
-        //TODO fix the above bugs
-
-        if(radiansTurned == 0) {
-            //that would mean it moved in a straight line
-            xPos += deltaBack * Math.cos(orientation);
-            xPos += deltaFL * Math.sin(orientation); //it didn't turn, so deltaFL and deltaFR are equal
-
-            yPos += deltaBack * Math.sin(orientation);
-            yPos += deltaFL * Math.cos(orientation);
-        }
-
-        else{ //that means it turned, and finding the position then becomes much more complicated
-
-            findPosChangeBasedOnFrontWheels(deltaFL / 2, deltaFR / 2, radiansTurned / 2);
-            findPosChangeBasedOnBackWheel(deltaBack, radiansTurned);
-            findPosChangeBasedOnFrontWheels(deltaFL / 2, deltaFR / 2, radiansTurned / 2);
-            /* because I don't yet know how to consider both the "front" wheels (the two that roll front to back)
-            and the "back" wheel (which rolls side to side) at the same time, I'm first doing half the front wheels,
-            then all the back wheel, then the other half of the front wheels
-             */
-        }
-    }
-
-    private void findPosChangeBasedOnFrontWheels(double deltaFL, double deltaFR, double radiansTurned){
-        boolean counterClockwise;
-        if(deltaFR > deltaFL){
-            counterClockwise = true;
-        }
-        else{
-            counterClockwise = false;
-        }
-
-        double a; //a is the same as the gapWidth, but sometimes it needs to be negative to make the math work
-
-        if(counterClockwise) {
-            a = EngineeringControlData.gapWidth;
-        }
-        else{
-            a = EngineeringControlData.gapWidth * (-1);
-        }
-
-        double turnRadius; //this is the radius of the turn made by the point between exactly the FL and FR wheels
-        turnRadius = a * deltaFL / (deltaFR - deltaFL) + EngineeringControlData.gapWidth;
-
-        double relXChange = turnRadius * Math.cos(radiansTurned); //relative to current position and rotation
-        double relYChange = turnRadius * Math.sin(radiansTurned);
-
-        double distance = Math.sqrt( bMath.squared(relXChange) + bMath.squared(relYChange) );
-
-        orientation += radiansTurned;
-
-        relXChange = distance * Math.cos(orientation); //relative to current position and absolute rotation
-        relYChange = distance * Math.sin(orientation);
-
-        xPos += relXChange;
-        yPos += relYChange;
-    }
-
-    private void findPosChangeBasedOnBackWheel(double deltaBack, double radiansTurned){
-        //adjust for the amount the back wheel spins just from rotation
-        deltaBack -= EngineeringControlData.yOffSet * radiansTurned;
-
-        //find effect of "sideways" motion on our total position
-        double relXChange = deltaBack * Math.cos(orientation); //relative to current position and absolute rotation
-        double relYChange = deltaBack * Math.sin(orientation); //same
-        xPos += relXChange;
-        yPos += relYChange;
+    //calculates displacement relative to its "last" position and rotation as a ComplexNum
+    private ComplexNum calculateDisplacement(){
+        //TODO go through this step by step and explain what's going on (in comments)
+        //TODO: rn, this doesn't use the middle odometer at all, fix that.
+        //TODO: this assumes it rotates about a point in line w/ the odometers, that's not true
+        double arcLength = (deltaRight + deltaLeft) / 2;
+        double turnRadius = deltaRotation * arcLength;
+        double halfTheta = deltaRotation / 2.0;
+        double chordLength = 2 * Math.sin(halfTheta) * turnRadius;
+        double xDisplacement = chordLength * Math.sin(halfTheta) * -bMath.sign(deltaRotation);
+        double yDisplacement = chordLength * Math.cos(halfTheta) * bMath.sign(deltaRotation);
+        return new ComplexNum(xDisplacement, yDisplacement);
     }
 
     //condensing 3 lines of code into 1 line for use elsewhere
     private void setLastValuesToCurrent() {
-        frontLeftLast = getFLOdometer();
-        frontRightLast = getFROdometer();
-        backLast = getRearOdometer();
+        leftLast = getLeftOdometer();
+        rightLast = getRightOdometer();
+        middleLast = getMiddleOdometer();
+        rotationLast = rotation;
+    }
+
+    //this changes the data in the ComlexNum "num" so it's rotated by the angle
+    private void rotateComplexNum(ComplexNum num, double angle){
+        ComplexNum newComplex = ComplexNum.multiply(num, bMath.cis(angle));
+        num.equals(newComplex);
     }
 
     //these are just placeholder methods until we get the actual odometry wheels installed and can get values from them
     //TODO get the actual odometers installed and connected so these methods can be replaced
-    double getFLOdometer(){
+    double getLeftOdometer(){
         return 5.0;
     }
-    double getFROdometer(){
+    double getRightOdometer(){
         return 5.0;
     }
-    double getRearOdometer(){
+    double getMiddleOdometer(){
         return 5.0;
     }
 
