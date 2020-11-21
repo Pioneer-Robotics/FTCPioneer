@@ -1,3 +1,10 @@
+## TEAM NOTICE
+
+This was the team's repo from the 2019-2020 season, it is no longer used and will be archived shortly!
+
+
+HISTORICAL:
+
 ## NOTICE
 
 This repository contains the public FTC SDK for the SKYSTONE (2019-2020) competition season.  
